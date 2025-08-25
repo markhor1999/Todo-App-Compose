@@ -1,22 +1,43 @@
 package com.codingwithsalman.apps.todo.app.compose.features.note.presentation.notes
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.codingwithsalman.apps.todo.app.compose.R
+import com.codingwithsalman.apps.todo.app.compose.features.note.presentation.components.TopAppBar
 import com.codingwithsalman.apps.todo.app.compose.features.note.presentation.notes.components.NoteItem
 import com.codingwithsalman.apps.todo.app.compose.features.note.presentation.notes.components.OrderSection
 import com.codingwithsalman.apps.todo.app.compose.features.note.presentation.util.Screen
@@ -29,8 +50,8 @@ fun NotesScreen(
     viewModel: NotesViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.value
-    val scaffoldState: ScaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         floatingActionButton = {
@@ -38,34 +59,46 @@ fun NotesScreen(
                 onClick = {
                     navController.navigate(Screen.AddEditNoteScreen.route)
                 },
-                backgroundColor = MaterialTheme.colors.onBackground
+                shape = CircleShape
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Note")
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.add_notes)
+                )
             }
         },
-        scaffoldState = scaffoldState,
-        snackbarHost = { snackBarHost ->
-            SnackbarHost(hostState = snackBarHost) { data ->
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
                 Snackbar(
-                    actionColor = MaterialTheme.colors.primary,
+                    actionColor = MaterialTheme.colorScheme.primary,
                     snackbarData = data
                 )
             }
-        }
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "Your Notes", style = MaterialTheme.typography.h4)
-                IconButton(onClick = {
-                    viewModel.noteEvent(NotesEvent.ToggleOrderSection)
-                }) {
-                    Icon(imageVector = Icons.Default.Sort, contentDescription = "Sort")
+        },
+        topBar = {
+            TopAppBar(
+                title = stringResource(R.string.notes),
+                actions = {
+                    IconButton(
+                        onClick = {
+                            viewModel.noteEvent(NotesEvent.ToggleOrderSection)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Sort,
+                            contentDescription = stringResource(R.string.sort)
+                        )
+                    }
                 }
-            }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
             AnimatedVisibility(
                 visible = state.isOrderSectionVisible,
                 enter = fadeIn() + slideInVertically(),
@@ -97,7 +130,7 @@ fun NotesScreen(
                         onDeleteClick = {
                             viewModel.noteEvent(NotesEvent.DeleteNote(note))
                             scope.launch {
-                                val result = scaffoldState.snackbarHostState.showSnackbar(
+                                val result = snackbarHostState.showSnackbar(
                                     message = "Note deleted",
                                     actionLabel = "Undo"
                                 )

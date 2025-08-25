@@ -18,5 +18,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Todo-App-Compose"
-include ':app'
+
+rootProject.name = "TodoComposeApp"
+include(":app")
+ 
