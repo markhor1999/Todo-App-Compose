@@ -26,11 +26,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
-import com.codingwithsalman.apps.todo.app.compose.features.note.domain.model.Note
+import com.codingwithsalman.jotjive.core.domain.jot.Jot
 
 @Composable
 fun NoteItem(
-    note: Note,
+    note: Jot,
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 10.dp,
     cutCornerSize: Dp = 30.dp,

@@ -1,9 +1,9 @@
 package com.codingwithsalman.apps.todo.app.compose.features.note.domain.use_case
 
-import com.codingwithsalman.apps.todo.app.compose.features.note.domain.repository.NoteRepository
+import com.codingwithsalman.jotjive.core.domain.jot.JotDataSource
 
 class GetNote(
-    private val repository: NoteRepository
+    private val jotDataSource: JotDataSource
 ) {
-    suspend operator fun invoke(id: Int) = repository.getNoteById(id)
+    suspend operator fun invoke(id: Int) = jotDataSource.getJot(id)
 }

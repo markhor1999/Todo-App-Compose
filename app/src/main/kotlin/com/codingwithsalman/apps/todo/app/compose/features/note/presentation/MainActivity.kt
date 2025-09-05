@@ -13,7 +13,7 @@ import androidx.navigation.navArgument
 import com.codingwithsalman.apps.todo.app.compose.features.note.presentation.add_edit_note.AddEditNoteScreen
 import com.codingwithsalman.apps.todo.app.compose.features.note.presentation.notes.NotesScreen
 import com.codingwithsalman.apps.todo.app.compose.features.note.presentation.util.Screen
-import com.codingwithsalman.apps.todo.app.compose.ui.theme.TodoAppComposeTheme
+import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.JotJiveTheme
 
 class MainActivity : ComponentActivity() {
     @ExperimentalAnimationApi
@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
-            TodoAppComposeTheme {
+            JotJiveTheme {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,

@@ -1,20 +1,20 @@
 package com.codingwithsalman.apps.todo.app.compose.features.note.domain.use_case
 
-import com.codingwithsalman.apps.todo.app.compose.features.note.domain.model.InvalidNoteException
-import com.codingwithsalman.apps.todo.app.compose.features.note.domain.model.Note
-import com.codingwithsalman.apps.todo.app.compose.features.note.domain.repository.NoteRepository
+import com.codingwithsalman.jotjive.core.database.jot.InvalidNoteException
+import com.codingwithsalman.jotjive.core.domain.jot.Jot
+import com.codingwithsalman.jotjive.core.domain.jot.JotDataSource
 
 class AddNote(
-    private val repository: NoteRepository
+    private val jotDataSource: JotDataSource
 ) {
     @Throws(InvalidNoteException::class)
-    suspend operator fun invoke(note: Note) {
-        if (note.title.isBlank()) {
+    suspend operator fun invoke(jot: Jot) {
+        if (jot.title.isBlank()) {
             throw InvalidNoteException("The title of the note can't by empty.")
         }
-        if (note.content.isBlank()) {
+        if (jot.content.isBlank()) {
             throw InvalidNoteException("The content of the note can't by empty.")
         }
-        repository.insertNote(note)
+        jotDataSource.insertJot(jot)
     }
 }

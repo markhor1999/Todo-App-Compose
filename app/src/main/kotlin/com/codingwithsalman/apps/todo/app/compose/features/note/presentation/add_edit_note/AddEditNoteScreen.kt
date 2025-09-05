@@ -37,8 +37,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.codingwithsalman.apps.todo.app.compose.R
-import com.codingwithsalman.apps.todo.app.compose.features.note.domain.model.Note
 import com.codingwithsalman.apps.todo.app.compose.features.note.presentation.add_edit_note.components.TransparentHintTextField
+import com.codingwithsalman.jotjive.core.domain.jot.Jot
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -107,7 +107,7 @@ fun AddEditNoteScreen(
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Note.noteColors.forEach { color ->
+                Jot.noteColors.forEach { color ->
                     val colorInt = color.toArgb()
                     Box(
                         modifier = Modifier
