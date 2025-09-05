@@ -60,5 +60,5 @@ dependencies {
     // Allow use of java.time.Instant below API 26
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    coreLibraryDesugaring(libs.androidx.preferences)
+    implementation(libs.androidx.preferences)
 }

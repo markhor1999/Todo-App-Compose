@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.codingwithsalman.jotjive.core.domain.jive.Mood
 import com.codingwithsalman.jotjive.core.domain.settings.SettingsPreferences
 
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +14,7 @@ import kotlinx.coroutines.flow.map
 
 class DataStoreSettings(
     private val context: Context
-): SettingsPreferences {
+) : SettingsPreferences {
 
     companion object {
         private val Context.settingsDataStore by preferencesDataStore(
