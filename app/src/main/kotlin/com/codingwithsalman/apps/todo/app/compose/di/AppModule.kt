@@ -1,5 +1,16 @@
 package com.codingwithsalman.apps.todo.app.compose.di
 
+import com.codingwithsalman.apps.todo.app.compose.NoteApp
+import kotlinx.coroutines.CoroutineScope
+import org.koin.android.ext.koin.androidApplication
+import org.koin.dsl.module
+
+val appModule = module {
+    single<CoroutineScope> {
+        (androidApplication() as NoteApp).applicationScope
+    }
+}
+
 /*
 @Module
 @InstallIn(SingletonComponent::class)
