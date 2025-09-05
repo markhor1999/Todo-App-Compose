@@ -20,4 +20,7 @@ interface JotDao {
 
     @Delete
     suspend fun deleteJot(jotEntity: JotEntity)
+
+    @Query("DELETE FROM jotentity WHERE id = :id")
+    suspend fun deleteJot(id: Int)
 }
