@@ -3,8 +3,6 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.room)
     alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
@@ -14,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.codingwithsalman.apps.todo.app.compose"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 36
         versionCode = 4
         versionName = "1.0.2"
@@ -44,10 +42,6 @@ android {
     }
 }
 
-room {
-    schemaDirectory("$projectDir/schemas")
-}
-
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -69,14 +63,12 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
 
-    //Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    ksp(libs.androidx.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
+    // Splashscreen & Widget
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.bundles.widget.glance)
 
-    // Room
-    implementation(libs.room.ktx)
-    implementation(libs.room.runtime)
-    ksp(libs.room.compiler)
+    // DI - Koin
+    implementation(libs.bundles.koin)
+
+    implementation(projects.core)
 }

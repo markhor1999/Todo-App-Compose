@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!--  Shadow plate (subtle)  -->
+    <path android:fillColor="#26FFFFFF" android:pathData="M20,38 h56 a10,10 0,0,1 10,10 v22 a10,10 0,0,1 -10,10 h-40 l-10,10 v-10 h-6 a10,10 0,0,1 -10,-10 v-22 a10,10 0,0,1 10,-10 z"/>
+    <!--  Chat bubble base  -->
+    <path android:fillColor="#FFFFFFFF" android:pathData="M18,36 h56 a12,12 0,0,1 12,12 v24 a12,12 0,0,1 -12,12 h-38 l-12,12 v-12 h-6 a12,12 0,0,1 -12,-12 v-24 a12,12 0,0,1 12,-12 z"/>
+    <!--  Checkmark inside bubble (left)  -->
+    <path android:fillColor="#FF1F2937" android:pathData="M28,62 l8,8 l18,-22 l6,6 l-24,28 l-14,-14 z"/>
+    <!--  Microphone capsule (right)  -->
+    <path android:fillColor="#FF1F2937" android:pathData="M70,48 a10,10 0,1,0 20,0 a10,10 0,1,0 -20,0"/>
+    <path android:fillColor="#FF1F2937" android:pathData="M70,58 h20 v20 h-20 z"/>
+    <path android:fillColor="#FF1F2937" android:pathData="M70,78 a10,10 0,1,0 20,0 a10,10 0,1,0 -20,0"/>
+    <!--  Mic stem  -->
+    <path android:fillColor="#FF1F2937" android:pathData="M79,80 h2 v10 h-2 z"/>
+    <!--  Waveform bars under mic  -->
+    <path android:fillColor="#801F2937" android:pathData="M60,92 h2 v6 h-2 z"/>
+    <path android:fillColor="#801F2937" android:pathData="M64,90 h2 v8 h-2 z"/>
+    <path android:fillColor="#801F2937" android:pathData="M68,88 h2 v10 h-2 z"/>
+    <path android:fillColor="#801F2937" android:pathData="M72,90 h2 v8 h-2 z"/>
+    <path android:fillColor="#801F2937" android:pathData="M76,92 h2 v6 h-2 z"/>
+</vector>
