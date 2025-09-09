@@ -35,6 +35,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
+        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {
@@ -71,4 +72,7 @@ dependencies {
     implementation(libs.bundles.koin)
 
     implementation(projects.core)
+
+    // Allow use of java.time.Instant below API 26
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }

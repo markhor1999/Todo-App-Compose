@@ -6,7 +6,7 @@ import com.codingwithsalman.jotjive.core.domain.jot.JotDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class RoomJotDataSource(
+internal class RoomJotDataSource(
     private val jotDao: JotDao
 ) : JotDataSource {
     override fun observeJots(): Flow<List<Jot>> {

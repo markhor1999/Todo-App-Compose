@@ -2,6 +2,7 @@ package com.codingwithsalman.apps.todo.app.compose
 
 import android.app.Application
 import com.codingwithsalman.apps.todo.app.compose.di.appModule
+import com.codingwithsalman.apps.todo.app.compose.di.useCaseModule
 import com.codingwithsalman.jotjive.core.database.di.databaseModule
 import com.codingwithsalman.jotjive.core.di.jotJiveModule
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +22,8 @@ class NoteApp : Application() {
             modules(
                 appModule,
                 jotJiveModule,
-                databaseModule
+                databaseModule,
+                useCaseModule
             )
         }
 

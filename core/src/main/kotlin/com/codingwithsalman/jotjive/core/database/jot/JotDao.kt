@@ -8,7 +8,7 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface JotDao {
+internal interface JotDao {
     @Query("SELECT * FROM jotentity")
     fun getJots(): Flow<List<JotEntity>>
 

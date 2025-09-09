@@ -20,6 +20,6 @@ dependencyResolutionManagement {
 }
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-rootProject.name = "TodoComposeApp"
+rootProject.name = "JotJive"
 include(":app")
 include(":core")

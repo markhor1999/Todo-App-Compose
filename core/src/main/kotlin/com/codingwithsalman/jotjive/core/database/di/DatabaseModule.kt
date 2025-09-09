@@ -16,4 +16,7 @@ val databaseModule = module {
     single {
         get<JotJiveDatabase>().jiveDao
     }
+    single {
+        get<JotJiveDatabase>().jotDao
+    }
 }
