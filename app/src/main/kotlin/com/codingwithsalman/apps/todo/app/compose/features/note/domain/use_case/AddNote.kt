@@ -12,7 +12,7 @@ class AddNote(
         if (jot.title.isBlank()) {
             throw InvalidNoteException("The title of the note can't by empty.")
         }
-        if (jot.content.isBlank()) {
+        if (jot.note.isNullOrBlank()) {
             throw InvalidNoteException("The content of the note can't by empty.")
         }
         jotDataSource.insertJot(jot)

@@ -133,6 +133,11 @@ class JotJivesViewModel(
             }
 
             JotJivesAction.OnSettingsClick -> {}
+            JotJivesAction.OnAddJotClick -> {
+                viewModelScope.launch {
+                    eventChannel.send(JotJivesEvent.AddJot)
+                }
+            }
 
             is JotJivesAction.OnRemoveFilters -> {
                 when (action.filterType) {

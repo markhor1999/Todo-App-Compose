@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.create_jive.CreateJiveRoot
+import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.create_jot.CreateJotRoot
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.JotJiveRoot
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.settings.SettingsRoot
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.util.toCreateJiveRoute
@@ -38,11 +39,19 @@ fun NavigationRoot(
                 },
                 onNavigateToSettings = {
                     navController.navigate(NavigationRoute.Settings)
+                },
+                onNavigateToCreateJot = {
+                    navController.navigate(NavigationRoute.CreateJot)
                 }
             )
         }
         composable<NavigationRoute.CreateJive> {
             CreateJiveRoot(
+                onConfirmLeave = navController::navigateUp
+            )
+        }
+        composable<NavigationRoute.CreateJot> {
+            CreateJotRoot(
                 onConfirmLeave = navController::navigateUp
             )
         }

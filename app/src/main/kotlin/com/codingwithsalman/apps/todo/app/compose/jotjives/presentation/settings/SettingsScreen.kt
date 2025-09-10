@@ -2,7 +2,6 @@
 
 package com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.settings
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +31,6 @@ import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.M
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.settings.components.DefaultTopicSelectorCard
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.settings.components.MoodCard
 import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.JotJiveTheme
-import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.bgGradient
 import com.codingwithsalman.jotjive.core.presentation.util.defaultShadow
 import org.koin.androidx.compose.koinViewModel
 
@@ -91,9 +89,6 @@ fun SettingsScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    brush = MaterialTheme.colorScheme.bgGradient
-                )
                 .padding(innerPadding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)

@@ -11,16 +11,16 @@ internal class RoomJotDataSource(
 ) : JotDataSource {
     override fun observeJots(): Flow<List<Jot>> {
         return jotDao
-            .getJots()
-            .map { jotEntities ->
-                jotEntities.map { jotEntity ->
+            .observeJots()
+            .map { jotWithTopics ->
+                jotWithTopics.map { jotEntity ->
                     jotEntity.toJot()
                 }
             }
     }
 
     override suspend fun insertJot(jot: Jot) {
-        jotDao.insertJot(jot.toJotEntity())
+        jotDao.insertJotWithTopics(jot.toJotWithTopics())
     }
 
     override suspend fun getJot(id: Int): Jot? {
@@ -29,9 +29,5 @@ internal class RoomJotDataSource(
 
     override suspend fun deleteJot(id: Int) {
         jotDao.deleteJot(id)
-    }
-
-    override suspend fun deleteJot(jot: Jot) {
-        jotDao.deleteJot(jot.toJotEntity())
     }
 }

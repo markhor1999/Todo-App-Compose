@@ -21,5 +21,8 @@ sealed interface NavigationRoute {
     ) : NavigationRoute
 
     @Serializable
+    data object CreateJot : NavigationRoute
+
+    @Serializable
     data object Settings
 }

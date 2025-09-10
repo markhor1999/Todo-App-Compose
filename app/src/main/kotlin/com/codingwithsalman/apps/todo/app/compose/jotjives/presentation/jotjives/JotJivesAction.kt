@@ -15,6 +15,7 @@ sealed interface JotJivesAction {
     data object OnRequestPermissionQuickRecording : JotJivesAction
     data object OnRecordButtonLongClick : JotJivesAction
     data object OnSettingsClick : JotJivesAction
+    data object OnAddJotClick : JotJivesAction
     data object OnPauseRecordingClick : JotJivesAction
     data object OnResumeRecordingClick : JotJivesAction
     data object OnCompleteRecording : JotJivesAction

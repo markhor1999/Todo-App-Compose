@@ -1,4 +1,4 @@
-package com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.create_jive.components
+package com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.components.create
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,9 +41,8 @@ import com.codingwithsalman.jotjive.core.presentation.designsystem.dropdowns.Sel
 import com.codingwithsalman.jotjive.core.presentation.designsystem.text_fields.TransparentHintTextField
 import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.JotJiveTheme
 
-
 @Composable
-fun JiveTopicsRow(
+fun CreateTopicsRow(
     topics: List<String>,
     addTopicText: String,
     showCreateTopicOption: Boolean,
@@ -162,7 +161,7 @@ fun JiveTopicsRow(
 @Composable
 private fun JiveTopicsRowPreview() {
     JotJiveTheme {
-        JiveTopicsRow(
+        CreateTopicsRow(
             topics = listOf(),
             addTopicText = "",
             showCreateTopicOption = true,

@@ -1,6 +1,5 @@
-package com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.create_jive
+package com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.create_jot
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -41,55 +40,40 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.codingwithsalman.apps.todo.app.compose.R
-import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.components.JiveMoodPlayer
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.components.create.CreateTopicsRow
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.components.create.SelectMoodSheet
-import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.MoodUi
 import com.codingwithsalman.jotjive.core.presentation.designsystem.buttons.PrimaryButton
 import com.codingwithsalman.jotjive.core.presentation.designsystem.buttons.SecondaryButton
 import com.codingwithsalman.jotjive.core.presentation.designsystem.text_fields.TransparentHintTextField
-import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.JotJiveTheme
 import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.secondary70
 import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.secondary95
 import com.codingwithsalman.jotjive.core.presentation.util.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CreateJiveRoot(
+fun CreateJotRoot(
     onConfirmLeave: () -> Unit,
-    viewModel: CreateJiveViewModel = koinViewModel()
+    viewModel: CreateJotViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val context = LocalContext.current
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            CreateJiveEvent.FailedToSaveFile -> {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.error_couldnt_save_file),
-                    Toast.LENGTH_LONG
-                ).show()
-                onConfirmLeave()
-            }
-
-            CreateJiveEvent.JiveSuccessfullySaved -> {
+            CreateJotEvent.JotSuccessfullySaved -> {
                 onConfirmLeave()
             }
         }
     }
 
-    CreateJiveScreen(
+    CreateJotScreen(
         state = state,
         onAction = viewModel::onAction,
         onConfirmLeave = onConfirmLeave
@@ -98,15 +82,15 @@ fun CreateJiveRoot(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CreateJiveScreen(
-    state: CreateJiveState,
+private fun CreateJotScreen(
+    state: CreateJotState,
     onConfirmLeave: () -> Unit,
-    onAction: (CreateJiveAction) -> Unit,
+    onAction: (CreateJotAction) -> Unit
 ) {
     BackHandler(
         enabled = !state.showConfirmLeaveDialog
     ) {
-        onAction(CreateJiveAction.OnGoBack)
+        onAction(CreateJotAction.OnGoBack)
     }
 
     Scaffold(
@@ -122,7 +106,7 @@ private fun CreateJiveScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            onAction(CreateJiveAction.OnNavigateBackClick)
+                            onAction(CreateJotAction.OnNavigateBackClick)
                         }
                     ) {
                         Icon(
@@ -155,7 +139,7 @@ private fun CreateJiveScreen(
                 if (state.mood == null) {
                     FilledIconButton(
                         onClick = {
-                            onAction(CreateJiveAction.OnSelectMoodClick)
+                            onAction(CreateJotAction.OnSelectMoodClick)
                         },
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = MaterialTheme.colorScheme.secondary95,
@@ -174,7 +158,7 @@ private fun CreateJiveScreen(
                         modifier = Modifier
                             .height(32.dp)
                             .clickable {
-                                onAction(CreateJiveAction.OnSelectMoodClick)
+                                onAction(CreateJotAction.OnSelectMoodClick)
                             },
                         contentScale = ContentScale.FillHeight
                     )
@@ -183,7 +167,7 @@ private fun CreateJiveScreen(
                 TransparentHintTextField(
                     text = state.titleText,
                     onValueChange = {
-                        onAction(CreateJiveAction.OnTitleTextChange(it))
+                        onAction(CreateJotAction.OnTitleTextChange(it))
                     },
                     modifier = Modifier
                         .weight(1f),
@@ -203,24 +187,6 @@ private fun CreateJiveScreen(
                 )
             }
 
-            JiveMoodPlayer(
-                moodUi = state.mood,
-                playbackState = state.playbackState,
-                playerProgress = { state.durationPlayedRatio },
-                durationPlayed = state.durationPlayed,
-                totalPlaybackDuration = state.playbackTotalDuration,
-                powerRatios = state.playbackAmplitudes,
-                onPlayClick = {
-                    onAction(CreateJiveAction.OnPlayAudioClick)
-                },
-                onPauseClick = {
-                    onAction(CreateJiveAction.OnPauseAudioClick)
-                },
-                onTrackSizeAvailable = {
-                    onAction(CreateJiveAction.OnTrackSizeAvailable(it))
-                }
-            )
-
             CreateTopicsRow(
                 topics = state.topics,
                 addTopicText = state.addTopicText,
@@ -228,16 +194,16 @@ private fun CreateJiveScreen(
                 showTopicSuggestions = state.showTopicSuggestions,
                 searchResults = state.searchResults,
                 onTopicClick = {
-                    onAction(CreateJiveAction.OnTopicClick(it))
+                    onAction(CreateJotAction.OnTopicClick(it))
                 },
                 onDismissTopicSuggestions = {
-                    onAction(CreateJiveAction.OnDismissTopicSuggestions)
+                    onAction(CreateJotAction.OnDismissTopicSuggestions)
                 },
                 onRemoveTopicClick = {
-                    onAction(CreateJiveAction.OnRemoveTopicClick(it))
+                    onAction(CreateJotAction.OnRemoveTopicClick(it))
                 },
                 onAddTopicTextChange = {
-                    onAction(CreateJiveAction.OnAddTopicTextChange(it))
+                    onAction(CreateJotAction.OnAddTopicTextChange(it))
                 }
             )
 
@@ -256,7 +222,7 @@ private fun CreateJiveScreen(
                 TransparentHintTextField(
                     text = state.noteText,
                     onValueChange = {
-                        onAction(CreateJiveAction.OnNoteTextChange(it))
+                        onAction(CreateJotAction.OnNoteTextChange(it))
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -283,7 +249,7 @@ private fun CreateJiveScreen(
                 SecondaryButton(
                     text = stringResource(R.string.cancel),
                     onClick = {
-                        onAction(CreateJiveAction.OnCancelClick)
+                        onAction(CreateJotAction.OnCancelClick)
                     },
                     modifier = Modifier
                         .fillMaxHeight()
@@ -291,10 +257,10 @@ private fun CreateJiveScreen(
                 PrimaryButton(
                     text = stringResource(R.string.save),
                     onClick = {
-                        onAction(CreateJiveAction.OnSaveClick)
+                        onAction(CreateJotAction.OnSaveClick)
                     },
                     modifier = Modifier.weight(1f),
-                    enabled = state.canSaveJive,
+                    enabled = state.canSaveJot,
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Check,
@@ -311,13 +277,13 @@ private fun CreateJiveScreen(
             SelectMoodSheet(
                 selectedMood = state.selectedMood,
                 onMoodClick = {
-                    onAction(CreateJiveAction.OnMoodClick(it))
+                    onAction(CreateJotAction.OnMoodClick(it))
                 },
                 onDismiss = {
-                    onAction(CreateJiveAction.OnDismissMoodSelector)
+                    onAction(CreateJotAction.OnDismissMoodSelector)
                 },
                 onConfirmClick = {
-                    onAction(CreateJiveAction.OnConfirmMood)
+                    onAction(CreateJotAction.OnConfirmMood)
                 }
             )
         }
@@ -325,7 +291,7 @@ private fun CreateJiveScreen(
         if (state.showConfirmLeaveDialog) {
             AlertDialog(
                 onDismissRequest = {
-                    onAction(CreateJiveAction.OnDismissConfirmLeaveDialog)
+                    onAction(CreateJotAction.OnDismissConfirmLeaveDialog)
                 },
                 confirmButton = {
                     TextButton(
@@ -340,7 +306,7 @@ private fun CreateJiveScreen(
                 dismissButton = {
                     TextButton(
                         onClick = {
-                            onAction(CreateJiveAction.OnDismissConfirmLeaveDialog)
+                            onAction(CreateJotAction.OnDismissConfirmLeaveDialog)
                         },
                     ) {
                         Text(text = stringResource(R.string.cancel))
@@ -358,20 +324,5 @@ private fun CreateJiveScreen(
                 }
             )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview() {
-    JotJiveTheme {
-        CreateJiveScreen(
-            state = CreateJiveState(
-                mood = MoodUi.EXCITED,
-                canSaveJive = true
-            ),
-            onAction = {},
-            onConfirmLeave = {}
-        )
     }
 }

@@ -7,5 +7,4 @@ interface JotDataSource {
     suspend fun insertJot(jot: Jot)
     suspend fun getJot(id: Int): Jot?
     suspend fun deleteJot(id: Int)
-    suspend fun deleteJot(jot: Jot)
 }

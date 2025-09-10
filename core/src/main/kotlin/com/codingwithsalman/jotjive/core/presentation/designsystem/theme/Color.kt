@@ -1,6 +1,8 @@
 package com.codingwithsalman.jotjive.core.presentation.designsystem.theme
 
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
@@ -73,38 +75,34 @@ val BabyBlue = Color(0xff81deea)
 val Violet = Color(0xffcf94da)
 val LightGreen = Color(0xffe7ed9b)
 
-val ColorScheme.bgGradient: Brush
-    get() = Brush.verticalGradient(
-        listOf(
-            Secondary90.copy(alpha = 0.4f),
-            Secondary95.copy(alpha = 0.4f),
-        )
-    )
-
 val ColorScheme.buttonGradient: Brush
+    @Composable
     get() = Brush.verticalGradient(
         listOf(
-            primaryContainer,
-            primaryContainer,
+            FloatingActionButtonDefaults.containerColor,
+            FloatingActionButtonDefaults.containerColor
         )
     )
 
 val ColorScheme.buttonGradientPressed: Brush
+    @Composable
     get() = Brush.verticalGradient(
         listOf(
-            primaryContainer.copy(alpha = 0.4f),
-            primaryContainer.copy(alpha = 0.6f),
+            FloatingActionButtonDefaults.containerColor.copy(alpha = 0.4f),
+            FloatingActionButtonDefaults.containerColor.copy(alpha = 0.6f)
         )
     )
 
 val ColorScheme.primary90: Color
-    get() = primaryLight.copy(
-        alpha = 0.1f
+    @Composable
+    get() = FloatingActionButtonDefaults.containerColor.copy(
+        alpha = 0.2f
     )
 
 val ColorScheme.primary95: Color
-    get() = primaryLight.copy(
-        alpha = 0.05f
+    @Composable
+    get() = FloatingActionButtonDefaults.containerColor.copy(
+        alpha = 0.1f
     )
 
 val ColorScheme.secondary95: Color

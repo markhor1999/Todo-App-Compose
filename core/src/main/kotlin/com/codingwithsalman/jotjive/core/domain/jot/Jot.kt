@@ -1,19 +1,13 @@
 package com.codingwithsalman.jotjive.core.domain.jot
 
-import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.BabyBlue
-import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.LightGreen
-import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.RedOrange
-import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.RedPink
-import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.Violet
+import com.codingwithsalman.jotjive.core.domain.jive.Mood
+import java.time.Instant
 
 data class Jot(
-    val id: Int? = null,
+    val mood: Mood,
     val title: String,
-    val content: String,
-    val timestamp: Long,
-    val color: Int
-) {
-    companion object {
-        val noteColors = listOf(RedOrange, LightGreen, Violet, BabyBlue, RedPink)
-    }
-}
+    val note: String?,
+    val topics: List<String>,
+    val addedAt: Instant,
+    val id: Int? = null
+)

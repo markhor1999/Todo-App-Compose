@@ -1,4 +1,4 @@
-package com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.create_jive.components
+package com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.components.create
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

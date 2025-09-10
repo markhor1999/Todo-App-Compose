@@ -1,31 +1,20 @@
-package com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.create_jive
+package com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.create_jot
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
-import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.PlaybackState
-import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.TrackSizeInfo
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.MoodUi
-import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.navigation.NavigationRoute
-import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.util.AmplitudeNormalizer
-import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.util.toRecordingDetails
-import com.codingwithsalman.jotjive.core.domain.audio.AudioPlayer
-import com.codingwithsalman.jotjive.core.domain.jive.Jive
-import com.codingwithsalman.jotjive.core.domain.jive.JiveDataSource
 import com.codingwithsalman.jotjive.core.domain.jive.Mood
-import com.codingwithsalman.jotjive.core.domain.recording.RecordingStorage
+import com.codingwithsalman.jotjive.core.domain.jot.Jot
+import com.codingwithsalman.jotjive.core.domain.jot.JotDataSource
 import com.codingwithsalman.jotjive.core.domain.settings.SettingsPreferences
 import com.codingwithsalman.jotjive.core.presentation.designsystem.dropdowns.Selectable.Companion.asUnselectedItems
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -36,27 +25,20 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
-import kotlin.time.Duration
 
-class CreateJiveViewModel(
+class CreateJotViewModel(
     private val savedStateHandle: SavedStateHandle,
-    private val recordingStorage: RecordingStorage,
-    private val audioPlayer: AudioPlayer,
-    private val jiveDataSource: JiveDataSource,
-    private val settingsPreferences: SettingsPreferences
+    private val settingsPreferences: SettingsPreferences,
+    private val jotDataSource: JotDataSource
 ) : ViewModel() {
     private var hasLoadedInitialData = false
 
-    private val route = savedStateHandle.toRoute<NavigationRoute.CreateJive>()
-    private val recordingDetails = route.toRecordingDetails()
-
-    private val eventChannel = Channel<CreateJiveEvent>()
+    private val eventChannel = Channel<CreateJotEvent>()
     val events = eventChannel.receiveAsFlow()
 
     private val restoredTopics = savedStateHandle.get<String>("topics")?.split(",")
     private val _state = MutableStateFlow(
-        CreateJiveState(
-            playbackTotalDuration = recordingDetails.duration,
+        CreateJotState(
             titleText = savedStateHandle["titleText"] ?: "",
             noteText = savedStateHandle["noteText"] ?: "",
             topics = restoredTopics ?: emptyList(),
@@ -64,7 +46,7 @@ class CreateJiveViewModel(
                 MoodUi.valueOf(it)
             },
             showMoodSelector = savedStateHandle.get<String>("mood") == null,
-            canSaveJive = savedStateHandle.get<Boolean>("canSaveJive") == true
+            canSaveJot = savedStateHandle.get<Boolean>("canSaveJot") == true
         )
     )
     val state = _state
@@ -80,36 +62,31 @@ class CreateJiveViewModel(
             savedStateHandle["noteText"] = state.noteText
             savedStateHandle["topics"] = state.topics.joinToString(",")
             savedStateHandle["mood"] = state.mood?.name
-            savedStateHandle["canSaveJive"] = state.canSaveJive
+            savedStateHandle["canSaveJot"] = state.canSaveJot
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = CreateJiveState()
+            initialValue = CreateJotState()
         )
 
-    private var durationJob: Job? = null
-
-    fun onAction(action: CreateJiveAction) {
+    fun onAction(action: CreateJotAction) {
         when (action) {
-            is CreateJiveAction.OnAddTopicTextChange -> onAddTopicTextChange(action.text)
-            CreateJiveAction.OnConfirmMood -> onConfirmMood()
-            CreateJiveAction.OnDismissMoodSelector -> onDismissMoodSelector()
-            CreateJiveAction.OnDismissTopicSuggestions -> onDismissTopicSuggestions()
-            is CreateJiveAction.OnMoodClick -> onMoodClick(action.moodUi)
-            is CreateJiveAction.OnNoteTextChange -> onNoteTextChange(action.text)
-            CreateJiveAction.OnPauseAudioClick -> audioPlayer.pause()
-            CreateJiveAction.OnPlayAudioClick -> onPlayAudioClick()
-            is CreateJiveAction.OnRemoveTopicClick -> onRemoveTopicClick(action.topic)
-            CreateJiveAction.OnSaveClick -> onSaveClick()
-            is CreateJiveAction.OnTitleTextChange -> onTitleTextChange(action.text)
-            is CreateJiveAction.OnTopicClick -> onTopicClick(action.topic)
-            is CreateJiveAction.OnTrackSizeAvailable -> onTrackSizeAvailable(action.trackSizeInfo)
-            CreateJiveAction.OnSelectMoodClick -> onSelectMoodClick()
-            CreateJiveAction.OnDismissConfirmLeaveDialog -> onDismissConfirmLeaveDialog()
-            CreateJiveAction.OnCancelClick,
-            CreateJiveAction.OnNavigateBackClick,
-            CreateJiveAction.OnGoBack -> onShowConfirmLeaveDialog()
+            is CreateJotAction.OnAddTopicTextChange -> onAddTopicTextChange(action.text)
+            CreateJotAction.OnConfirmMood -> onConfirmMood()
+            CreateJotAction.OnDismissMoodSelector -> onDismissMoodSelector()
+            CreateJotAction.OnDismissTopicSuggestions -> onDismissTopicSuggestions()
+            is CreateJotAction.OnMoodClick -> onMoodClick(action.moodUi)
+            is CreateJotAction.OnNoteTextChange -> onNoteTextChange(action.text)
+            is CreateJotAction.OnRemoveTopicClick -> onRemoveTopicClick(action.topic)
+            CreateJotAction.OnSaveClick -> onSaveClick()
+            is CreateJotAction.OnTitleTextChange -> onTitleTextChange(action.text)
+            is CreateJotAction.OnTopicClick -> onTopicClick(action.topic)
+            CreateJotAction.OnSelectMoodClick -> onSelectMoodClick()
+            CreateJotAction.OnDismissConfirmLeaveDialog -> onDismissConfirmLeaveDialog()
+            CreateJotAction.OnCancelClick,
+            CreateJotAction.OnNavigateBackClick,
+            CreateJotAction.OnGoBack -> onShowConfirmLeaveDialog()
         }
     }
 
@@ -150,95 +127,35 @@ class CreateJiveViewModel(
         }
     }
 
-    private fun onPlayAudioClick() {
-        if (state.value.playbackState == PlaybackState.PAUSED) {
-            audioPlayer.resume()
-        } else {
-            audioPlayer.play(
-                filePath = recordingDetails.filePath ?: throw IllegalArgumentException(
-                    "File path can't be null"
-                ),
-                onComplete = {
-                    _state.update {
-                        it.copy(
-                            playbackState = PlaybackState.STOPPED,
-                            durationPlayed = Duration.ZERO
-                        )
-                    }
-                }
-            )
-
-            durationJob = audioPlayer
-                .activeTrack
-                .filterNotNull()
-                .onEach { track ->
-                    _state.update {
-                        it.copy(
-                            playbackState = if (track.isPlaying) PlaybackState.PLAYING else PlaybackState.PAUSED,
-                            durationPlayed = track.durationPlayed
-                        )
-                    }
-                }
-                .launchIn(viewModelScope)
-        }
-    }
-
-    private fun onTrackSizeAvailable(trackSizeInfo: TrackSizeInfo) {
-        viewModelScope.launch(Dispatchers.Default) {
-            val finalAmplitudes = AmplitudeNormalizer.normalize(
-                sourceAmplitudes = recordingDetails.amplitudes,
-                trackWidth = trackSizeInfo.trackWidth,
-                barWidth = trackSizeInfo.barWidth,
-                spacing = trackSizeInfo.spacing
-            )
-
-            _state.update {
-                it.copy(
-                    playbackAmplitudes = finalAmplitudes
-                )
-            }
-        }
-    }
 
     private fun onTitleTextChange(text: String) {
         _state.update {
             it.copy(
                 titleText = text,
-                canSaveJive = text.isNotBlank() && it.mood != null
+                canSaveJot = text.isNotBlank() && it.mood != null
             )
         }
     }
 
     private fun onSaveClick() {
-        if (recordingDetails.filePath == null || !state.value.canSaveJive) {
+        if (!state.value.canSaveJot) {
             return
         }
 
         viewModelScope.launch {
-            val savedFilePath = recordingStorage.savePersistently(
-                tempFilePath = recordingDetails.filePath!!
-            )
-            if (savedFilePath == null) {
-                eventChannel.send(CreateJiveEvent.FailedToSaveFile)
-                return@launch
-            }
-
             val currentState = state.value
-            val jive = Jive(
+            val jot = Jot(
                 mood = currentState.mood?.let {
                     Mood.valueOf(it.name)
                 } ?: throw IllegalStateException("Mood must be set before saving."),
                 title = currentState.titleText.trim(),
                 note = currentState.noteText.ifBlank { null },
                 topics = currentState.topics,
-                audioFilePath = savedFilePath,
-                audioPlaybackLength = currentState.playbackTotalDuration,
-                audioAmplitudes = recordingDetails.amplitudes,
-                recordedAt = Instant.now()
+                addedAt = Instant.now()
             )
 
-            jiveDataSource.insertJive(jive)
-            eventChannel.send(CreateJiveEvent.JiveSuccessfullySaved)
+            jotDataSource.insertJot(jot)
+            eventChannel.send(CreateJotEvent.JotSuccessfullySaved)
         }
     }
 
@@ -317,7 +234,7 @@ class CreateJiveViewModel(
         _state.update {
             it.copy(
                 mood = it.selectedMood,
-                canSaveJive = it.titleText.isNotBlank(),
+                canSaveJot = it.titleText.isNotBlank(),
                 showMoodSelector = false
             )
         }

@@ -5,20 +5,28 @@ import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.codingwithsalman.apps.todo.app.compose.R
@@ -31,7 +39,6 @@ import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.AudioCaptureMethod
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.RecordingState
 import com.codingwithsalman.jotjive.core.domain.recording.RecordingDetails
-import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.bgGradient
 import com.codingwithsalman.jotjive.core.presentation.util.ObserveAsEvents
 import com.codingwithsalman.jotjive.core.presentation.util.isAppInForeground
 import org.koin.androidx.compose.koinViewModel
@@ -39,6 +46,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun JotJiveRoot(
     onNavigateToCreateJive: (RecordingDetails) -> Unit,
+    onNavigateToCreateJot: () -> Unit,
     onNavigateToSettings: () -> Unit,
     viewModel: JotJivesViewModel = koinViewModel()
 ) {
@@ -70,6 +78,10 @@ fun JotJiveRoot(
             is JotJivesEvent.OnDoneRecording -> {
                 onNavigateToCreateJive(event.details)
             }
+
+            is JotJivesEvent.AddJot -> {
+                onNavigateToCreateJot()
+            }
         }
     }
 
@@ -100,30 +112,45 @@ private fun JotJivesScreen(
     val context = LocalContext.current
     Scaffold(
         floatingActionButton = {
-            JiveQuickRecordFloatingActionButton(
-                onClick = {
-                    onAction(JotJivesAction.OnRecordFabClick)
-                },
-                isQuickRecording = state.recordingState == RecordingState.QUICK_CAPTURE,
-                onLongPressEnd = { cancelledRecording ->
-                    if (cancelledRecording) {
-                        onAction(JotJivesAction.OnCancelRecording)
-                    } else {
-                        onAction(JotJivesAction.OnCompleteRecording)
-                    }
-                },
-                onLongPressStart = {
-                    val hasPermission = ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.RECORD_AUDIO
-                    ) == PackageManager.PERMISSION_GRANTED
-                    if (hasPermission) {
-                        onAction(JotJivesAction.OnRecordButtonLongClick)
-                    } else {
-                        onAction(JotJivesAction.OnRequestPermissionQuickRecording)
-                    }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                FloatingActionButton(
+                    onClick = {
+                        onAction(JotJivesAction.OnAddJotClick)
+                    },
+                    shape = CircleShape,
+                    elevation = FloatingActionButtonDefaults.elevation(0.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = stringResource(R.string.add_notes)
+                    )
                 }
-            )
+
+                JiveQuickRecordFloatingActionButton(
+                    onClick = {
+                        onAction(JotJivesAction.OnRecordFabClick)
+                    },
+                    isQuickRecording = state.recordingState == RecordingState.QUICK_CAPTURE,
+                    onLongPressEnd = { cancelledRecording ->
+                        if (cancelledRecording) {
+                            onAction(JotJivesAction.OnCancelRecording)
+                        } else {
+                            onAction(JotJivesAction.OnCompleteRecording)
+                        }
+                    },
+                    onLongPressStart = {
+                        val hasPermission = ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.RECORD_AUDIO
+                        ) == PackageManager.PERMISSION_GRANTED
+                        if (hasPermission) {
+                            onAction(JotJivesAction.OnRecordButtonLongClick)
+                        } else {
+                            onAction(JotJivesAction.OnRequestPermissionQuickRecording)
+                        }
+                    }
+                )
+            }
         },
         topBar = {
             JivesTopBar(
@@ -136,9 +163,6 @@ private fun JotJivesScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    brush = MaterialTheme.colorScheme.bgGradient
-                )
                 .padding(innerPadding)
         ) {
             JiveFilterRow(
