@@ -26,7 +26,7 @@ fun JivesTopBar(
         modifier = modifier,
         title = {
             Text(
-                text = stringResource(R.string.title_echos),
+                text = stringResource(R.string.app_name),
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )
