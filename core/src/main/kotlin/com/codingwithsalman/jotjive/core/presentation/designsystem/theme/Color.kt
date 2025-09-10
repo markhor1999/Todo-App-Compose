@@ -84,30 +84,38 @@ val ColorScheme.bgGradient: Brush
 val ColorScheme.buttonGradient: Brush
     get() = Brush.verticalGradient(
         listOf(
-            Primary60,
-            Primary50,
+            primaryLight.copy(alpha = 0.4f),
+            primaryLight.copy(alpha = 0.5f),
         )
     )
 
 val ColorScheme.buttonGradientPressed: Brush
     get() = Brush.verticalGradient(
         listOf(
-            Primary60,
-            Primary40,
+            primaryLight.copy(alpha = 0.4f),
+            primaryLight.copy(alpha = 0.6f),
         )
     )
 
 val ColorScheme.primary90: Color
-    get() = Primary90
+    get() = primaryLight.copy(
+        alpha = 0.1f
+    )
 
 val ColorScheme.primary95: Color
-    get() = Primary95
+    get() = primaryLight.copy(
+        alpha = 0.05f
+    )
 
 val ColorScheme.secondary95: Color
-    get() = Secondary95
+    get() = secondaryLight.copy(
+        alpha = 0.05f
+    )
 
 val ColorScheme.secondary70: Color
-    get() = Secondary70
+    get() = secondaryLight.copy(
+        0.3f
+    )
 
 /**/
 val primaryLight = Color(0xFF6F5D0E)
