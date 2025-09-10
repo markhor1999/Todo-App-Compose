@@ -93,7 +93,7 @@ fun JotJiveRoot(
 }
 
 @Composable
-fun JotJivesScreen(
+private fun JotJivesScreen(
     state: JotJivesState,
     onAction: (JotJivesAction) -> Unit
 ) {

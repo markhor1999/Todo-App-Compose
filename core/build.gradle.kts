@@ -59,6 +59,7 @@ dependencies {
     // Room
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
+    implementation(libs.androidx.compose.ui.text.google.fonts)
     ksp(libs.room.compiler)
 
     // DI - Koin

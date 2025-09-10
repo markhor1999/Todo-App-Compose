@@ -1,11 +1,12 @@
 package com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.util
 
-import com.plcoding.echojournal.app.navigation.NavigationRoute
-import com.plcoding.echojournal.echos.domain.recording.RecordingDetails
+
+import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.navigation.NavigationRoute
+import com.codingwithsalman.jotjive.core.domain.recording.RecordingDetails
 import kotlin.time.Duration.Companion.milliseconds
 
-fun RecordingDetails.toCreateEchoRoute(): NavigationRoute.CreateEcho {
-    return NavigationRoute.CreateEcho(
+fun RecordingDetails.toCreateJiveRoute(): NavigationRoute.CreateJive {
+    return NavigationRoute.CreateJive(
         recordingPath = this.filePath ?: throw IllegalArgumentException(
             "Recording path can't be null."
         ),
@@ -14,7 +15,7 @@ fun RecordingDetails.toCreateEchoRoute(): NavigationRoute.CreateEcho {
     )
 }
 
-fun NavigationRoute.CreateEcho.toRecordingDetails(): RecordingDetails {
+fun NavigationRoute.CreateJive.toRecordingDetails(): RecordingDetails {
     return RecordingDetails(
         duration = this.duration.milliseconds,
         amplitudes = this.amplitudes.split(";").map { it.toFloat() },

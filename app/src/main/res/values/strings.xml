@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Todo</string>
+    <string name="app_name">JotJive</string>
     <string name="settings">Settings</string>
     <string name="notes">Notes</string>
     <string name="add_notes">Add Note</string>

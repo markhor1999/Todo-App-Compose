@@ -1,4 +1,6 @@
 package com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.create_jive
 
-interface CreateJiveEvent {
+sealed interface CreateJiveEvent {
+    data object FailedToSaveFile : CreateJiveEvent
+    data object JiveSuccessfullySaved : CreateJiveEvent
 }

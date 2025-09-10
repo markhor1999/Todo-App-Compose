@@ -10,15 +10,22 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TodoAppCompose">
+        android:theme="@style/Theme.JotJive.Splash">
         <activity
             android:name=".features.note.presentation.MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.TodoAppCompose">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="com.codingwithsalman.CREATE_JIVE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="https"
+                    android:host="jotjive.com"
+                    android:path="/jives" />
             </intent-filter>
         </activity>
     </application>

@@ -18,6 +18,7 @@ desugar_jdk_libs = "2.1.5"
 splashscreen = "1.0.1"
 glance = "1.1.1"
 preferences = "1.1.7"
+uiTextGoogleFonts = "1.9.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,6 +55,7 @@ androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscree
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
 androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glance" }
 androidx-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "preferences" }
+androidx-compose-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 
 [bundles]
 koin = ["koin-core", "koin-android", "koin-androidx-compose"]
