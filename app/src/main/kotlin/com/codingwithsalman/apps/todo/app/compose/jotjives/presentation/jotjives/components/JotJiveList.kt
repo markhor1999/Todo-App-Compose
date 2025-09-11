@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.JotJiveDaySection
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.RelativePosition
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.TrackSizeInfo
+import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JotJiveUi
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.preview.PreviewModels
 import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.JotJiveTheme
 import com.codingwithsalman.jotjive.core.presentation.util.UiText
@@ -27,7 +28,7 @@ import java.time.Instant
 import java.time.ZonedDateTime
 
 @Composable
-fun JiveList(
+fun JotJiveList(
     sections: List<JotJiveDaySection>,
     onPlayClick: (jiveId: Int) -> Unit,
     onPauseClick: () -> Unit,
@@ -38,7 +39,7 @@ fun JiveList(
         modifier = modifier,
         contentPadding = PaddingValues(16.dp)
     ) {
-        sections.forEachIndexed { sectionIndex, (dateHeader, jives) ->
+        sections.forEachIndexed { sectionIndex, (dateHeader, jotJives) ->
             stickyHeader {
                 if (sectionIndex > 0) {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -55,21 +56,35 @@ fun JiveList(
                 Spacer(modifier = Modifier.height(8.dp))
             }
             itemsIndexed(
-                items = jives,
-                key = { _, jive -> jive.id }
-            ) { index, jive ->
-                JiveTimelineItem(
-                    jiveUi = jive,
-                    relativePosition = when {
-                        index == 0 && jives.size == 1 -> RelativePosition.SINGLE_ENTRY
-                        index == 0 -> RelativePosition.FIRST
-                        jives.lastIndex == index -> RelativePosition.LAST
-                        else -> RelativePosition.IN_BETWEEN
-                    },
-                    onPlayClick = { onPlayClick(jive.id) },
-                    onPauseClick = onPauseClick,
-                    onTrackSizeAvailable = onTrackSizeAvailable
-                )
+                items = jotJives,
+                key = { _, jotJive -> jotJive.id }
+            ) { index, jotJive ->
+                when (jotJive) {
+                    is JotJiveUi.Jive -> {
+                        JiveTimelineItem(
+                            jiveUi = jotJive.jiveUi,
+                            relativePosition = when {
+                                index == 0 && jotJives.size == 1 -> RelativePosition.SINGLE_ENTRY
+                                index == 0 -> RelativePosition.FIRST
+                                jotJives.lastIndex == index -> RelativePosition.LAST
+                                else -> RelativePosition.IN_BETWEEN
+                            },
+                            onPlayClick = { onPlayClick(jotJive.id) },
+                            onPauseClick = onPauseClick,
+                            onTrackSizeAvailable = onTrackSizeAvailable
+                        )
+                    }
+
+                    is JotJiveUi.Jot -> JotTimelineItem(
+                        jotUi = jotJive.jotUi,
+                        relativePosition = when {
+                            index == 0 && jotJives.size == 1 -> RelativePosition.SINGLE_ENTRY
+                            index == 0 -> RelativePosition.FIRST
+                            jotJives.lastIndex == index -> RelativePosition.LAST
+                            else -> RelativePosition.IN_BETWEEN
+                        }
+                    )
+                }
             }
         }
     }
@@ -83,25 +98,38 @@ private fun JiveListPreview() {
     JotJiveTheme {
         val todaysEchos = remember {
             (1..3).map {
-                PreviewModels.jiveUi.copy(
-                    id = it,
-                    recordedAt = Instant.now()
+                JotJiveUi.Jive(
+                    PreviewModels.jiveUi.copy(
+                        id = it,
+                        recordedAt = Instant.now()
+                    )
+                )
+            } + (1..2).map {
+                JotJiveUi.Jot(
+                    PreviewModels.jotUi.copy(
+                        id = it,
+                        addedAt = Instant.now()
+                    )
                 )
             }
         }
         val yesterdaysEchos = remember {
             (4..6).map {
-                PreviewModels.jiveUi.copy(
-                    id = it,
-                    recordedAt = ZonedDateTime.now().minusDays(1).toInstant()
+                JotJiveUi.Jive(
+                    PreviewModels.jiveUi.copy(
+                        id = it,
+                        recordedAt = ZonedDateTime.now().minusDays(1).toInstant()
+                    )
                 )
             }
         }
         val jivesFrom2DaysAgo = remember {
             (7..9).map {
-                PreviewModels.jiveUi.copy(
-                    id = it,
-                    recordedAt = ZonedDateTime.now().minusDays(2).toInstant()
+                JotJiveUi.Jive(
+                    PreviewModels.jiveUi.copy(
+                        id = it,
+                        recordedAt = ZonedDateTime.now().minusDays(2).toInstant()
+                    )
                 )
             }
         }
@@ -109,20 +137,20 @@ private fun JiveListPreview() {
             listOf(
                 JotJiveDaySection(
                     dateHeader = UiText.Dynamic("Today"),
-                    jives = todaysEchos
+                    jotJives = todaysEchos
                 ),
                 JotJiveDaySection(
                     dateHeader = UiText.Dynamic("Yesterday"),
-                    jives = yesterdaysEchos
+                    jotJives = yesterdaysEchos
                 ),
                 JotJiveDaySection(
                     dateHeader = UiText.Dynamic("2025/04/25"),
-                    jives = jivesFrom2DaysAgo
+                    jotJives = jivesFrom2DaysAgo
                 ),
             )
         }
 
-        JiveList(
+        JotJiveList(
             sections = sections,
             onPauseClick = {},
             onPlayClick = {},

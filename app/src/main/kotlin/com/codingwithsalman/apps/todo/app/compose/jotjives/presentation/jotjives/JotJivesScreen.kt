@@ -31,11 +31,11 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.codingwithsalman.apps.todo.app.compose.R
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.components.JiveFilterRow
-import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.components.JiveList
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.components.JiveQuickRecordFloatingActionButton
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.components.JiveRecordingSheet
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.components.JivesEmptyBackground
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.components.JivesTopBar
+import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.components.JotJiveList
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.AudioCaptureMethod
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.RecordingState
 import com.codingwithsalman.jotjive.core.domain.recording.RecordingDetails
@@ -188,7 +188,7 @@ private fun JotJivesScreen(
                     )
                 }
 
-                !state.hasJotJivesRecorded -> {
+                !state.hasJivesRecorded -> {
                     JivesEmptyBackground(
                         modifier = Modifier
                             .weight(1f)
@@ -197,7 +197,7 @@ private fun JotJivesScreen(
                 }
 
                 else -> {
-                    JiveList(
+                    JotJiveList(
                         sections = state.jotJiveDaySections,
                         onPlayClick = {
                             onAction(JotJivesAction.OnPlayJiveClick(it))

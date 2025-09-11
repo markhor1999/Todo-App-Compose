@@ -11,12 +11,16 @@ import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.RecordingState
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.TrackSizeInfo
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JiveUi
+import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JotJiveUi
+import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JotUi
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.MoodUi
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.util.AmplitudeNormalizer
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.util.toJiveUi
+import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.util.toJotUi
 import com.codingwithsalman.jotjive.core.domain.audio.AudioPlayer
 import com.codingwithsalman.jotjive.core.domain.jive.Jive
 import com.codingwithsalman.jotjive.core.domain.jive.JiveDataSource
+import com.codingwithsalman.jotjive.core.domain.jot.Jot
 import com.codingwithsalman.jotjive.core.domain.jot.JotDataSource
 import com.codingwithsalman.jotjive.core.domain.recording.VoiceRecorder
 import com.codingwithsalman.jotjive.core.presentation.designsystem.dropdowns.Selectable
@@ -69,7 +73,7 @@ class JotJivesViewModel(
         .onStart {
             if (!hasLoadedInitialData) {
                 observeFilters()
-                observeJives()
+                observeJotJives()
                 fetchNavigationArgs()
                 hasLoadedInitialData = true
             }
@@ -82,11 +86,11 @@ class JotJivesViewModel(
 
     private val filteredJives = jiveDataSource
         .observeJives()
-        .filterByMoodAndTopics()
+        .filterJivesByMoodAndTopics()
         .onEach { jives ->
             _state.update {
                 it.copy(
-                    hasJotJivesRecorded = jives.isNotEmpty(),
+                    hasJivesRecorded = jives.isNotEmpty(),
                     isLoadingData = false
                 )
             }
@@ -104,6 +108,19 @@ class JotJivesViewModel(
                     )
                 }
             } else jives
+        }
+        .flowOn(Dispatchers.Default)
+
+    private val filteredJots = jotDataSource
+        .observeJots()
+        .filterJotsByMoodAndTopics()
+        .onEach { jots ->
+            _state.update {
+                it.copy(
+                    hasJotsAdded = jots.isNotEmpty(),
+                    isLoadingJotsData = false
+                )
+            }
         }
         .flowOn(Dispatchers.Default)
 
@@ -212,7 +229,7 @@ class JotJivesViewModel(
         }
     }
 
-    private fun observeJives() {
+    /*private fun observeJives() {
         combine(
             filteredJives,
             playingJiveId,
@@ -241,10 +258,65 @@ class JotJivesViewModel(
             }
             .flowOn(Dispatchers.Default)
             .launchIn(viewModelScope)
+    }*/
+
+    /*private fun observeJots() {
+        filteredJots
+            .map { jots ->
+                jots.map {
+                    it.toJotUi()
+                }
+            }
+            .groupByRelativeDate()
+            .onEach { groupedJots ->
+                _state.update {
+                    it.copy(
+                        jots = groupedJots
+                    )
+                }
+            }
+            .flowOn(Dispatchers.Default)
+            .launchIn(viewModelScope)
+    }*/
+
+    private fun observeJotJives() {
+        combine(
+            filteredJives,
+            filteredJots,
+            playingJiveId,
+            audioPlayer.activeTrack
+        ) { jives, jots, playingJiveId, activeTrack ->
+            val jotsUi = jots.map { jot -> jot.toJotUi() }
+            if (playingJiveId == null || activeTrack == null) {
+                val jivesUi = jives.map { it.toJiveUi() }
+                return@combine jotsUi.map { JotJiveUi.Jot(it) } + jivesUi.map { JotJiveUi.Jive(it) }
+            }
+
+            val jivesUi = jives.map { jive ->
+                if (jive.id == playingJiveId) {
+                    jive.toJiveUi(
+                        currentPlaybackDuration = activeTrack.durationPlayed,
+                        playbackState = if (activeTrack.isPlaying) PlaybackState.PLAYING else PlaybackState.PAUSED
+                    )
+                } else jive.toJiveUi()
+            }
+            jotsUi.map { JotJiveUi.Jot(it) } + jivesUi.map { JotJiveUi.Jive(it) }
+        }
+            .groupByRelativeDate()
+            .onEach { groupedJotJives ->
+                _state.update {
+                    it.copy(
+                        jotJives = groupedJotJives
+                    )
+                }
+            }
+            .flowOn(Dispatchers.Default)
+            .launchIn(viewModelScope)
     }
 
     private fun onPlayJiveClick(jiveId: Int) {
-        val selectedJive = state.value.jives.values.flatten().first { it.id == jiveId }
+        val selectedJive = (state.value.jotJives.values.flatten()
+            .first { it is JotJiveUi.Jive && it.jiveUi.id == jiveId } as JotJiveUi.Jive).jiveUi
         val activeTrack = audioPlayer.activeTrack.value
         val isNewJive = playingJiveId.value != jiveId
         val isSameJiveIsPlayingFromBeginning = jiveId == playingJiveId.value && activeTrack != null
@@ -267,11 +339,19 @@ class JotJivesViewModel(
     private fun completePlayback() {
         _state.update {
             it.copy(
-                jives = it.jives.mapValues { (_, jives) ->
-                    jives.map { jive ->
-                        jive.copy(
-                            playbackCurrentDuration = Duration.ZERO
-                        )
+                jotJives = it.jotJives.mapValues { (_, jotJives) ->
+                    jotJives.map { jotJive ->
+                        when (jotJive) {
+                            is JotJiveUi.Jive -> {
+                                JotJiveUi.Jive(
+                                    jotJive.jiveUi.copy(
+                                        playbackCurrentDuration = Duration.ZERO
+                                    )
+                                )
+                            }
+
+                            is JotJiveUi.Jot -> jotJive
+                        }
                     }
                 }
             )
@@ -465,7 +545,7 @@ class JotJivesViewModel(
         }
     }
 
-    private fun Flow<List<Jive>>.filterByMoodAndTopics(): Flow<List<Jive>> {
+    private fun Flow<List<Jive>>.filterJivesByMoodAndTopics(): Flow<List<Jive>> {
         return combine(
             this,
             selectedMoodFilters,
@@ -486,19 +566,40 @@ class JotJivesViewModel(
         }
     }
 
-    private fun Flow<List<JiveUi>>.groupByRelativeDate(): Flow<Map<UiText, List<JiveUi>>> {
+    private fun Flow<List<Jot>>.filterJotsByMoodAndTopics(): Flow<List<Jot>> {
+        return combine(
+            this,
+            selectedMoodFilters,
+            selectedTopicFilters
+        ) { jots, moodFilters, topicFilters ->
+            jots.filter { jot ->
+                val matchesMoodFilter = moodFilters
+                    .takeIf { it.isNotEmpty() }
+                    ?.any { it.name == jot.mood.name }
+                    ?: true
+                val matchesTopicFilter = topicFilters
+                    .takeIf { it.isNotEmpty() }
+                    ?.any { it in jot.topics }
+                    ?: true
+
+                matchesMoodFilter && matchesTopicFilter
+            }
+        }
+    }
+
+    private fun Flow<List<JotJiveUi>>.groupByRelativeDate(): Flow<Map<UiText, List<JotJiveUi>>> {
         val formatter = DateTimeFormatter.ofPattern("dd MMM")
         val today = LocalDate.now()
-        return map { jives ->
-            jives
-                .groupBy { jive ->
+        return map { jotJives ->
+            jotJives
+                .groupBy { jotJiveUi ->
                     LocalDate.ofInstant(
-                        jive.recordedAt,
+                        jotJiveUi.time(),
                         ZoneId.systemDefault()
                     )
                 }
-                .mapValues { (_, jives) ->
-                    jives.sortedByDescending { it.recordedAt }
+                .mapValues { (_, jotJives) ->
+                    jotJives.sortedByDescending { it.time() }
                 }
                 .toSortedMap(compareByDescending { it })
                 .mapKeys { (date, _) ->
@@ -509,5 +610,10 @@ class JotJivesViewModel(
                     }
                 }
         }
+    }
+
+    private fun JotJiveUi.time() = when (this) {
+        is JotJiveUi.Jot -> jotUi.addedAt
+        is JotJiveUi.Jive -> jiveUi.recordedAt
     }
 }

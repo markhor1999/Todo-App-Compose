@@ -7,6 +7,8 @@ import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.MoodChipContent
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.RecordingState
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JiveUi
+import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JotJiveUi
+import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JotUi
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.MoodUi
 import com.codingwithsalman.jotjive.core.presentation.designsystem.dropdowns.Selectable
 import com.codingwithsalman.jotjive.core.presentation.util.UiText
@@ -15,13 +17,17 @@ import kotlin.math.roundToInt
 import kotlin.time.Duration
 
 data class JotJivesState(
-    val jives: Map<UiText, List<JiveUi>> = emptyMap(),
+//    val jives: Map<UiText, List<JiveUi>> = emptyMap(),
+//    val jots: Map<UiText, List<JotUi>> = emptyMap(),
+    val jotJives: Map<UiText, List<JotJiveUi>> = emptyMap(),
     val currentCaptureMethod: AudioCaptureMethod? = null,
     val recordingElapsedDuration: Duration = Duration.ZERO,
-    val hasJotJivesRecorded: Boolean = false,
+    val hasJivesRecorded: Boolean = false,
+    val hasJotsAdded: Boolean = false,
     val hasActiveTopicFilters: Boolean = false,
     val hasActiveMoodFilters: Boolean = false,
     val isLoadingData: Boolean = true,
+    val isLoadingJotsData: Boolean = true,
     val recordingState: RecordingState = RecordingState.NOT_RECORDING,
     val moods: List<Selectable<MoodUi>> = emptyList(),
     val topics: List<Selectable<String>> = emptyList(),
@@ -29,7 +35,7 @@ data class JotJivesState(
     val selectedJotJiveFilterChip: JotJiveFilterChip? = null,
     val topicChipTitle: UiText = UiText.StringResource(R.string.all_topics)
 ) {
-    val jotJiveDaySections = jives
+    val jotJiveDaySections = jotJives
         .toList()
         .map { (dateHeader, jives) ->
             JotJiveDaySection(dateHeader, jives)
