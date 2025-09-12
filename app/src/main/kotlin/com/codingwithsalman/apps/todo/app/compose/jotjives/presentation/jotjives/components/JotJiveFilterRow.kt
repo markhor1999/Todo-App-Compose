@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -110,6 +111,7 @@ fun JiveFilterRow(
                         Image(
                             imageVector = ImageVector.vectorResource(moodUi.iconSet.fill),
                             contentDescription = moodUi.title.asString(),
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 )

@@ -159,7 +159,7 @@ fun SheetContent(
                     .size(secondaryButtonSize),
                 colors = IconButtonDefaults.filledIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    contentColor = MaterialTheme.colorScheme.primary
+                    contentColor = MaterialTheme.colorScheme.background
                 )
             ) {
                 Icon(

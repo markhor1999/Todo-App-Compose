@@ -295,7 +295,10 @@ private fun CreateJotScreen(
                 },
                 confirmButton = {
                     TextButton(
-                        onClick = onConfirmLeave,
+                        onClick = {
+                            onAction(CreateJotAction.OnDismissConfirmLeaveDialog)
+                            onConfirmLeave()
+                        },
                     ) {
                         Text(
                             text = stringResource(R.string.discard),

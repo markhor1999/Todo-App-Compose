@@ -25,7 +25,7 @@ fun SecondaryButton(
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.primary
+//            color = MaterialTheme.colorScheme.primary
         )
     }
 }

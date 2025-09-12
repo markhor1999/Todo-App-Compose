@@ -60,6 +60,7 @@
     <string name="resume_recording">Resume recording</string>
     <string name="remove_topic">Remove topic %s</string>
     <string name="discard_recording">Discard recording?</string>
+    <string name="discard_note">Discard note?</string>
     <string name="this_cannot_be_undone">This can\'t be undone.</string>
     <string name="error_couldnt_save_file">Oops, saving the file failed.</string>
     <string name="today">Today</string>
