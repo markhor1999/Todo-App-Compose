@@ -32,7 +32,8 @@ private val noVerticalLineBelowIconModifier = Modifier.height(8.dp)
 fun JotTimelineItem(
     modifier: Modifier = Modifier,
     jotUi: JotUi,
-    relativePosition: RelativePosition
+    relativePosition: RelativePosition,
+    markJotDone: (JotUi) -> Unit
 ) {
     Row(
         modifier = modifier
@@ -67,7 +68,8 @@ fun JotTimelineItem(
         JotCard(
             jotUi = jotUi,
             modifier = Modifier
-                .padding(vertical = 8.dp)
+                .padding(vertical = 8.dp),
+            markDone = markJotDone
         )
     }
 }
@@ -80,7 +82,8 @@ private fun Preview() {
             jotUi = PreviewModels.jotUi,
             relativePosition = RelativePosition.IN_BETWEEN,
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            markJotDone = {}
         )
     }
 }

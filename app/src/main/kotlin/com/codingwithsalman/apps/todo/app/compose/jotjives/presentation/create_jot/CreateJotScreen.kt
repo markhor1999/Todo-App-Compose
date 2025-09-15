@@ -29,6 +29,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -45,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.codingwithsalman.apps.todo.app.compose.R
@@ -53,6 +57,7 @@ import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.componen
 import com.codingwithsalman.jotjive.core.presentation.designsystem.buttons.PrimaryButton
 import com.codingwithsalman.jotjive.core.presentation.designsystem.buttons.SecondaryButton
 import com.codingwithsalman.jotjive.core.presentation.designsystem.text_fields.TransparentHintTextField
+import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.JotJiveTheme
 import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.secondary70
 import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.secondary95
 import com.codingwithsalman.jotjive.core.presentation.util.ObserveAsEvents
@@ -239,6 +244,24 @@ private fun CreateJotScreen(
                 )
             }
 
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                state.jotCategories.forEachIndexed { index, category ->
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = index,
+                            count = state.jotCategories.size
+                        ),
+                        onClick = {
+                            onAction(CreateJotAction.OnJotCategoryUpdated(category))
+                        },
+                        selected = index == state.selectedJotCategory.ordinal,
+                        label = { Text(stringResource(category.title)) }
+                    )
+                }
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -327,5 +350,17 @@ private fun CreateJotScreen(
                 }
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun CreateJotScreenPreview() {
+    JotJiveTheme {
+        CreateJotScreen(
+            state = CreateJotState(),
+            onAction = {},
+            onConfirmLeave = {}
+        )
     }
 }

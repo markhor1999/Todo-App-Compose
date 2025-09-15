@@ -23,6 +23,10 @@ internal class RoomJotDataSource(
         jotDao.insertJotWithTopics(jot.toJotWithTopics())
     }
 
+    override suspend fun updateJot(jot: Jot) {
+        jotDao.updateJot(jot.toJotEntity())
+    }
+
     override suspend fun getJot(id: Int): Jot? {
         return jotDao.getJotById(id)?.toJot()
     }

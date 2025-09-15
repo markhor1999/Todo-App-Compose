@@ -13,6 +13,18 @@ internal fun JotWithTopics.toJot() = Jot(
     addedAt = Instant.ofEpochMilli(jot.addedAt),
     mood = jot.mood,
     topics = topics.map { it.topic },
+    isTodo = jot.isTodo,
+    isDone = jot.isDone
+)
+
+internal fun Jot.toJotEntity() = JotEntity(
+    jotId = id ?: 0,
+    title = title,
+    note = note,
+    addedAt = addedAt.toEpochMilli(),
+    mood = mood,
+    isTodo = isTodo,
+    isDone = isDone
 )
 
 internal fun Jot.toJotWithTopics(): JotWithTopics {
@@ -22,7 +34,9 @@ internal fun Jot.toJotWithTopics(): JotWithTopics {
             title = title,
             mood = mood,
             addedAt = addedAt.toEpochMilli(),
-            note = note
+            note = note,
+            isTodo = isTodo,
+            isDone = isDone
         ),
         topics = topics.map { TopicEntity(it) }
     )

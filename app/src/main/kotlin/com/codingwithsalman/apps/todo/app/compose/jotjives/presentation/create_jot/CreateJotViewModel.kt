@@ -87,6 +87,8 @@ class CreateJotViewModel(
             CreateJotAction.OnCancelClick,
             CreateJotAction.OnNavigateBackClick,
             CreateJotAction.OnGoBack -> onShowConfirmLeaveDialog()
+
+            is CreateJotAction.OnJotCategoryUpdated -> onJotCategoryUpdated(action.category)
         }
     }
 
@@ -117,6 +119,14 @@ class CreateJotViewModel(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun onJotCategoryUpdated(jotCategory: JotCategory) {
+        _state.update {
+            it.copy(
+                selectedJotCategory = jotCategory
+            )
+        }
     }
 
     private fun onNoteTextChange(text: String) {
@@ -151,7 +161,9 @@ class CreateJotViewModel(
                 title = currentState.titleText.trim(),
                 note = currentState.noteText.ifBlank { null },
                 topics = currentState.topics,
-                addedAt = Instant.now()
+                addedAt = Instant.now(),
+                isTodo = currentState.selectedJotCategory == JotCategory.TODO,
+                isDone = false
             )
 
             jotDataSource.insertJot(jot)

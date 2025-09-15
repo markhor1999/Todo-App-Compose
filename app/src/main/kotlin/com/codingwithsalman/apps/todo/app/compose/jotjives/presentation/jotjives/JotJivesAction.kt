@@ -2,6 +2,7 @@ package com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjive
 
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.JotJiveFilterChip
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.TrackSizeInfo
+import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JotUi
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.MoodUi
 
 sealed interface JotJivesAction {
@@ -25,4 +26,7 @@ sealed interface JotJivesAction {
     data class OnPlayJiveClick(val jiveId: Int) : JotJivesAction
     data object OnAudioPermissionGranted : JotJivesAction
     data object OnCancelRecording : JotJivesAction
+
+    data class OnJotCompleted(val jotUi: JotUi) : JotJivesAction
+
 }

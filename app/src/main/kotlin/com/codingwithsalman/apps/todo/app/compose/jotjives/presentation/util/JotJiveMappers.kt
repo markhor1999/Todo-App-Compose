@@ -5,6 +5,7 @@ import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.J
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JotUi
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.MoodUi
 import com.codingwithsalman.jotjive.core.domain.jive.Jive
+import com.codingwithsalman.jotjive.core.domain.jive.Mood
 import com.codingwithsalman.jotjive.core.domain.jot.Jot
 import kotlin.time.Duration
 
@@ -34,6 +35,21 @@ fun Jot.toJotUi(): JotUi {
         mood = MoodUi.valueOf(mood.name),
         addedAt = addedAt,
         note = note,
-        topics = topics
+        topics = topics,
+        isTodo = isTodo,
+        isDone = isDone
+    )
+}
+
+fun JotUi.toJot(): Jot {
+    return Jot(
+        id = id,
+        title = title,
+        mood = Mood.valueOf(mood.name),
+        addedAt = addedAt,
+        note = note,
+        topics = topics,
+        isTodo = isTodo,
+        isDone = isDone
     )
 }

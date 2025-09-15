@@ -1,5 +1,7 @@
 package com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.create_jot
 
+import androidx.annotation.StringRes
+import com.codingwithsalman.apps.todo.app.compose.R
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.MoodUi
 import com.codingwithsalman.jotjive.core.presentation.designsystem.dropdowns.Selectable
 
@@ -15,5 +17,15 @@ data class CreateJotState(
     val searchResults: List<Selectable<String>> = emptyList(),
     val showCreateTopicOption: Boolean = true,
     val canSaveJot: Boolean = false,
-    val showConfirmLeaveDialog: Boolean = false
+    val showConfirmLeaveDialog: Boolean = false,
+    val jotCategories: List<JotCategory> = JotCategory.entries,
+    val selectedJotCategory: JotCategory = jotCategories.first()
 )
+
+enum class JotCategory(
+    @StringRes
+    val title: Int
+) {
+    NOTE(R.string.notes),
+    TODO(R.string.todo)
+}

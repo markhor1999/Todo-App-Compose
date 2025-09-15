@@ -9,5 +9,7 @@ data class Jot(
     val note: String?,
     val topics: List<String>,
     val addedAt: Instant,
-    val id: Int? = null
+    val id: Int? = null,
+    val isTodo: Boolean = false,
+    val isDone: Boolean = false
 )

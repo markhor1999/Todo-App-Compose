@@ -195,7 +195,7 @@ private fun JotJivesScreen(
                     )
                 }
 
-                !state.hasJivesRecorded -> {
+                !state.hasJivesRecorded && !state.hasJotsAdded -> {
                     JivesEmptyBackground(
                         modifier = Modifier
                             .weight(1f)
@@ -214,6 +214,9 @@ private fun JotJivesScreen(
                         },
                         onTrackSizeAvailable = { trackSize ->
                             onAction(JotJivesAction.OnTrackSizeAvailable(trackSize))
+                        },
+                        markJotDone = {
+                            onAction(JotJivesAction.OnJotCompleted(it))
                         }
                     )
                 }

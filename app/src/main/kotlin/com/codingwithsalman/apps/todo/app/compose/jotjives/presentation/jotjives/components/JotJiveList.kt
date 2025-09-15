@@ -21,6 +21,7 @@ import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.RelativePosition
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.TrackSizeInfo
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JotJiveUi
+import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JotUi
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.preview.PreviewModels
 import com.codingwithsalman.jotjive.core.presentation.designsystem.theme.JotJiveTheme
 import com.codingwithsalman.jotjive.core.presentation.util.UiText
@@ -31,6 +32,7 @@ import java.time.ZonedDateTime
 fun JotJiveList(
     sections: List<JotJiveDaySection>,
     onPlayClick: (jiveId: Int) -> Unit,
+    markJotDone: (jotUi: JotUi) -> Unit,
     onPauseClick: () -> Unit,
     onTrackSizeAvailable: (TrackSizeInfo) -> Unit,
     modifier: Modifier = Modifier
@@ -82,7 +84,8 @@ fun JotJiveList(
                             index == 0 -> RelativePosition.FIRST
                             jotJives.lastIndex == index -> RelativePosition.LAST
                             else -> RelativePosition.IN_BETWEEN
-                        }
+                        },
+                        markJotDone = { markJotDone(it) }
                     )
                 }
             }
@@ -154,7 +157,8 @@ private fun JiveListPreview() {
             sections = sections,
             onPauseClick = {},
             onPlayClick = {},
-            onTrackSizeAvailable = {}
+            onTrackSizeAvailable = {},
+            markJotDone = {}
         )
     }
 }

@@ -10,6 +10,8 @@ data class JotUi(
     val addedAt: JavaInstant,
     val note: String?,
     val topics: List<String>,
+    val isTodo: Boolean = false,
+    val isDone: Boolean = false
 ) {
     val formattedRecordedAt = addedAt.toReadableTime()
 }

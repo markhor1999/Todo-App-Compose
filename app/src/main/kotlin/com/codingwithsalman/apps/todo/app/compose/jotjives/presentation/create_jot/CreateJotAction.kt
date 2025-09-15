@@ -16,6 +16,7 @@ sealed interface CreateJotAction {
     data object OnCancelClick : CreateJotAction
     data object OnSaveClick : CreateJotAction
     data class OnRemoveTopicClick(val topic: String) : CreateJotAction
+    data class OnJotCategoryUpdated(val category: JotCategory) : CreateJotAction
     data object OnGoBack : CreateJotAction
     data object OnDismissConfirmLeaveDialog : CreateJotAction
 }

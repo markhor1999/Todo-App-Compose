@@ -10,12 +10,12 @@ import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.PlaybackState
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.RecordingState
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.jotjives.models.TrackSizeInfo
-import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JiveUi
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JotJiveUi
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.JotUi
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.models.MoodUi
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.util.AmplitudeNormalizer
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.util.toJiveUi
+import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.util.toJot
 import com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.util.toJotUi
 import com.codingwithsalman.jotjive.core.domain.audio.AudioPlayer
 import com.codingwithsalman.jotjive.core.domain.jive.Jive
@@ -214,6 +214,10 @@ class JotJivesViewModel(
             JotJivesAction.OnCompleteRecording -> stopRecording()
 
             JotJivesAction.OnResumeRecordingClick -> resumeRecording()
+
+            is JotJivesAction.OnJotCompleted -> {
+                markJotDone(action.jotUi)
+            }
         }
     }
 
@@ -496,6 +500,12 @@ class JotJivesViewModel(
                 )
             }
         }.launchIn(viewModelScope)
+    }
+
+    private fun markJotDone(jotUi: JotUi) {
+        viewModelScope.launch {
+            jotDataSource.updateJot(jotUi.toJot().copy(isDone = true))
+        }
     }
 
     private fun List<String>.deriveTopicsToText(): UiText {

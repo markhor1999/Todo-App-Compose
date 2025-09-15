@@ -34,7 +34,6 @@ fun JivePlaybackButton(
         },
         colors = colors,
         modifier = modifier
-            .defaultShadow()
     ) {
         Icon(
             imageVector = when (playbackState) {
@@ -56,7 +55,7 @@ fun JivePlaybackButton(
 private fun JivePlaybackButtonPreview() {
     JotJiveTheme {
         JivePlaybackButton(
-            playbackState = PlaybackState.PLAYING,
+            playbackState = PlaybackState.PAUSED,
             onPauseClick = {},
             onPlayClick = {},
             colors = IconButtonDefaults.filledIconButtonColors(
