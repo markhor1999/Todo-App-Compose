@@ -33,7 +33,7 @@ fun HashtagChip(
     ) {
         Row(
             modifier = Modifier
-                .background(Gray6)
+                .background(MaterialTheme.colorScheme.tertiaryContainer)
                 .padding(
                     vertical = 4.dp,
                     horizontal = 8.dp

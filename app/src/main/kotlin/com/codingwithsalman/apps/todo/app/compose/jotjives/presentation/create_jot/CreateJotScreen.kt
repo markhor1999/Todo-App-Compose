@@ -340,7 +340,7 @@ private fun CreateJotScreen(
                 },
                 title = {
                     Text(
-                        text = stringResource(R.string.discard_recording)
+                        text = stringResource(R.string.discard_note)
                     )
                 },
                 text = {

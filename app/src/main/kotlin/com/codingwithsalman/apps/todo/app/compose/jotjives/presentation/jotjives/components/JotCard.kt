@@ -83,7 +83,8 @@ fun JotCard(
             Spacer(Modifier.height(12.dp))
 
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 jotUi.topics.forEach { topic ->
                     HashtagChip(text = topic)

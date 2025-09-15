@@ -78,7 +78,8 @@ fun JiveCard(
             }
 
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 jiveUi.topics.forEach { topic ->
                     HashtagChip(text = topic)
