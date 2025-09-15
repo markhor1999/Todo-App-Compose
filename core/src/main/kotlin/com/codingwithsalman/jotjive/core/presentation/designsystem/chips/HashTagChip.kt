@@ -43,9 +43,12 @@ fun HashtagChip(
         ) {
             Text(
                 text = "#",
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.labelSmall
             )
-            Text(text)
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelSmall
+            )
             trailingIcon?.invoke()
         }
     }
