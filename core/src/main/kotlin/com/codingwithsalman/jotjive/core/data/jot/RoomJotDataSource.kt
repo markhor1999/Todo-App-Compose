@@ -5,6 +5,7 @@ import com.codingwithsalman.jotjive.core.domain.jot.Jot
 import com.codingwithsalman.jotjive.core.domain.jot.JotDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlin.collections.map
 
 internal class RoomJotDataSource(
     private val jotDao: JotDao
@@ -16,6 +17,14 @@ internal class RoomJotDataSource(
                 jotWithTopics.map { jotEntity ->
                     jotEntity.toJot()
                 }
+            }
+    }
+
+    override fun observeTopics(): Flow<List<String>> {
+        return jotDao
+            .observeTopics()
+            .map { topicEntities ->
+                topicEntities.map { it.topic }
             }
     }
 

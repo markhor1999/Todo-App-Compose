@@ -23,6 +23,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -260,18 +261,19 @@ class CreateJiveViewModel(
 
     @OptIn(FlowPreview::class)
     private fun observeAddTopicText() {
-        state
-            .map { it.addTopicText }
+        combine(
+            state.map { it.addTopicText },
+            jiveDataSource.observeTopics()
+        ) { addTopicText, topics ->
+            addTopicText to topics
+        }
             .distinctUntilChanged()
             .debounce(300)
-            .onEach { query ->
+            .onEach { (query, existingTopics) ->
                 _state.update {
                     it.copy(
                         showTopicSuggestions = query.isNotBlank() && query.trim() !in it.topics,
-                        searchResults = listOf(
-                            "hello",
-                            "helloworld",
-                        ).asUnselectedItems()
+                        searchResults = existingTopics.asUnselectedItems()
                     )
                 }
             }

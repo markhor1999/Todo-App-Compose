@@ -18,6 +18,8 @@ internal interface JotDao {
     @Query("SELECT * FROM jotentity")
     fun observeJots(): Flow<List<JotWithTopics>>
 
+    @Query("SELECT * FROM topicentity ORDER BY topic ASC")
+    fun observeTopics(): Flow<List<TopicEntity>>
     @Query("SELECT * FROM jotentity WHERE jotId = :id")
     suspend fun getJotById(id: Int): JotWithTopics?
 

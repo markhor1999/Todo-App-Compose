@@ -5,6 +5,11 @@ import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -23,7 +29,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -114,49 +124,85 @@ private fun JotJivesScreen(
     onAction: (JotJivesAction) -> Unit
 ) {
     val context = LocalContext.current
+    val lazyListState = rememberLazyListState()
+
+    var previousFirstVisibleItemIndex by remember { mutableIntStateOf(0) }
+    var previousFirstVisibleItemScrollOffset by remember { mutableIntStateOf(0) }
+
+    // 3. A derived state to determine if the FAB should be visible
+    val isFabVisible by remember {
+        derivedStateOf {
+            // Get the current scroll state
+            val firstVisibleItemIndex = lazyListState.firstVisibleItemIndex
+            val firstVisibleItemScrollOffset = lazyListState.firstVisibleItemScrollOffset
+
+            // Logic to determine visibility
+            val isScrollingUp = if (firstVisibleItemIndex == previousFirstVisibleItemIndex) {
+                // If we are in the same item, check the scroll offset
+                firstVisibleItemScrollOffset < previousFirstVisibleItemScrollOffset
+            } else {
+                // Otherwise, check the item index
+                firstVisibleItemIndex < previousFirstVisibleItemIndex
+            }
+
+            // Update the previous state for the next comparison
+            previousFirstVisibleItemIndex = firstVisibleItemIndex
+            previousFirstVisibleItemScrollOffset = firstVisibleItemScrollOffset
+
+            // Return true if scrolling up or at the top of the list
+            isScrollingUp || firstVisibleItemIndex == 0
+        }
+    }
+
     Scaffold(
         floatingActionButton = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.buttonGradient)
-                        .clickable {
-                            onAction(JotJivesAction.OnAddJotClick)
+            AnimatedVisibility(
+                visible = isFabVisible,
+                enter = fadeIn() + slideInVertically { it },
+                exit = fadeOut() + slideOutVertically { it }
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.buttonGradient)
+                            .clickable {
+                                onAction(JotJivesAction.OnAddJotClick)
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(R.string.add_notes)
+                        )
+                    }
+
+                    JiveQuickRecordFloatingActionButton(
+                        onClick = {
+                            onAction(JotJivesAction.OnRecordFabClick)
                         },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = stringResource(R.string.add_notes)
+                        isQuickRecording = state.recordingState == RecordingState.QUICK_CAPTURE,
+                        onLongPressEnd = { cancelledRecording ->
+                            if (cancelledRecording) {
+                                onAction(JotJivesAction.OnCancelRecording)
+                            } else {
+                                onAction(JotJivesAction.OnCompleteRecording)
+                            }
+                        },
+                        onLongPressStart = {
+                            val hasPermission = ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.RECORD_AUDIO
+                            ) == PackageManager.PERMISSION_GRANTED
+                            if (hasPermission) {
+                                onAction(JotJivesAction.OnRecordButtonLongClick)
+                            } else {
+                                onAction(JotJivesAction.OnRequestPermissionQuickRecording)
+                            }
+                        }
                     )
                 }
-
-                JiveQuickRecordFloatingActionButton(
-                    onClick = {
-                        onAction(JotJivesAction.OnRecordFabClick)
-                    },
-                    isQuickRecording = state.recordingState == RecordingState.QUICK_CAPTURE,
-                    onLongPressEnd = { cancelledRecording ->
-                        if (cancelledRecording) {
-                            onAction(JotJivesAction.OnCancelRecording)
-                        } else {
-                            onAction(JotJivesAction.OnCompleteRecording)
-                        }
-                    },
-                    onLongPressStart = {
-                        val hasPermission = ContextCompat.checkSelfPermission(
-                            context,
-                            Manifest.permission.RECORD_AUDIO
-                        ) == PackageManager.PERMISSION_GRANTED
-                        if (hasPermission) {
-                            onAction(JotJivesAction.OnRecordButtonLongClick)
-                        } else {
-                            onAction(JotJivesAction.OnRequestPermissionQuickRecording)
-                        }
-                    }
-                )
             }
         },
         topBar = {
@@ -206,6 +252,7 @@ private fun JotJivesScreen(
                 else -> {
                     JotJiveList(
                         sections = state.jotJiveDaySections,
+                        lazyListState = lazyListState,
                         onPlayClick = {
                             onAction(JotJivesAction.OnPlayJiveClick(it))
                         },

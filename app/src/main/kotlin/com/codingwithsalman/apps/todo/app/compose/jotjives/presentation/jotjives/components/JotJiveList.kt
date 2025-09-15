@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,10 +37,12 @@ fun JotJiveList(
     markJotDone: (jotUi: JotUi) -> Unit,
     onPauseClick: () -> Unit,
     onTrackSizeAvailable: (TrackSizeInfo) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    lazyListState: LazyListState,
 ) {
     LazyColumn(
         modifier = modifier,
+        state = lazyListState,
         contentPadding = PaddingValues(16.dp)
     ) {
         sections.forEachIndexed { sectionIndex, (dateHeader, jotJives) ->
@@ -59,7 +63,7 @@ fun JotJiveList(
             }
             itemsIndexed(
                 items = jotJives,
-                key = { _, jotJive -> jotJive.id }
+                key = { _, jotJive -> jotJive.id.toString() + jotJive.title }
             ) { index, jotJive ->
                 when (jotJive) {
                     is JotJiveUi.Jive -> {
@@ -158,7 +162,8 @@ private fun JiveListPreview() {
             onPauseClick = {},
             onPlayClick = {},
             onTrackSizeAvailable = {},
-            markJotDone = {}
+            markJotDone = {},
+            lazyListState = rememberLazyListState()
         )
     }
 }
