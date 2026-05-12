@@ -69,4 +69,7 @@
     <string name="yesterday">Yesterday</string>
     <string name="record_new_echo">Record new echo</string>
     <string name="check_if_todo">Check if it\'s a todo</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_description">How we handle your data</string>
+    <string name="privacy_policy_url" translatable="false">https://codingwithsalman.github.io/jotjive-legal/privacy-policy.html</string>
 </resources>
