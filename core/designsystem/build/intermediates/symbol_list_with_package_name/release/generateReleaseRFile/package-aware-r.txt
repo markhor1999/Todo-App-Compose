@@ -1,0 +1,4 @@
+com.codingwithsalman.voicenotes.core.designsystem
+array com_google_android_gms_fonts_certs
+array com_google_android_gms_fonts_certs_dev
+array com_google_android_gms_fonts_certs_prod
