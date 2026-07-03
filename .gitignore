@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+sherpa-onnx aar
+third_party/m2/
+keystore.properties
+*.jks
+*.keystore
