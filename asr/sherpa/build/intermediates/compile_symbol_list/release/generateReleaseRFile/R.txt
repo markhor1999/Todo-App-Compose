@@ -1,0 +1,1 @@
+int drawable vn_ic_notif_transcribe 0x0

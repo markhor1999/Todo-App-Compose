@@ -1,0 +1,2 @@
+com.codingwithsalman.voicenotes.asr.sherpa
+drawable vn_ic_notif_transcribe
