@@ -72,6 +72,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.codingwithsalman.voicenotes.asr.api.EngineState
 import com.codingwithsalman.voicenotes.core.common.util.formatDurationMs
 import com.codingwithsalman.voicenotes.core.common.util.formatNoteDate
+import com.codingwithsalman.voicenotes.core.designsystem.components.ProPaywallSheet
 import com.codingwithsalman.voicenotes.core.designsystem.components.StaticWaveform
 import com.codingwithsalman.voicenotes.core.designsystem.components.StatusBadge
 import com.codingwithsalman.voicenotes.core.designsystem.components.vnSharedBounds
@@ -107,6 +108,7 @@ fun NoteDetailScreen(
 
     var showRename by remember { mutableStateOf(false) }
     var showMenu by remember { mutableStateOf(false) }
+    var showPaywall by remember { mutableStateOf(false) }
 
     val exportTxt = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument(ExportFormat.TXT.mimeType)
@@ -243,13 +245,10 @@ fun NoteDetailScreen(
                 meterBlocked = !isPro && remainingTodayMs <= 0L,
                 remainingTodayMs = remainingTodayMs,
                 isPro = isPro,
-                monthlyPrice = pricing.monthlyPrice,
-                lifetimePrice = pricing.lifetimePrice,
                 onDownloadModel = viewModel::downloadModel,
                 onTranscribe = viewModel::transcribe,
                 onSeekToSegment = viewModel::seekToMs,
-                onBuyMonthly = { activity?.let(viewModel::launchMonthly) },
-                onBuyLifetime = { activity?.let(viewModel::launchLifetime) },
+                onOpenPaywall = { showPaywall = true },
             )
 
             Spacer(modifier = Modifier.height(28.dp))
@@ -263,6 +262,18 @@ fun NoteDetailScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
         }
+    }
+
+    if (showPaywall) {
+        ProPaywallSheet(
+            isPro = isPro,
+            monthlyPrice = pricing.monthlyPrice,
+            lifetimePrice = pricing.lifetimePrice,
+            onBuyMonthly = { activity?.let(viewModel::launchMonthly) },
+            onBuyLifetime = { activity?.let(viewModel::launchLifetime) },
+            onRestore = viewModel::restorePurchases,
+            onDismiss = { showPaywall = false },
+        )
     }
 
     if (showRename) {
@@ -423,13 +434,10 @@ private fun TranscriptSection(
     meterBlocked: Boolean,
     remainingTodayMs: Long,
     isPro: Boolean,
-    monthlyPrice: String?,
-    lifetimePrice: String?,
     onDownloadModel: () -> Unit,
     onTranscribe: () -> Unit,
     onSeekToSegment: (Long) -> Unit,
-    onBuyMonthly: () -> Unit,
-    onBuyLifetime: () -> Unit,
+    onOpenPaywall: () -> Unit,
 ) {
     val haptics = LocalHapticFeedback.current
 
@@ -593,14 +601,7 @@ private fun TranscriptSection(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(14.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Button(onClick = onBuyMonthly) {
-                                Text("Pro monthly" + (monthlyPrice?.let { " · $it" } ?: ""))
-                            }
-                            Button(onClick = onBuyLifetime) {
-                                Text("Lifetime" + (lifetimePrice?.let { " · $it" } ?: ""))
-                            }
-                        }
+                        Button(onClick = onOpenPaywall) { Text("See Murmur Pro") }
                     }
                 } else {
                     InfoCard {
@@ -618,11 +619,19 @@ private fun TranscriptSection(
                         )
                         if (!isPro) {
                             Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = "${remainingTodayMs / 60_000} min of free transcription left today",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
+                            Row {
+                                Text(
+                                    text = "${remainingTodayMs / 60_000} min free left today · ",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                Text(
+                                    text = "Go unlimited",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.clickable(onClick = onOpenPaywall),
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.height(14.dp))
                         Button(onClick = onTranscribe) {

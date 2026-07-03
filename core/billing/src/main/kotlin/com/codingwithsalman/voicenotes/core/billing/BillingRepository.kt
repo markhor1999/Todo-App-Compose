@@ -118,13 +118,30 @@ class BillingRepository @Inject constructor(
         }
     }
 
+    /**
+     * Re-derives the entitlement from BOTH product types in one pass so a lapsed
+     * subscription (and no lifetime) correctly REVOKES Pro, while an active
+     * purchase of either kind grants it.
+     */
     fun restorePurchases() {
-        listOf(BillingClient.ProductType.SUBS, BillingClient.ProductType.INAPP).forEach { type ->
+        client.queryPurchasesAsync(
+            QueryPurchasesParams.newBuilder()
+                .setProductType(BillingClient.ProductType.SUBS).build()
+        ) { subResult, subPurchases ->
             client.queryPurchasesAsync(
-                QueryPurchasesParams.newBuilder().setProductType(type).build()
-            ) { result, purchases ->
-                if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                    handlePurchases(purchases)
+                QueryPurchasesParams.newBuilder()
+                    .setProductType(BillingClient.ProductType.INAPP).build()
+            ) { inappResult, inappPurchases ->
+                if (subResult.responseCode == BillingClient.BillingResponseCode.OK &&
+                    inappResult.responseCode == BillingClient.BillingResponseCode.OK
+                ) {
+                    val all = subPurchases + inappPurchases
+                    acknowledgeNew(all)
+                    val owned = all.any { purchase ->
+                        purchase.purchaseState == Purchase.PurchaseState.PURCHASED &&
+                            purchase.products.any { it == PRODUCT_MONTHLY || it == PRODUCT_LIFETIME }
+                    }
+                    scope.launch { entitlementStore.setPro(owned) }
                 }
             }
         }
@@ -155,11 +172,17 @@ class BillingRepository @Inject constructor(
         )
     }
 
+    /** Grant-only path for live onPurchasesUpdated events (revocation is restore's job). */
     private fun handlePurchases(purchases: List<Purchase>) {
+        acknowledgeNew(purchases)
         val owned = purchases.any { purchase ->
             purchase.purchaseState == Purchase.PurchaseState.PURCHASED &&
                 purchase.products.any { it == PRODUCT_MONTHLY || it == PRODUCT_LIFETIME }
         }
+        if (owned) scope.launch { entitlementStore.setPro(true) }
+    }
+
+    private fun acknowledgeNew(purchases: List<Purchase>) {
         purchases
             .filter { it.purchaseState == Purchase.PurchaseState.PURCHASED && !it.isAcknowledged }
             .forEach { purchase ->
@@ -169,7 +192,6 @@ class BillingRepository @Inject constructor(
                         .build()
                 ) { ack -> Log.i(TAG, "ack=${ack.responseCode}") }
             }
-        if (owned) scope.launch { entitlementStore.setPro(true) }
     }
 
     companion object {

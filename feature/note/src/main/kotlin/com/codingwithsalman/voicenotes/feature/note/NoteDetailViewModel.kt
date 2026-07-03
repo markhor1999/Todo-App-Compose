@@ -82,6 +82,8 @@ class NoteDetailViewModel @Inject constructor(
 
     fun launchLifetime(activity: android.app.Activity) = billing.launchLifetime(activity)
 
+    fun restorePurchases() = billing.restorePurchases()
+
     init {
         viewModelScope.launch {
             val loaded = note.filterNotNull().first()

@@ -76,6 +76,18 @@ class TranscriptionWorker @AssistedInject constructor(
                     )
                 },
             )
+            // Auto-title: default titles ("Note — …" / import filenames like rec_/imp_)
+            // get replaced by the note's own first words. User-set titles are kept.
+            val firstWords = result.segments.firstOrNull()?.text
+                ?.split(Regex("\\s+"))?.take(6)?.joinToString(" ")
+                ?.trim()?.trimEnd('.', ',', ';')
+            val isDefaultTitle = note.title.startsWith("Note — ") ||
+                note.title.startsWith("Imported — ") ||
+                note.title.startsWith("rec_") || note.title.startsWith("imp_") ||
+                note.title.startsWith("spike")
+            if (!firstWords.isNullOrBlank() && isDefaultTitle) {
+                repository.updateTitle(noteId, firstWords)
+            }
             repository.updateStatus(noteId, TranscriptionStatus.DONE)
             entitlementStore.consume(note.durationMs)
             Result.success()

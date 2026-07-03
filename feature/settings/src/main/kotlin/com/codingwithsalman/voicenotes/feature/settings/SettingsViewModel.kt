@@ -6,6 +6,9 @@ import com.codingwithsalman.voicenotes.asr.api.AsrModelSpec
 import com.codingwithsalman.voicenotes.asr.api.EngineState
 import com.codingwithsalman.voicenotes.asr.api.ModelCatalog
 import com.codingwithsalman.voicenotes.asr.api.TranscriptionCoordinator
+import com.codingwithsalman.voicenotes.core.billing.BillingRepository
+import com.codingwithsalman.voicenotes.core.billing.ProPricing
+import com.codingwithsalman.voicenotes.core.datastore.EntitlementStore
 import com.codingwithsalman.voicenotes.core.datastore.SettingsRepository
 import com.codingwithsalman.voicenotes.core.model.ThemeMode
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +23,20 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val settings: SettingsRepository,
     private val transcriptionCoordinator: TranscriptionCoordinator,
+    private val billing: BillingRepository,
+    entitlementStore: EntitlementStore,
 ) : ViewModel() {
+
+    val isPro: StateFlow<Boolean> = entitlementStore.isPro
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    val pricing: StateFlow<ProPricing> = billing.pricing
+
+    fun launchMonthly(activity: android.app.Activity) = billing.launchMonthly(activity)
+
+    fun launchLifetime(activity: android.app.Activity) = billing.launchLifetime(activity)
+
+    fun restorePurchases() = billing.restorePurchases()
 
     val themeMode: StateFlow<ThemeMode> = settings.themeMode
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ThemeMode.SYSTEM)
