@@ -1,25 +1,46 @@
+import java.util.Properties
+
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.voicenotes.android.application)
+    alias(libs.plugins.voicenotes.hilt)
+}
+
+// Drop a keystore.properties (gitignored) at the repo root to sign releases:
+//   storeFile=/absolute/path/upload.jks
+//   storePassword=...
+//   keyAlias=...
+//   keyPassword=...
+// Absent file -> unsigned release (CI/verification builds keep working).
+val keystorePropsFile = rootProject.file("keystore.properties")
+val keystoreProps = Properties().apply {
+    if (keystorePropsFile.exists()) {
+        load(keystorePropsFile.inputStream())
+    }
 }
 
 android {
-    namespace = "com.codingwithsalman.apps.todo.app.compose"
-    compileSdk = 36
+    namespace = "com.codingwithsalman.voicenotes.app"
 
     defaultConfig {
+        // Live Play listing is kept — the applicationId predates the rewrite and cannot change.
         applicationId = "com.codingwithsalman.apps.todo.app.compose"
-        minSdk = 24
-        targetSdk = 36
-        versionCode = 6
-        versionName = "1.0.4"
+        versionCode = 7
+        versionName = "2.0.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
+        ndk {
+            // sherpa-onnx ships native libs; keep the APK/AAB to the ABIs real devices use.
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            if (keystorePropsFile.exists()) {
+                storeFile = file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
         }
     }
 
@@ -31,51 +52,38 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            if (keystorePropsFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-        isCoreLibraryDesugaringEnabled = true
-    }
-
-    buildFeatures {
-        compose = true
     }
 }
 
 dependencies {
+    implementation(projects.feature.capture)
+    implementation(projects.feature.library)
+    implementation(projects.feature.note)
+    implementation(projects.feature.settings)
+    implementation(projects.feature.onboarding)
+    implementation(projects.core.billing)
+
+    implementation(projects.core.common)
+    implementation(projects.core.model)
+    implementation(projects.core.designsystem)
+    implementation(projects.core.database)
+    implementation(projects.core.datastore)
+    implementation(projects.core.media)
+    implementation(projects.asr.api)
+    implementation(projects.asr.sherpa)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.material.icons.extended)
-    implementation(libs.androidx.core.splashscreen)
-    implementation(libs.bundles.widget.glance)
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-
     implementation(libs.androidx.navigation.compose)
-
-    // Splashscreen & Widget
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.bundles.widget.glance)
-
-    // DI - Koin
-    implementation(libs.bundles.koin)
-
-    implementation(projects.core)
-
-    // Allow use of java.time.Instant below API 26
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    implementation(libs.androidx.work.ktx)
+    implementation(libs.hilt.ext.work)
+    ksp(libs.hilt.ext.compiler)
 }
