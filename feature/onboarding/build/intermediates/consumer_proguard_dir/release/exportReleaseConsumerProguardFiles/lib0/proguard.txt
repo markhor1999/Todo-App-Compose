@@ -1,0 +1,2 @@
+-keep,allowobfuscation,allowshrinking class com.codingwithsalman.voicenotes.feature.onboarding.OnboardingViewModel
+-keep,allowobfuscation,allowshrinking class com.codingwithsalman.voicenotes.feature.onboarding.OnboardingViewModel

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.codingwithsalman.voicenotes.feature.capture" >
+
+    <uses-sdk android:minSdkVersion="24" />
+
+    <application>
+        <service
+            android:name="com.codingwithsalman.voicenotes.feature.capture.RecordingService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+    </application>
+
+</manifest>

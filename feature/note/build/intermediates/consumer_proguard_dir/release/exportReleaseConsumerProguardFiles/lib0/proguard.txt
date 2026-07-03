@@ -1,0 +1,2 @@
+-keep,allowobfuscation,allowshrinking class com.codingwithsalman.voicenotes.feature.note.NoteDetailViewModel
+-keep,allowobfuscation,allowshrinking class com.codingwithsalman.voicenotes.feature.note.NoteDetailViewModel
