@@ -19,6 +19,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.stringResource
+import com.codingwithsalman.voicenotes.core.designsystem.R
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,13 +57,13 @@ fun ProPaywallSheet(
         ) {
             if (isPro) {
                 Text(
-                    text = "You're Pro. Thank you. 🖤",
+                    text = stringResource(R.string.vn_paywall_pro_title),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Unlimited on-device transcription is active on this phone.",
+                    text = stringResource(R.string.vn_paywall_pro_body),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -70,40 +72,40 @@ fun ProPaywallSheet(
             }
 
             Text(
-                text = "Murmur Pro",
+                text = stringResource(R.string.vn_paywall_title),
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Free gives you unlimited recording, forever. Pro removes the one limit that exists:",
+                text = stringResource(R.string.vn_paywall_intro),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            BenefitRow("∞", "Unlimited transcription", "Free: 10 minutes a day. Pro: no meter, ever.")
-            BenefitRow("🌍", "Every model, every language", "Including the 99-language HD model — all offline.")
-            BenefitRow("🔒", "Still 100% private", "Pro changes what you can do, never where your data lives.")
-            BenefitRow("🌱", "Built by one person", "Your purchase directly funds development.")
+            BenefitRow("∞", stringResource(R.string.vn_benefit1_title), stringResource(R.string.vn_benefit1_body))
+            BenefitRow("🌍", stringResource(R.string.vn_benefit2_title), stringResource(R.string.vn_benefit2_body))
+            BenefitRow("🔒", stringResource(R.string.vn_benefit3_title), stringResource(R.string.vn_benefit3_body))
+            BenefitRow("🌱", stringResource(R.string.vn_benefit4_title), stringResource(R.string.vn_benefit4_body))
 
             Spacer(modifier = Modifier.height(20.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 PriceCard(
                     modifier = Modifier.weight(1f),
-                    title = "Monthly",
+                    title = stringResource(R.string.vn_monthly),
                     price = monthlyPrice ?: "—",
-                    caption = "cancel anytime",
+                    caption = stringResource(R.string.vn_cancel_anytime),
                     highlighted = false,
                     onClick = onBuyMonthly,
                 )
                 PriceCard(
                     modifier = Modifier.weight(1f),
-                    title = "Lifetime",
+                    title = stringResource(R.string.vn_lifetime),
                     price = lifetimePrice ?: "—",
-                    caption = "pay once · founder price",
+                    caption = stringResource(R.string.vn_pay_once),
                     highlighted = true,
                     onClick = onBuyLifetime,
                 )
@@ -117,10 +119,10 @@ fun ProPaywallSheet(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 TextButton(onClick = onRestore) {
-                    Text("Restore purchase", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.vn_restore_purchase), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Text(
-                    text = "Billed by Google Play",
+                    text = stringResource(R.string.vn_billed_by),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -179,7 +181,7 @@ private fun PriceCard(
         ) {
             if (highlighted) {
                 Text(
-                    text = "BEST VALUE",
+                    text = stringResource(R.string.vn_best_value),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
                 )

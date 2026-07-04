@@ -39,6 +39,19 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
+      name=":@@:core:designsystem::release"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/5bc32564aed37ef521baff457433d6f5/transformed/out/jars/classes.jar:/Users/muhammadsalman/.gradle/caches/8.13/transforms/5bc32564aed37ef521baff457433d6f5/transformed/out/jars/libs/R.jar"
+      resolved="VoiceNotes.core:designsystem:unspecified"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/5bc32564aed37ef521baff457433d6f5/transformed/out"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
       name=":@@:core:model::release"
       jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/6ce16d2dea4c0cd6a28501a747bf867d/transformed/out/jars/classes.jar:/Users/muhammadsalman/.gradle/caches/8.13/transforms/6ce16d2dea4c0cd6a28501a747bf867d/transformed/out/jars/libs/R.jar"
       resolved="VoiceNotes.core:model:unspecified"
@@ -800,6 +813,19 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
+      name="androidx.compose.ui:ui-text-google-fonts:1.9.0@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/02fa151052910dd1f1e097c8a0ef1d3c/transformed/jetified-ui-text-google-fonts-1.9.0/jars/classes.jar"
+      resolved="androidx.compose.ui:ui-text-google-fonts:1.9.0"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/02fa151052910dd1f1e097c8a0ef1d3c/transformed/jetified-ui-text-google-fonts-1.9.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
       name="androidx.activity:activity-ktx:1.8.2@aar"
       jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/c0b62111f2e07791a26dfb79a3e7cd24/transformed/jetified-activity-ktx-1.8.2/jars/classes.jar"
       resolved="androidx.activity:activity-ktx:1.8.2"
@@ -817,6 +843,19 @@
       jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/bcc47ea5f633bf28a693cbd5ae092c1f/transformed/jetified-activity-compose-1.8.2/jars/classes.jar"
       resolved="androidx.activity:activity-compose:1.8.2"
       folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/bcc47ea5f633bf28a693cbd5ae092c1f/transformed/jetified-activity-compose-1.8.2"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="androidx.compose.material:material-icons-extended-android:1.7.8@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/e9d1a527d0c05cf5f4c7c4412530e0bc/transformed/jetified-material-icons-extended-release/jars/classes.jar"
+      resolved="androidx.compose.material:material-icons-extended-android:1.7.8"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/e9d1a527d0c05cf5f4c7c4412530e0bc/transformed/jetified-material-icons-extended-release"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"

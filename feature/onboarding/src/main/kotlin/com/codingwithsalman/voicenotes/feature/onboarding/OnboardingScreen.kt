@@ -26,6 +26,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.stringResource
+import com.codingwithsalman.voicenotes.core.designsystem.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -85,15 +87,14 @@ fun OnboardingScreen(
                             )
                             Spacer(modifier = Modifier.height(28.dp))
                             Text(
-                                text = "Your voice,\nyour phone,\nyour business.",
+                                text = stringResource(R.string.vn_onb1_title),
                                 style = MaterialTheme.typography.displayMedium,
                                 color = MaterialTheme.colorScheme.onBackground,
                                 textAlign = TextAlign.Center,
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "Record anything. It becomes searchable text — " +
-                                    "right on this phone. No cloud. No account. No limits on recording.",
+                                text = stringResource(R.string.vn_onb1_body),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center,
@@ -107,15 +108,14 @@ fun OnboardingScreen(
                             )
                             Spacer(modifier = Modifier.height(28.dp))
                             Text(
-                                text = "One permission.",
+                                text = stringResource(R.string.vn_onb2_title),
                                 style = MaterialTheme.typography.headlineMedium,
                                 color = MaterialTheme.colorScheme.onBackground,
                                 textAlign = TextAlign.Center,
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "The microphone — for the obvious reason. Audio is " +
-                                    "processed on this device and never uploaded anywhere.",
+                                text = stringResource(R.string.vn_onb2_body),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center,
@@ -127,7 +127,7 @@ fun OnboardingScreen(
                                 ) == PackageManager.PERMISSION_GRANTED
                                 if (granted) scope.launch { pagerState.animateScrollToPage(2) }
                                 else micLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                            }) { Text("Allow microphone") }
+                            }) { Text(stringResource(R.string.vn_allow_mic)) }
                         }
 
                         2 -> {
@@ -137,15 +137,14 @@ fun OnboardingScreen(
                             )
                             Spacer(modifier = Modifier.height(28.dp))
                             Text(
-                                text = "Set up your private AI",
+                                text = stringResource(R.string.vn_onb3_title),
                                 style = MaterialTheme.typography.headlineMedium,
                                 color = MaterialTheme.colorScheme.onBackground,
                                 textAlign = TextAlign.Center,
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "One download puts the speech model on your phone. " +
-                                    "After that, every transcript is made locally — even in airplane mode.",
+                                text = stringResource(R.string.vn_onb3_body),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center,
@@ -153,7 +152,7 @@ fun OnboardingScreen(
                             Spacer(modifier = Modifier.height(24.dp))
                             when (val engine = engineState) {
                                 is EngineState.NotInstalled -> Button(onClick = viewModel::downloadModel) {
-                                    Text("Download · ${engine.spec.approxSizeMb} MB")
+                                    Text(stringResource(R.string.vn_download_size, engine.spec.approxSizeMb))
                                 }
                                 is EngineState.Downloading -> Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -164,16 +163,16 @@ fun OnboardingScreen(
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = "${(engine.progress * 100).toInt()}% — you can start using the app",
+                                        text = stringResource(R.string.vn_onb_dl_progress, (engine.progress * 100).toInt()),
                                         style = MaterialTheme.typography.labelMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 }
                                 is EngineState.DownloadFailed -> Button(onClick = viewModel::downloadModel) {
-                                    Text("Try again")
+                                    Text(stringResource(R.string.vn_try_again))
                                 }
                                 is EngineState.Ready -> Text(
-                                    text = "✓ Ready — everything stays on this phone",
+                                    text = stringResource(R.string.vn_onb_ready),
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary,
                                 )
@@ -207,14 +206,14 @@ fun OnboardingScreen(
                 when {
                     pagerState.currentPage < 2 -> {
                         TextButton(onClick = { finish() }) {
-                            Text("Skip", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(stringResource(R.string.vn_skip), color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         Button(onClick = {
                             scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
-                        }) { Text("Next") }
+                        }) { Text(stringResource(R.string.vn_next)) }
                     }
                     else -> Button(onClick = { finish() }) {
-                        Text(if (engineState is EngineState.Ready) "Start" else "Start anyway")
+                        Text(if (engineState is EngineState.Ready) stringResource(R.string.vn_start) else stringResource(R.string.vn_start_anyway))
                     }
                 }
             }

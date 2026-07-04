@@ -18,6 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material3.Icon
+import androidx.compose.ui.res.stringResource
+import com.codingwithsalman.voicenotes.core.designsystem.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -50,6 +52,8 @@ fun RecordButton(
     size: Dp = 84.dp,
 ) {
     val extended = VnTheme.extended
+    val stopDesc = stringResource(R.string.vn_cd_stop_recording)
+    val recordDesc = stringResource(R.string.vn_cd_record)
     val interactionSource = remember { MutableInteractionSource() }
     val pressed by interactionSource.collectIsPressedAsState()
 
@@ -89,7 +93,7 @@ fun RecordButton(
     Box(
         modifier = modifier
             .size(size)
-            .semantics { contentDescription = if (isRecording) "Stop recording" else "Record" },
+            .semantics { contentDescription = if (isRecording) stopDesc else recordDesc },
         contentAlignment = Alignment.Center,
     ) {
         Box(

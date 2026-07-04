@@ -33,6 +33,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.stringResource
+import com.codingwithsalman.voicenotes.core.designsystem.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -131,10 +133,10 @@ fun CaptureScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 TextButton(onClick = { viewModel.discard() }) {
-                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.vn_cancel), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 TextButton(onClick = onClose) {
-                    Text("Hide", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.vn_capture_hide), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
 
@@ -177,7 +179,7 @@ fun CaptureScreen(
                 ) {
                     Icon(
                         imageVector = if (state.isPaused) Icons.Rounded.Mic else Icons.Rounded.Pause,
-                        contentDescription = if (state.isPaused) "Resume" else "Pause",
+                        contentDescription = if (state.isPaused) stringResource(R.string.vn_cd_resume) else stringResource(R.string.vn_cd_pause),
                     )
                 }
                 RecordButton(
@@ -192,8 +194,8 @@ fun CaptureScreen(
                 Spacer(modifier = Modifier.size(56.dp))
             }
             Text(
-                text = if (state.isPaused) "Paused · tap mic to resume"
-                else "Tap to finish · keeps recording if you leave",
+                text = if (state.isPaused) stringResource(R.string.vn_capture_hint_paused)
+                else stringResource(R.string.vn_capture_hint_recording),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 18.dp, bottom = 40.dp),
@@ -225,7 +227,7 @@ private fun RecordingIndicator(visible: Boolean, paused: Boolean = false) {
                 .background(VnTheme.extended.record),
         )
         Text(
-            text = if (paused) "Paused" else "Recording",
+            text = if (paused) stringResource(R.string.vn_capture_paused) else stringResource(R.string.vn_capture_recording),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

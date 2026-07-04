@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import com.codingwithsalman.voicenotes.core.designsystem.R as DsR
 
 /** One builder for the recording notification, shared by the service (startForeground)
  *  and the session manager (pause/resume updates). */
@@ -30,8 +31,8 @@ object RecordingNotifications {
 
         return NotificationCompat.Builder(context, CHANNEL_RECORDING)
             .setSmallIcon(R.drawable.vn_ic_notif_mic)
-            .setContentTitle(if (paused) "Recording paused" else "Recording voice note")
-            .setContentText(if (paused) "Resume from the app" else "Tap to return · Stop to save")
+            .setContentTitle(context.getString(if (paused) DsR.string.vn_notif_paused_title else DsR.string.vn_notif_recording_title))
+            .setContentText(context.getString(if (paused) DsR.string.vn_notif_paused_text else DsR.string.vn_notif_recording_text))
             .setUsesChronometer(!paused)
             .setWhen(if (paused) System.currentTimeMillis() else startedAtMs)
             .setShowWhen(!paused)
@@ -39,7 +40,7 @@ object RecordingNotifications {
             .setOnlyAlertOnce(true)
             .setSilent(true)
             .setContentIntent(openIntent)
-            .addAction(0, "Stop & save", stopIntent)
+            .addAction(0, context.getString(DsR.string.vn_notif_stop_save), stopIntent)
             .build()
     }
 }

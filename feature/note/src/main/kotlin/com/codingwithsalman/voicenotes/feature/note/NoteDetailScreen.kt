@@ -49,6 +49,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.stringResource
+import com.codingwithsalman.voicenotes.core.designsystem.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -140,7 +142,7 @@ fun NoteDetailScreen(
                 IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.vn_cd_back),
                         tint = MaterialTheme.colorScheme.onBackground,
                     )
                 }
@@ -148,27 +150,27 @@ fun NoteDetailScreen(
                     IconButton(onClick = { showMenu = true }) {
                         Icon(
                             imageVector = Icons.Rounded.MoreVert,
-                            contentDescription = "More",
+                            contentDescription = stringResource(R.string.vn_cd_more),
                             tint = MaterialTheme.colorScheme.onBackground,
                         )
                     }
                     DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                         val hasTranscript = segments.isNotEmpty()
                         DropdownMenuItem(
-                            text = { Text("Rename") },
+                            text = { Text(stringResource(R.string.vn_menu_rename)) },
                             onClick = { showMenu = false; showRename = true },
                         )
                         DropdownMenuItem(
-                            text = { Text("Share transcript") },
+                            text = { Text(stringResource(R.string.vn_menu_share_transcript)) },
                             enabled = hasTranscript,
                             onClick = { showMenu = false; viewModel.shareTranscript() },
                         )
                         DropdownMenuItem(
-                            text = { Text("Share audio") },
+                            text = { Text(stringResource(R.string.vn_menu_share_audio)) },
                             onClick = { showMenu = false; viewModel.shareAudio() },
                         )
                         DropdownMenuItem(
-                            text = { Text("Export as .txt") },
+                            text = { Text(stringResource(R.string.vn_menu_export_txt)) },
                             enabled = hasTranscript,
                             onClick = {
                                 showMenu = false
@@ -176,7 +178,7 @@ fun NoteDetailScreen(
                             },
                         )
                         DropdownMenuItem(
-                            text = { Text("Export as .md") },
+                            text = { Text(stringResource(R.string.vn_menu_export_md)) },
                             enabled = hasTranscript,
                             onClick = {
                                 showMenu = false
@@ -184,7 +186,7 @@ fun NoteDetailScreen(
                             },
                         )
                         DropdownMenuItem(
-                            text = { Text("Export as .srt") },
+                            text = { Text(stringResource(R.string.vn_menu_export_srt)) },
                             enabled = hasTranscript,
                             onClick = {
                                 showMenu = false
@@ -294,7 +296,7 @@ private fun RenameDialog(
     var value by remember { mutableStateOf(initial) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Rename note") },
+        title = { Text(stringResource(R.string.vn_rename_title)) },
         text = {
             OutlinedTextField(
                 value = value,
@@ -304,10 +306,10 @@ private fun RenameDialog(
             )
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(value) }) { Text("Save") }
+            TextButton(onClick = { onConfirm(value) }) { Text(stringResource(R.string.vn_save)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.vn_cancel)) }
         },
     )
 }
@@ -378,7 +380,7 @@ private fun PlayerCard(
                 ) {
                     Icon(
                         imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
-                        contentDescription = if (isPlaying) "Pause" else "Play",
+                        contentDescription = if (isPlaying) stringResource(R.string.vn_cd_pause) else stringResource(R.string.vn_cd_play),
                     )
                 }
                 Spacer(modifier = Modifier.size(12.dp))
@@ -442,7 +444,7 @@ private fun TranscriptSection(
     val haptics = LocalHapticFeedback.current
 
     Text(
-        text = "Transcript",
+        text = stringResource(R.string.vn_note_transcript),
         style = MaterialTheme.typography.headlineSmall,
         color = MaterialTheme.colorScheme.onBackground,
     )
@@ -499,8 +501,8 @@ private fun TranscriptSection(
         status == TranscriptionStatus.QUEUED || status == TranscriptionStatus.TRANSCRIBING -> {
             InfoCard {
                 Text(
-                    text = if (status == TranscriptionStatus.QUEUED) "Queued…"
-                    else "Transcribing on this device…",
+                    text = if (status == TranscriptionStatus.QUEUED) stringResource(R.string.vn_note_queued)
+                    else stringResource(R.string.vn_note_transcribing_body),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -513,7 +515,7 @@ private fun TranscriptSection(
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = "${(progress * 100).toInt()}%",
+                        text = stringResource(R.string.vn_percent_value, (progress * 100).toInt()),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -527,20 +529,27 @@ private fun TranscriptSection(
             is EngineState.NotInstalled -> {
                 InfoCard {
                     Text(
-                        text = "Get your private transcription engine",
+                        text = stringResource(R.string.vn_engine_get_title),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = "One download (~${engine.spec.approxSizeMb} MB). After that, " +
-                            "every transcript is created on this phone — offline, unlimited, private.",
+                        text = stringResource(R.string.vn_engine_get_body, engine.spec.approxSizeMb),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.height(14.dp))
                     Button(onClick = onDownloadModel) {
-                        Text("Download · ${engine.spec.displayName}")
+                        Text(
+                            stringResource(
+                                R.string.vn_engine_download_btn,
+                                stringResource(
+                                    if (engine.spec.languages == listOf("en")) R.string.vn_model_name_fast
+                                    else R.string.vn_model_name_all
+                                ),
+                            )
+                        )
                     }
                 }
             }
@@ -548,7 +557,7 @@ private fun TranscriptSection(
             is EngineState.Downloading -> {
                 InfoCard {
                     Text(
-                        text = "Downloading your engine…",
+                        text = stringResource(R.string.vn_engine_downloading),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -559,7 +568,7 @@ private fun TranscriptSection(
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = "${(engine.progress * 100).toInt()}% of ~${engine.spec.approxSizeMb} MB",
+                        text = stringResource(R.string.vn_engine_progress, (engine.progress * 100).toInt(), engine.spec.approxSizeMb),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -569,7 +578,7 @@ private fun TranscriptSection(
             is EngineState.DownloadFailed -> {
                 InfoCard {
                     Text(
-                        text = "Download didn't finish",
+                        text = stringResource(R.string.vn_engine_failed_title),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.error,
                     )
@@ -580,7 +589,7 @@ private fun TranscriptSection(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.height(14.dp))
-                    Button(onClick = onDownloadModel) { Text("Try again") }
+                    Button(onClick = onDownloadModel) { Text(stringResource(R.string.vn_try_again)) }
                 }
             }
 
@@ -588,31 +597,29 @@ private fun TranscriptSection(
                 if (meterBlocked) {
                     InfoCard {
                         Text(
-                            text = "Today's free minutes are used up",
+                            text = stringResource(R.string.vn_meter_used_title),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = "Free includes 10 minutes of on-device transcription a day " +
-                                "(resets at midnight). Pro removes the limit — still 100% private, " +
-                                "still on this phone.",
+                            text = stringResource(R.string.vn_meter_used_body),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(14.dp))
-                        Button(onClick = onOpenPaywall) { Text("See Murmur Pro") }
+                        Button(onClick = onOpenPaywall) { Text(stringResource(R.string.vn_see_pro)) }
                     }
                 } else {
                     InfoCard {
                         Text(
                             text = when (status) {
                                 TranscriptionStatus.FAILED ->
-                                    "Transcription failed — you can retry."
+                                    stringResource(R.string.vn_failed_body)
                                 TranscriptionStatus.DONE ->
-                                    "No speech detected in this recording. You can try again."
+                                    stringResource(R.string.vn_no_speech_body)
                                 else ->
-                                    "Ready to transcribe on this device. Nothing gets uploaded."
+                                    stringResource(R.string.vn_ready_body)
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -621,12 +628,12 @@ private fun TranscriptSection(
                             Spacer(modifier = Modifier.height(6.dp))
                             Row {
                                 Text(
-                                    text = "${remainingTodayMs / 60_000} min free left today · ",
+                                    text = stringResource(R.string.vn_meter_left, remainingTodayMs / 60_000) + " · ",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                                 Text(
-                                    text = "Go unlimited",
+                                    text = stringResource(R.string.vn_go_unlimited),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.clickable(onClick = onOpenPaywall),
@@ -637,8 +644,8 @@ private fun TranscriptSection(
                         Button(onClick = onTranscribe) {
                             Text(
                                 when (status) {
-                                    TranscriptionStatus.FAILED, TranscriptionStatus.DONE -> "Retry"
-                                    else -> "Transcribe"
+                                    TranscriptionStatus.FAILED, TranscriptionStatus.DONE -> stringResource(R.string.vn_retry)
+                                    else -> stringResource(R.string.vn_transcribe)
                                 }
                             )
                         }
@@ -661,7 +668,7 @@ private fun ActionItemsSection(
     var draft by remember { mutableStateOf("") }
 
     Text(
-        text = "Action items",
+        text = stringResource(R.string.vn_actions_title),
         style = MaterialTheme.typography.headlineSmall,
         color = MaterialTheme.colorScheme.onBackground,
     )
@@ -694,7 +701,7 @@ private fun ActionItemsSection(
         }
         if (items.isEmpty()) {
             Text(
-                text = "Capture the follow-ups from this note. Long-press an item to delete it.",
+                text = stringResource(R.string.vn_actions_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 10.dp),
@@ -704,7 +711,7 @@ private fun ActionItemsSection(
             OutlinedTextField(
                 value = draft,
                 onValueChange = { draft = it },
-                placeholder = { Text("Add an action item…") },
+                placeholder = { Text(stringResource(R.string.vn_actions_placeholder)) },
                 singleLine = true,
                 shape = RoundedCornerShape(14.dp),
                 modifier = Modifier.weight(1f),
@@ -719,7 +726,7 @@ private fun ActionItemsSection(
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Add,
-                    contentDescription = "Add action item",
+                    contentDescription = stringResource(R.string.vn_cd_add_action),
                     tint = MaterialTheme.colorScheme.primary,
                 )
             }

@@ -54,18 +54,8 @@
       name=":@@:asr:api::release"
       project=":asr:api"/>
   <library
-      name="androidx.fragment:fragment:1.5.1@aar"
-      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/493e3200e5d0430e57d7f278c04e9f2b/transformed/fragment-1.5.1/jars/classes.jar"
-      resolved="androidx.fragment:fragment:1.5.1"
-      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/493e3200e5d0430e57d7f278c04e9f2b/transformed/fragment-1.5.1"
-      manifest="AndroidManifest.xml"
-      resFolder="res"
-      assetsFolder="assets"
-      lintJar="lint.jar"
-      publicResources="public.txt"
-      symbolFile="R.txt"
-      externalAnnotations="annotations.zip"
-      proguardRules="proguard.txt"/>
+      name=":@@:core:billing::release"
+      project=":core:billing"/>
   <library
       name="androidx.navigation:navigation-common-android:2.9.3@aar"
       jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/153ef1e2a8fc2564a2a9c6dc2fced671/transformed/jetified-navigation-common-release/jars/classes.jar"
@@ -106,10 +96,10 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="androidx.activity:activity-ktx:1.8.2@aar"
-      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/c0b62111f2e07791a26dfb79a3e7cd24/transformed/jetified-activity-ktx-1.8.2/jars/classes.jar"
-      resolved="androidx.activity:activity-ktx:1.8.2"
-      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/c0b62111f2e07791a26dfb79a3e7cd24/transformed/jetified-activity-ktx-1.8.2"
+      name="androidx.activity:activity-ktx:1.10.1@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/80261d6251a25d59763f2bff53ead3db/transformed/jetified-activity-ktx-1.10.1/jars/classes.jar"
+      resolved="androidx.activity:activity-ktx:1.10.1"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/80261d6251a25d59763f2bff53ead3db/transformed/jetified-activity-ktx-1.10.1"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -119,10 +109,10 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="androidx.activity:activity-compose:1.8.2@aar"
-      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/bcc47ea5f633bf28a693cbd5ae092c1f/transformed/jetified-activity-compose-1.8.2/jars/classes.jar"
-      resolved="androidx.activity:activity-compose:1.8.2"
-      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/bcc47ea5f633bf28a693cbd5ae092c1f/transformed/jetified-activity-compose-1.8.2"
+      name="androidx.activity:activity-compose:1.10.1@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/52dd8fc2c982a0356fad10c1746ce7ab/transformed/jetified-activity-compose-1.10.1/jars/classes.jar"
+      resolved="androidx.activity:activity-compose:1.10.1"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/52dd8fc2c982a0356fad10c1746ce7ab/transformed/jetified-activity-compose-1.10.1"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -132,10 +122,23 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="androidx.activity:activity:1.8.2@aar"
-      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/4a4d0199689d894158130044d8ac6911/transformed/jetified-activity-1.8.2/jars/classes.jar"
-      resolved="androidx.activity:activity:1.8.2"
-      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/4a4d0199689d894158130044d8ac6911/transformed/jetified-activity-1.8.2"
+      name="androidx.fragment:fragment:1.5.1@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/493e3200e5d0430e57d7f278c04e9f2b/transformed/fragment-1.5.1/jars/classes.jar"
+      resolved="androidx.fragment:fragment:1.5.1"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/493e3200e5d0430e57d7f278c04e9f2b/transformed/fragment-1.5.1"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="androidx.activity:activity:1.10.1@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/504572da92a507075dd99553839443f6/transformed/jetified-activity-1.10.1/jars/classes.jar"
+      resolved="androidx.activity:activity:1.10.1"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/504572da92a507075dd99553839443f6/transformed/jetified-activity-1.10.1"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -366,19 +369,6 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.3@aar"
-      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/3ebdf52a394812df2c335c743303a6a5/transformed/jetified-lifecycle-viewmodel-ktx-2.9.3/jars/classes.jar"
-      resolved="androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.3"
-      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/3ebdf52a394812df2c335c743303a6a5/transformed/jetified-lifecycle-viewmodel-ktx-2.9.3"
-      manifest="AndroidManifest.xml"
-      resFolder="res"
-      assetsFolder="assets"
-      lintJar="lint.jar"
-      publicResources="public.txt"
-      symbolFile="R.txt"
-      externalAnnotations="annotations.zip"
-      proguardRules="proguard.txt"/>
-  <library
       name="androidx.lifecycle:lifecycle-livedata-core-ktx:2.9.3@aar"
       jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/508c71ba7e12ebcc9bb2f4718baa3400/transformed/jetified-lifecycle-livedata-core-ktx-2.9.3/jars/classes.jar"
       resolved="androidx.lifecycle:lifecycle-livedata-core-ktx:2.9.3"
@@ -422,6 +412,19 @@
       jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/8540e63e6c9e0ea321ee63b0302cae23/transformed/jetified-lifecycle-runtime-release/jars/classes.jar"
       resolved="androidx.lifecycle:lifecycle-runtime-android:2.9.3"
       folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/8540e63e6c9e0ea321ee63b0302cae23/transformed/jetified-lifecycle-runtime-release"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.3@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/3ebdf52a394812df2c335c743303a6a5/transformed/jetified-lifecycle-viewmodel-ktx-2.9.3/jars/classes.jar"
+      resolved="androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.3"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/3ebdf52a394812df2c335c743303a6a5/transformed/jetified-lifecycle-viewmodel-ktx-2.9.3"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -707,6 +710,19 @@
       jars="/Users/muhammadsalman/.gradle/caches/modules-2/files-2.1/androidx.annotation/annotation-jvm/1.9.1/b17951747e38bf3986a24431b9ba0d039958aa5f/annotation-jvm-1.9.1.jar"
       resolved="androidx.annotation:annotation-jvm:1.9.1"/>
   <library
+      name="androidx.core:core-viewtree:1.0.0@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/32efd7b0e052b53bab4a54707f58a4d1/transformed/jetified-core-viewtree-1.0.0/jars/classes.jar"
+      resolved="androidx.core:core-viewtree:1.0.0"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/32efd7b0e052b53bab4a54707f58a4d1/transformed/jetified-core-viewtree-1.0.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
       name="org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2@jar"
       jars="/Users/muhammadsalman/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-coroutines-core-jvm/1.10.2/4a9f78ef49483748e2c129f3d124b8fa249dafbf/kotlinx-coroutines-core-jvm-1.10.2.jar"
       resolved="org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2"/>
@@ -763,6 +779,97 @@
       name="com.google.code.findbugs:jsr305:3.0.2@jar"
       jars="/Users/muhammadsalman/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.2/25ea2e8b0c338a877313bd4672d3fe056ea78f0d/jsr305-3.0.2.jar"
       resolved="com.google.code.findbugs:jsr305:3.0.2"/>
+  <library
+      name="com.android.billingclient:billing-ktx:7.1.1@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/8ac2061337de12b1440a7cbb6e37bf09/transformed/jetified-billing-ktx-7.1.1/jars/classes.jar"
+      resolved="com.android.billingclient:billing-ktx:7.1.1"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/8ac2061337de12b1440a7cbb6e37bf09/transformed/jetified-billing-ktx-7.1.1"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="com.android.billingclient:billing:7.1.1@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/58cf57f113aa15ca2fdf4a5adbb0df31/transformed/jetified-billing-7.1.1/jars/classes.jar"
+      resolved="com.android.billingclient:billing:7.1.1"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/58cf57f113aa15ca2fdf4a5adbb0df31/transformed/jetified-billing-7.1.1"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="com.google.android.gms:play-services-location:19.0.0@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/d93d278ae61c5202c28dcbef13e12e19/transformed/jetified-play-services-location-19.0.0/jars/classes.jar"
+      resolved="com.google.android.gms:play-services-location:19.0.0"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/d93d278ae61c5202c28dcbef13e12e19/transformed/jetified-play-services-location-19.0.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="com.google.android.gms:play-services-base:18.5.0@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/0c875add689ff0da338fc6de834df491/transformed/jetified-play-services-base-18.5.0/jars/classes.jar"
+      resolved="com.google.android.gms:play-services-base:18.5.0"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/0c875add689ff0da338fc6de834df491/transformed/jetified-play-services-base-18.5.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="com.google.android.gms:play-services-tasks:18.2.0@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/24d012e1f81ff1c95ee67bee2203ff4d/transformed/jetified-play-services-tasks-18.2.0/jars/classes.jar"
+      resolved="com.google.android.gms:play-services-tasks:18.2.0"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/24d012e1f81ff1c95ee67bee2203ff4d/transformed/jetified-play-services-tasks-18.2.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="com.google.android.gms:play-services-places-placereport:17.0.0@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/b7cdc452b72454c6f106ec7fa12bf649/transformed/jetified-play-services-places-placereport-17.0.0/jars/classes.jar"
+      resolved="com.google.android.gms:play-services-places-placereport:17.0.0"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/b7cdc452b72454c6f106ec7fa12bf649/transformed/jetified-play-services-places-placereport-17.0.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="com.google.android.gms:play-services-basement:18.4.0@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/c4561be7a797ca03d05ba4e7a750f5cb/transformed/jetified-play-services-basement-18.4.0/jars/classes.jar"
+      resolved="com.google.android.gms:play-services-basement:18.4.0"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/c4561be7a797ca03d05ba4e7a750f5cb/transformed/jetified-play-services-basement-18.4.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
   <library
       name="androidx.compose.ui:ui-text-google-fonts:1.9.0@aar"
       jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/02fa151052910dd1f1e097c8a0ef1d3c/transformed/jetified-ui-text-google-fonts-1.9.0/jars/classes.jar"
@@ -923,14 +1030,10 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="androidx.collection:collection-ktx:1.5.0@jar"
-      jars="/Users/muhammadsalman/.gradle/caches/modules-2/files-2.1/androidx.collection/collection-ktx/1.5.0/27c78a926a16a1bf792b2285cf2834e8caae4a07/collection-ktx-1.5.0.jar"
-      resolved="androidx.collection:collection-ktx:1.5.0"/>
-  <library
-      name="androidx.interpolator:interpolator:1.0.0@aar"
-      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/ed0904ef0da36b5c72a8ed6a18daf05a/transformed/interpolator-1.0.0/jars/classes.jar"
-      resolved="androidx.interpolator:interpolator:1.0.0"
-      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/ed0904ef0da36b5c72a8ed6a18daf05a/transformed/interpolator-1.0.0"
+      name="com.google.android.datatransport:transport-backend-cct:3.1.8@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/dce98f109ad1c2e0c39d7d4a0f4e781a/transformed/jetified-transport-backend-cct-3.1.8/jars/classes.jar"
+      resolved="com.google.android.datatransport:transport-backend-cct:3.1.8"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/dce98f109ad1c2e0c39d7d4a0f4e781a/transformed/jetified-transport-backend-cct-3.1.8"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -939,6 +1042,36 @@
       symbolFile="R.txt"
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
+  <library
+      name="com.google.android.datatransport:transport-runtime:3.1.8@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/218e120eda04bc091a303ff84211d454/transformed/jetified-transport-runtime-3.1.8/jars/classes.jar"
+      resolved="com.google.android.datatransport:transport-runtime:3.1.8"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/218e120eda04bc091a303ff84211d454/transformed/jetified-transport-runtime-3.1.8"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="com.google.android.datatransport:transport-api:3.0.0@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/f617feb06335e25a88079abece97e1bd/transformed/jetified-transport-api-3.0.0/jars/classes.jar"
+      resolved="com.google.android.datatransport:transport-api:3.0.0"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/f617feb06335e25a88079abece97e1bd/transformed/jetified-transport-api-3.0.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="androidx.concurrent:concurrent-futures:1.1.0@jar"
+      jars="/Users/muhammadsalman/.gradle/caches/modules-2/files-2.1/androidx.concurrent/concurrent-futures/1.1.0/50b7fb98350d5f42a4e49704b03278542293ba48/concurrent-futures-1.1.0.jar"
+      resolved="androidx.concurrent:concurrent-futures:1.1.0"/>
   <library
       name="androidx.startup:startup-runtime:1.1.1@aar"
       jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/77db62654bae008e2f8c09252ce505d5/transformed/jetified-startup-runtime-1.1.1/jars/classes.jar"
@@ -953,6 +1086,10 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
+      name="androidx.collection:collection-ktx:1.5.0@jar"
+      jars="/Users/muhammadsalman/.gradle/caches/modules-2/files-2.1/androidx.collection/collection-ktx/1.5.0/27c78a926a16a1bf792b2285cf2834e8caae4a07/collection-ktx-1.5.0.jar"
+      resolved="androidx.collection:collection-ktx:1.5.0"/>
+  <library
       name="androidx.tracing:tracing:1.2.0@aar"
       jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/1c29ca107c3df810552cbc99cfddb4de/transformed/jetified-tracing-1.2.0/jars/classes.jar"
       resolved="androidx.tracing:tracing:1.2.0"
@@ -966,14 +1103,10 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="androidx.concurrent:concurrent-futures:1.1.0@jar"
-      jars="/Users/muhammadsalman/.gradle/caches/modules-2/files-2.1/androidx.concurrent/concurrent-futures/1.1.0/50b7fb98350d5f42a4e49704b03278542293ba48/concurrent-futures-1.1.0.jar"
-      resolved="androidx.concurrent:concurrent-futures:1.1.0"/>
-  <library
-      name="androidx.core:core-viewtree:1.0.0@aar"
-      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/32efd7b0e052b53bab4a54707f58a4d1/transformed/jetified-core-viewtree-1.0.0/jars/classes.jar"
-      resolved="androidx.core:core-viewtree:1.0.0"
-      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/32efd7b0e052b53bab4a54707f58a4d1/transformed/jetified-core-viewtree-1.0.0"
+      name="androidx.interpolator:interpolator:1.0.0@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/ed0904ef0da36b5c72a8ed6a18daf05a/transformed/interpolator-1.0.0/jars/classes.jar"
+      resolved="androidx.interpolator:interpolator:1.0.0"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/ed0904ef0da36b5c72a8ed6a18daf05a/transformed/interpolator-1.0.0"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -982,6 +1115,27 @@
       symbolFile="R.txt"
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
+  <library
+      name="com.google.firebase:firebase-encoders-json:18.0.0@aar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/4ea46de52bf1e88eddb27b9f385d63fb/transformed/jetified-firebase-encoders-json-18.0.0/jars/classes.jar"
+      resolved="com.google.firebase:firebase-encoders-json:18.0.0"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/4ea46de52bf1e88eddb27b9f385d63fb/transformed/jetified-firebase-encoders-json-18.0.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="com.google.firebase:firebase-encoders-proto:16.0.0@jar"
+      jars="/Users/muhammadsalman/.gradle/caches/modules-2/files-2.1/com.google.firebase/firebase-encoders-proto/16.0.0/a42d5fd83b96ae7b73a8617d29c94703e18c9992/firebase-encoders-proto-16.0.0.jar"
+      resolved="com.google.firebase:firebase-encoders-proto:16.0.0"/>
+  <library
+      name="com.google.firebase:firebase-encoders:17.0.0@jar"
+      jars="/Users/muhammadsalman/.gradle/caches/modules-2/files-2.1/com.google.firebase/firebase-encoders/17.0.0/26f52dc549c42575b155f8c720e84059ee600a85/firebase-encoders-17.0.0.jar"
+      resolved="com.google.firebase:firebase-encoders:17.0.0"/>
   <library
       name="org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22@jar"
       jars="/Users/muhammadsalman/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-parcelize-runtime/1.9.22/de4a21d6560cadd035c69ba3af3ad1afecc95299/kotlin-parcelize-runtime-1.9.22.jar"

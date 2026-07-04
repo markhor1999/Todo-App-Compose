@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.codingwithsalman.voicenotes.asr.sherpa.R
+import com.codingwithsalman.voicenotes.core.designsystem.R as DsR
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -81,8 +82,13 @@ class TranscriptionWorker @AssistedInject constructor(
             val firstWords = result.segments.firstOrNull()?.text
                 ?.split(Regex("\\s+"))?.take(6)?.joinToString(" ")
                 ?.trim()?.trimEnd('.', ',', ';')
-            val isDefaultTitle = note.title.startsWith("Note — ") ||
-                note.title.startsWith("Imported — ") ||
+            val localizedNotePrefix = applicationContext
+                .getString(DsR.string.vn_note_default_title).substringBefore("%1").trim()
+            val localizedImportPrefix = applicationContext
+                .getString(DsR.string.vn_imported_default_title).substringBefore("%1").trim()
+            val isDefaultTitle = note.title.startsWith(localizedNotePrefix) ||
+                note.title.startsWith(localizedImportPrefix) ||
+                note.title.startsWith("Note — ") || note.title.startsWith("Imported — ") ||
                 note.title.startsWith("rec_") || note.title.startsWith("imp_") ||
                 note.title.startsWith("spike")
             if (!firstWords.isNullOrBlank() && isDefaultTitle) {
@@ -108,7 +114,7 @@ class TranscriptionWorker @AssistedInject constructor(
         // Best-effort: silently invisible if POST_NOTIFICATIONS is denied.
         val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setSmallIcon(R.drawable.vn_ic_notif_transcribe)
-            .setContentTitle("Transcribing on this device")
+            .setContentTitle(applicationContext.getString(DsR.string.vn_notif_transcribing_title))
             .setContentText(title)
             .setProgress(100, percent, percent == 0)
             .setOngoing(true)

@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
+import com.codingwithsalman.voicenotes.core.designsystem.R
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -98,23 +100,23 @@ fun NoteCard(
 fun StatusBadge(status: TranscriptionStatus, modifier: Modifier = Modifier) {
     val (label, container, content) = when (status) {
         TranscriptionStatus.RECORDED -> Triple(
-            "Audio",
+            stringResource(R.string.vn_status_audio),
             MaterialTheme.colorScheme.surfaceVariant,
             MaterialTheme.colorScheme.onSurfaceVariant,
         )
         TranscriptionStatus.QUEUED,
         TranscriptionStatus.TRANSCRIBING -> Triple(
-            "Transcribing…",
+            stringResource(R.string.vn_status_transcribing),
             MaterialTheme.colorScheme.primaryContainer,
             MaterialTheme.colorScheme.onPrimaryContainer,
         )
         TranscriptionStatus.DONE -> Triple(
-            "Transcript",
+            stringResource(R.string.vn_status_transcript),
             MaterialTheme.colorScheme.primaryContainer,
             MaterialTheme.colorScheme.primary,
         )
         TranscriptionStatus.FAILED -> Triple(
-            "Failed",
+            stringResource(R.string.vn_status_failed),
             MaterialTheme.colorScheme.surfaceVariant,
             MaterialTheme.colorScheme.error,
         )

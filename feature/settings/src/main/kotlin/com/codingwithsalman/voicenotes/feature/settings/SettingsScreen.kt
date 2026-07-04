@@ -27,6 +27,8 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
+import com.codingwithsalman.voicenotes.core.designsystem.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,35 +74,35 @@ fun SettingsScreen(
                 IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.vn_cd_back),
                         tint = MaterialTheme.colorScheme.onBackground,
                     )
                 }
             }
 
             Text(
-                text = "Settings",
+                text = stringResource(R.string.vn_settings_title),
                 style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.onBackground,
             )
 
-            SectionTitle("Murmur Pro")
+            SectionTitle(stringResource(R.string.vn_pro_section))
             SettingsCard {
                 if (isPro) {
                     Text(
-                        text = "✓ Pro is active — unlimited transcription",
+                        text = stringResource(R.string.vn_pro_active),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
                     )
                 } else {
                     Text(
-                        text = "Unlimited transcription. Still 100% private.",
+                        text = stringResource(R.string.vn_pro_pitch_title),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Free includes 10 minutes a day. Pro removes the meter — monthly, or pay once for lifetime.",
+                        text = stringResource(R.string.vn_pro_pitch_body),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -109,10 +111,10 @@ fun SettingsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Button(onClick = { showPaywall = true }) { Text("See Murmur Pro") }
+                        Button(onClick = { showPaywall = true }) { Text(stringResource(R.string.vn_see_pro)) }
                         Spacer(modifier = Modifier.weight(1f))
                         Text(
-                            text = "Restore",
+                            text = stringResource(R.string.vn_restore),
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.clickable(onClick = viewModel::restorePurchases),
@@ -121,14 +123,14 @@ fun SettingsScreen(
                 }
             }
 
-            SectionTitle("Appearance")
+            SectionTitle(stringResource(R.string.vn_appearance))
             SettingsCard {
                 ThemeMode.entries.forEach { mode ->
                     OptionRow(
                         title = when (mode) {
-                            ThemeMode.SYSTEM -> "Match system"
-                            ThemeMode.DARK -> "Dark"
-                            ThemeMode.LIGHT -> "Light"
+                            ThemeMode.SYSTEM -> stringResource(R.string.vn_theme_system)
+                            ThemeMode.DARK -> stringResource(R.string.vn_theme_dark)
+                            ThemeMode.LIGHT -> stringResource(R.string.vn_theme_light)
                         },
                         selected = themeMode == mode,
                         onClick = { viewModel.setThemeMode(mode) },
@@ -136,14 +138,19 @@ fun SettingsScreen(
                 }
             }
 
-            SectionTitle("Transcription engine")
+            SectionTitle(stringResource(R.string.vn_engine_section))
             SettingsCard {
                 viewModel.models.forEach { spec ->
                     OptionRow(
-                        title = spec.displayName,
-                        subtitle = "${spec.approxSizeMb} MB · " +
-                            if (spec.languages == listOf("en")) "English only, fastest"
-                            else "99 languages incl. اردو / हिन्दी",
+                        title = stringResource(
+                            if (spec.languages == listOf("en")) R.string.vn_model_name_fast
+                            else R.string.vn_model_name_all
+                        ),
+                        subtitle = stringResource(
+                            if (spec.languages == listOf("en")) R.string.vn_model_sub_fast
+                            else R.string.vn_model_sub_all,
+                            spec.approxSizeMb,
+                        ),
                         selected = selectedModel.id == spec.id,
                         onClick = { viewModel.selectModel(spec) },
                     )
@@ -154,7 +161,7 @@ fun SettingsScreen(
                         Button(
                             onClick = viewModel::downloadSelected,
                             modifier = Modifier.padding(top = 10.dp),
-                        ) { Text("Download ${engine.spec.displayName} · ${engine.spec.approxSizeMb} MB") }
+                        ) { Text(stringResource(R.string.vn_download_size, engine.spec.approxSizeMb)) }
                     }
                     is EngineState.Downloading -> {
                         Column(modifier = Modifier.padding(top = 12.dp)) {
@@ -163,7 +170,7 @@ fun SettingsScreen(
                                 modifier = Modifier.fillMaxWidth(),
                             )
                             Text(
-                                text = "${(engine.progress * 100).toInt()}%",
+                                text = stringResource(R.string.vn_percent_value, (engine.progress * 100).toInt()),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(top = 6.dp),
@@ -180,11 +187,17 @@ fun SettingsScreen(
                         Button(
                             onClick = viewModel::downloadSelected,
                             modifier = Modifier.padding(top = 6.dp),
-                        ) { Text("Try again") }
+                        ) { Text(stringResource(R.string.vn_try_again)) }
                     }
                     is EngineState.Ready -> {
                         Text(
-                            text = "✓ ${engine.spec.displayName} is installed and ready",
+                            text = stringResource(
+                                R.string.vn_engine_installed,
+                                stringResource(
+                                    if (engine.spec.languages == listOf("en")) R.string.vn_model_name_fast
+                                    else R.string.vn_model_name_all
+                                ),
+                            ),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(top = 10.dp),
@@ -193,19 +206,16 @@ fun SettingsScreen(
                 }
             }
 
-            SectionTitle("Privacy")
+            SectionTitle(stringResource(R.string.vn_privacy_section))
             SettingsCard {
                 Text(
-                    text = "Everything stays on this phone.",
+                    text = stringResource(R.string.vn_privacy_title),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Recordings, transcripts, and action items are stored only on this " +
-                        "device. Transcription runs on your phone's own processor — audio is " +
-                        "never uploaded, and the app works fully offline. The only network " +
-                        "use is downloading a speech model, once.",
+                    text = stringResource(R.string.vn_privacy_body),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -225,7 +235,7 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "Murmur 2.0.0",
+                text = stringResource(R.string.vn_version_line, "2.0.0"),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier

@@ -11,6 +11,7 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.database)
     implementation(projects.core.datastore)
+    implementation(projects.core.designsystem)
     implementation(projects.core.media)
     implementation(libs.sherpa.onnx.android)
     implementation(libs.kotlinx.coroutines.android)

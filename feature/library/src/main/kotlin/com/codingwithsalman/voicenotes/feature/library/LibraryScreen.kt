@@ -26,6 +26,9 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.stringResource
+import com.codingwithsalman.voicenotes.core.designsystem.R
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -87,17 +90,16 @@ fun LibraryScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Notes",
+                            text = stringResource(R.string.vn_library_title),
                             style = MaterialTheme.typography.displayMedium,
                             color = MaterialTheme.colorScheme.onBackground,
                         )
                         Text(
                             text = when {
                                 query.isNotBlank() ->
-                                    if (notes.size == 1) "1 match" else "${notes.size} matches"
-                                notes.isEmpty() -> "Record or import to begin"
-                                notes.size == 1 -> "1 recording"
-                                else -> "${notes.size} recordings"
+                                    pluralStringResource(R.plurals.vn_matches_count, notes.size, notes.size)
+                                notes.isEmpty() -> stringResource(R.string.vn_library_empty_hint)
+                                else -> pluralStringResource(R.plurals.vn_recordings_count, notes.size, notes.size)
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -105,13 +107,13 @@ fun LibraryScreen(
                     }
                     VnIconChip(
                         icon = VnIcons.ImportAudio,
-                        contentDescription = "Import audio",
+                        contentDescription = stringResource(R.string.vn_cd_import_audio),
                         onClick = { importLauncher.launch(arrayOf("audio/*")) },
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     VnIconChip(
                         icon = VnIcons.Tune,
-                        contentDescription = "Settings",
+                        contentDescription = stringResource(R.string.vn_cd_settings),
                         onClick = onOpenSettings,
                     )
                 }
@@ -126,7 +128,7 @@ fun LibraryScreen(
                         .padding(bottom = 6.dp),
                     placeholder = {
                         Text(
-                            text = "Search your words…",
+                            text = stringResource(R.string.vn_search_placeholder),
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     },
@@ -142,7 +144,7 @@ fun LibraryScreen(
                             IconButton(onClick = { viewModel.onQueryChange("") }) {
                                 Icon(
                                     imageVector = Icons.Rounded.Close,
-                                    contentDescription = "Clear search",
+                                    contentDescription = stringResource(R.string.vn_cd_clear_search),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
@@ -169,13 +171,13 @@ fun LibraryScreen(
                     ) {
                         if (query.isBlank()) {
                             EmptyState(
-                                title = "Nothing here yet",
-                                body = "Tap record and just talk. Your words become searchable notes — right on this phone.",
+                                title = stringResource(R.string.vn_empty_title),
+                                body = stringResource(R.string.vn_empty_body),
                             )
                         } else {
                             EmptyState(
-                                title = "No matches",
-                                body = "Nothing in your titles or transcripts matches \"$query\".",
+                                title = stringResource(R.string.vn_no_matches_title),
+                                body = stringResource(R.string.vn_no_matches_body, query),
                             )
                         }
                     }
@@ -200,18 +202,18 @@ fun LibraryScreen(
     pendingDelete?.let { note ->
         AlertDialog(
             onDismissRequest = { pendingDelete = null },
-            title = { Text("Delete this note?") },
-            text = { Text("\"${note.title}\" and its audio will be removed from this device.") },
+            title = { Text(stringResource(R.string.vn_delete_dialog_title)) },
+            text = { Text(stringResource(R.string.vn_delete_dialog_body, note.title)) },
             confirmButton = {
                 TextButton(
                     onClick = {
                         viewModel.delete(note)
                         pendingDelete = null
                     }
-                ) { Text("Delete", color = MaterialTheme.colorScheme.error) }
+                ) { Text(stringResource(R.string.vn_delete), color = MaterialTheme.colorScheme.error) }
             },
             dismissButton = {
-                TextButton(onClick = { pendingDelete = null }) { Text("Cancel") }
+                TextButton(onClick = { pendingDelete = null }) { Text(stringResource(R.string.vn_cancel)) }
             },
         )
     }

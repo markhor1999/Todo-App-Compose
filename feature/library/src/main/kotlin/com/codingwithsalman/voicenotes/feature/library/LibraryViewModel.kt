@@ -84,7 +84,10 @@ class LibraryViewModel @Inject constructor(
                         Note(
                             title = displayName?.substringBeforeLast('.')
                                 ?.takeIf(String::isNotEmpty)
-                                ?: "Imported — ${formatNoteDate(now)}",
+                                ?: context.getString(
+                                    com.codingwithsalman.voicenotes.core.designsystem.R.string.vn_imported_default_title,
+                                    formatNoteDate(now),
+                                ),
                             createdAtMs = now,
                             durationMs = audioProbe.durationMs(destination),
                             audioPath = destination.absolutePath,

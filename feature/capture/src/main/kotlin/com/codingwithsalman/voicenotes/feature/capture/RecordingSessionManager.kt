@@ -136,7 +136,10 @@ class RecordingSessionManager @Inject constructor(
         scope.launch {
             val id = repository.createNote(
                 Note(
-                    title = "Note — ${formatNoteDate(startedAt)}",
+                    title = context.getString(
+                        com.codingwithsalman.voicenotes.core.designsystem.R.string.vn_note_default_title,
+                        formatNoteDate(startedAt),
+                    ),
                     createdAtMs = startedAt,
                     durationMs = activeMs,
                     audioPath = info.file.absolutePath,

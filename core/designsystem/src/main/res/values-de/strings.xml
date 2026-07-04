@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vn_status_audio">Audio</string>
+    <string name="vn_status_transcribing">Transkribiert…</string>
+    <string name="vn_status_transcript">Transkript</string>
+    <string name="vn_status_failed">Fehlgeschlagen</string>
+
+    <string name="vn_cd_record">Aufnehmen</string>
+    <string name="vn_cd_stop_recording">Aufnahme beenden</string>
+    <string name="vn_cd_pause">Pause</string>
+    <string name="vn_cd_resume">Fortsetzen</string>
+    <string name="vn_cd_play">Abspielen</string>
+    <string name="vn_cd_back">Zurück</string>
+    <string name="vn_cd_more">Mehr</string>
+    <string name="vn_cd_settings">Einstellungen</string>
+    <string name="vn_cd_import_audio">Audio importieren</string>
+    <string name="vn_cd_clear_search">Suche löschen</string>
+    <string name="vn_cd_add_action">Aufgabe hinzufügen</string>
+
+    <string name="vn_library_title">Notizen</string>
+    <string name="vn_library_empty_hint">Aufnehmen oder importieren</string>
+    <plurals name="vn_recordings_count">
+        <item quantity="one">1 Aufnahme</item>
+        <item quantity="other">%1$d Aufnahmen</item>
+    </plurals>
+    <plurals name="vn_matches_count">
+        <item quantity="one">1 Treffer</item>
+        <item quantity="other">%1$d Treffer</item>
+    </plurals>
+    <string name="vn_search_placeholder">Durchsuche deine Worte…</string>
+    <string name="vn_empty_title">Noch nichts hier</string>
+    <string name="vn_empty_body">Tippe auf Aufnahme und sprich einfach. Deine Worte werden zu durchsuchbaren Notizen — direkt auf diesem Handy.</string>
+    <string name="vn_no_matches_title">Keine Treffer</string>
+    <string name="vn_no_matches_body">Nichts in deinen Titeln oder Transkripten passt zu „%1$s“.</string>
+    <string name="vn_delete_dialog_title">Diese Notiz löschen?</string>
+    <string name="vn_delete_dialog_body">„%1$s“ und die zugehörige Aufnahme werden von diesem Gerät entfernt.</string>
+    <string name="vn_delete">Löschen</string>
+    <string name="vn_cancel">Abbrechen</string>
+    <string name="vn_save">Speichern</string>
+    <string name="vn_imported_default_title">Importiert — %1$s</string>
+    <string name="vn_note_default_title">Notiz — %1$s</string>
+
+    <string name="vn_capture_recording">Aufnahme</string>
+    <string name="vn_capture_paused">Pausiert</string>
+    <string name="vn_capture_hide">Ausblenden</string>
+    <string name="vn_capture_hint_recording">Zum Beenden tippen · nimmt weiter auf, wenn du gehst</string>
+    <string name="vn_capture_hint_paused">Pausiert · Mikrofon antippen zum Fortsetzen</string>
+
+    <string name="vn_notif_recording_title">Sprachnotiz wird aufgenommen</string>
+    <string name="vn_notif_recording_text">Antippen zum Öffnen · Stopp zum Speichern</string>
+    <string name="vn_notif_paused_title">Aufnahme pausiert</string>
+    <string name="vn_notif_paused_text">In der App fortsetzen</string>
+    <string name="vn_notif_stop_save">Stopp &amp; speichern</string>
+    <string name="vn_notif_transcribing_title">Wird auf diesem Gerät transkribiert</string>
+
+    <string name="vn_note_transcript">Transkript</string>
+    <string name="vn_note_queued">In Warteschlange…</string>
+    <string name="vn_note_transcribing_body">Wird auf diesem Gerät transkribiert…</string>
+    <string name="vn_percent_value">%1$d%%</string>
+    <string name="vn_engine_get_title">Hol dir deine private Transkriptions-Engine</string>
+    <string name="vn_engine_get_body">Ein Download (~%1$d MB). Danach entsteht jedes Transkript auf diesem Handy — offline, unbegrenzt, privat.</string>
+    <string name="vn_engine_download_btn">Herunterladen · %1$s</string>
+    <string name="vn_engine_downloading">Deine Engine wird heruntergeladen…</string>
+    <string name="vn_engine_progress">%1$d%% von ~%2$d MB</string>
+    <string name="vn_engine_failed_title">Download nicht abgeschlossen</string>
+    <string name="vn_try_again">Erneut versuchen</string>
+    <string name="vn_ready_body">Bereit zur Transkription auf diesem Gerät. Nichts wird hochgeladen.</string>
+    <string name="vn_failed_body">Transkription fehlgeschlagen — du kannst es erneut versuchen.</string>
+    <string name="vn_no_speech_body">Keine Sprache in dieser Aufnahme erkannt. Versuch es erneut.</string>
+    <string name="vn_retry">Erneut</string>
+    <string name="vn_transcribe">Transkribieren</string>
+    <string name="vn_meter_used_title">Die freien Minuten für heute sind aufgebraucht</string>
+    <string name="vn_meter_used_body">Kostenlos enthält 10 Minuten Transkription pro Tag (Reset um Mitternacht). Pro hebt das Limit auf — weiterhin 100%% privat, weiterhin auf diesem Handy.</string>
+    <string name="vn_see_pro">Murmur Pro ansehen</string>
+    <string name="vn_meter_left">Heute noch %1$d Min. gratis</string>
+    <string name="vn_go_unlimited">Unbegrenzt freischalten</string>
+    <string name="vn_menu_rename">Umbenennen</string>
+    <string name="vn_menu_share_transcript">Transkript teilen</string>
+    <string name="vn_menu_share_audio">Audio teilen</string>
+    <string name="vn_menu_export_txt">Als .txt exportieren</string>
+    <string name="vn_menu_export_md">Als .md exportieren</string>
+    <string name="vn_menu_export_srt">Als .srt exportieren</string>
+    <string name="vn_rename_title">Notiz umbenennen</string>
+    <string name="vn_actions_title">Aufgaben</string>
+    <string name="vn_actions_hint">Halte die To-dos aus dieser Notiz fest. Zum Löschen lange drücken.</string>
+    <string name="vn_actions_placeholder">Aufgabe hinzufügen…</string>
+
+    <string name="vn_settings_title">Einstellungen</string>
+    <string name="vn_pro_section">Murmur Pro</string>
+    <string name="vn_pro_active">✓ Pro ist aktiv — unbegrenzte Transkription</string>
+    <string name="vn_pro_pitch_title" formatted="false">Unbegrenzte Transkription. Weiterhin 100% privat.</string>
+    <string name="vn_pro_pitch_body">Kostenlos enthält 10 Minuten pro Tag. Pro entfernt das Limit — monatlich oder einmal zahlen, für immer.</string>
+    <string name="vn_restore">Wiederherstellen</string>
+    <string name="vn_appearance">Darstellung</string>
+    <string name="vn_theme_system">System folgen</string>
+    <string name="vn_theme_dark">Dunkel</string>
+    <string name="vn_theme_light">Hell</string>
+    <string name="vn_engine_section">Transkriptions-Engine</string>
+    <string name="vn_model_name_fast">Englisch · Schnell</string>
+    <string name="vn_model_name_all">Alle Sprachen</string>
+    <string name="vn_model_sub_fast">%1$d MB · Nur Englisch, am schnellsten</string>
+    <string name="vn_model_sub_all">%1$d MB · 99 Sprachen inkl. Deutsch</string>
+    <string name="vn_engine_installed">✓ %1$s ist installiert und bereit</string>
+    <string name="vn_privacy_section">Privatsphäre</string>
+    <string name="vn_privacy_title">Alles bleibt auf diesem Handy.</string>
+    <string name="vn_privacy_body">Aufnahmen, Transkripte und Aufgaben werden nur auf diesem Gerät gespeichert. Die Transkription läuft auf dem Prozessor deines Handys — Audio wird nie hochgeladen, und die App funktioniert komplett offline. Internet wird nur einmal benutzt: für den Modell-Download.</string>
+    <string name="vn_version_line">Murmur %1$s</string>
+
+    <string name="vn_paywall_title">Murmur Pro</string>
+    <string name="vn_paywall_pro_title">Du bist Pro. Danke. 🖤</string>
+    <string name="vn_paywall_pro_body">Unbegrenzte Transkription auf dem Gerät ist auf diesem Handy aktiv.</string>
+    <string name="vn_paywall_intro">Kostenlos bedeutet: unbegrenzt aufnehmen, für immer. Pro entfernt das einzige Limit, das existiert:</string>
+    <string name="vn_benefit1_title">Unbegrenzte Transkription</string>
+    <string name="vn_benefit1_body">Kostenlos: 10 Minuten pro Tag. Pro: kein Limit, nie.</string>
+    <string name="vn_benefit2_title">Jedes Modell, jede Sprache</string>
+    <string name="vn_benefit2_body">Inklusive des HD-Modells mit 99 Sprachen — alles offline.</string>
+    <string name="vn_benefit3_title" formatted="false">Weiterhin 100% privat</string>
+    <string name="vn_benefit3_body">Pro ändert, was du tun kannst — nie, wo deine Daten liegen.</string>
+    <string name="vn_benefit4_title">Von einer Person gebaut</string>
+    <string name="vn_benefit4_body">Dein Kauf finanziert die Entwicklung direkt.</string>
+    <string name="vn_monthly">Monatlich</string>
+    <string name="vn_lifetime">Lifetime</string>
+    <string name="vn_cancel_anytime">jederzeit kündbar</string>
+    <string name="vn_pay_once">einmal zahlen · Gründerpreis</string>
+    <string name="vn_best_value">BESTER WERT</string>
+    <string name="vn_restore_purchase">Kauf wiederherstellen</string>
+    <string name="vn_billed_by">Abrechnung über Google Play</string>
+
+    <string name="vn_onb1_title">Deine Stimme,\ndein Handy,\ndeine Sache.</string>
+    <string name="vn_onb1_body">Nimm alles auf. Es wird zu durchsuchbarem Text — direkt auf diesem Handy. Keine Cloud. Kein Konto. Kein Aufnahmelimit.</string>
+    <string name="vn_onb2_title">Eine Berechtigung.</string>
+    <string name="vn_onb2_body">Das Mikrofon — aus dem offensichtlichen Grund. Audio wird auf diesem Gerät verarbeitet und nie irgendwohin hochgeladen.</string>
+    <string name="vn_allow_mic">Mikrofon erlauben</string>
+    <string name="vn_onb3_title">Richte deine private KI ein</string>
+    <string name="vn_onb3_body">Ein Download bringt das Sprachmodell auf dein Handy. Danach entsteht jedes Transkript lokal — sogar im Flugmodus.</string>
+    <string name="vn_onb_dl_progress">%1$d%% — du kannst die App schon benutzen</string>
+    <string name="vn_onb_ready">✓ Bereit — alles bleibt auf diesem Handy</string>
+    <string name="vn_skip">Überspringen</string>
+    <string name="vn_next">Weiter</string>
+    <string name="vn_start">Los geht\'s</string>
+    <string name="vn_start_anyway">Trotzdem starten</string>
+    <string name="vn_download_size">Herunterladen · %1$d MB</string>
+</resources>
