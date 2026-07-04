@@ -68,6 +68,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -107,6 +108,7 @@ fun NoteDetailScreen(
     val remainingTodayMs by viewModel.remainingTodayMs.collectAsStateWithLifecycle()
     val pricing by viewModel.pricing.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
+    val screenContext = androidx.compose.ui.platform.LocalContext.current
 
     var showRename by remember { mutableStateOf(false) }
     var showMenu by remember { mutableStateOf(false) }
@@ -208,7 +210,7 @@ fun NoteDetailScreen(
             Spacer(modifier = Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "${formatNoteDate(current.createdAtMs)} · ${formatDurationMs(current.durationMs)}",
+                    text = "${formatNoteDate(screenContext, current.createdAtMs)} · ${formatDurationMs(current.durationMs)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f),
@@ -488,7 +490,11 @@ private fun TranscriptSection(
                             )
                             Text(
                                 text = segment.text,
-                                style = MaterialTheme.typography.bodyLarge,
+                                // Transcripts are user content: let the text pick its own
+                                // direction (English stays LTR inside an RTL UI and vice versa).
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    textDirection = TextDirection.Content,
+                                ),
                                 color = if (isCurrent) MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.onSurface,
                             )

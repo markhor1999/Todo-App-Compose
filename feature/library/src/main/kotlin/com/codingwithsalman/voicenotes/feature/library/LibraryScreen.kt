@@ -55,6 +55,7 @@ fun LibraryScreen(
     onOpenSettings: () -> Unit,
     viewModel: LibraryViewModel = hiltViewModel(),
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     val notes by viewModel.notes.collectAsStateWithLifecycle()
     val query by viewModel.query.collectAsStateWithLifecycle()
     var pendingDelete by remember { mutableStateOf<Note?>(null) }
@@ -93,6 +94,7 @@ fun LibraryScreen(
                             text = stringResource(R.string.vn_library_title),
                             style = MaterialTheme.typography.displayMedium,
                             color = MaterialTheme.colorScheme.onBackground,
+                            maxLines = 1,
                         )
                         Text(
                             text = when {
@@ -186,7 +188,7 @@ fun LibraryScreen(
                 items(notes, key = Note::id) { note ->
                     NoteCard(
                         title = note.title,
-                        meta = "${formatNoteDate(note.createdAtMs)} · ${formatDurationMs(note.durationMs)}",
+                        meta = "${formatNoteDate(context, note.createdAtMs)} · ${formatDurationMs(note.durationMs)}",
                         status = note.status,
                         waveform = note.waveform,
                         onClick = { onOpenNote(note.id) },

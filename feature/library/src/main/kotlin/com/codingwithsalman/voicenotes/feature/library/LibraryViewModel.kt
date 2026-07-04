@@ -86,7 +86,7 @@ class LibraryViewModel @Inject constructor(
                                 ?.takeIf(String::isNotEmpty)
                                 ?: context.getString(
                                     com.codingwithsalman.voicenotes.core.designsystem.R.string.vn_imported_default_title,
-                                    formatNoteDate(now),
+                                    formatNoteDate(context, now),
                                 ),
                             createdAtMs = now,
                             durationMs = audioProbe.durationMs(destination),

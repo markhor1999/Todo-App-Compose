@@ -4,6 +4,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
@@ -40,20 +41,23 @@ val VnTypography = Typography(
         fontWeight = FontWeight.SemiBold,
         fontSize = 40.sp,
         lineHeight = 46.sp,
-        letterSpacing = (-0.5).sp,
+        letterSpacing = 0.sp, // negative tracking breaks Arabic-script shaping
+        lineBreak = LineBreak.Simple,
     ),
     headlineMedium = TextStyle(
         fontFamily = DisplayFontFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 28.sp,
         lineHeight = 34.sp,
-        letterSpacing = (-0.25).sp,
+        letterSpacing = 0.sp,
+        lineBreak = LineBreak.Simple,
     ),
     headlineSmall = TextStyle(
         fontFamily = DisplayFontFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 22.sp,
         lineHeight = 28.sp,
+        lineBreak = LineBreak.Simple,
     ),
     titleLarge = TextStyle(
         fontFamily = DisplayFontFamily,

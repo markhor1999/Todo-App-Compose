@@ -1,0 +1,2 @@
+int string vn_today 0x0
+int string vn_yesterday 0x0

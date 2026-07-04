@@ -138,7 +138,7 @@ class RecordingSessionManager @Inject constructor(
                 Note(
                     title = context.getString(
                         com.codingwithsalman.voicenotes.core.designsystem.R.string.vn_note_default_title,
-                        formatNoteDate(startedAt),
+                        formatNoteDate(context, startedAt),
                     ),
                     createdAtMs = startedAt,
                     durationMs = activeMs,

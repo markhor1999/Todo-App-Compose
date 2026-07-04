@@ -1,1 +1,3 @@
 com.codingwithsalman.voicenotes.core.common
+string vn_today
+string vn_yesterday

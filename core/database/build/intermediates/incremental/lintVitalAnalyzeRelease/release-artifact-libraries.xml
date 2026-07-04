@@ -57,9 +57,9 @@
       proguardRules="proguard.txt"/>
   <library
       name=":@@:core:common::release"
-      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/216773e9525c4c445ec5752b5754cc2c/transformed/out/jars/classes.jar:/Users/muhammadsalman/.gradle/caches/8.13/transforms/216773e9525c4c445ec5752b5754cc2c/transformed/out/jars/libs/R.jar"
+      jars="/Users/muhammadsalman/.gradle/caches/8.13/transforms/18cced1c4f36f8e773b9f411afc95e81/transformed/out/jars/classes.jar:/Users/muhammadsalman/.gradle/caches/8.13/transforms/18cced1c4f36f8e773b9f411afc95e81/transformed/out/jars/libs/R.jar"
       resolved="VoiceNotes.core:common:unspecified"
-      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/216773e9525c4c445ec5752b5754cc2c/transformed/out"
+      folder="/Users/muhammadsalman/.gradle/caches/8.13/transforms/18cced1c4f36f8e773b9f411afc95e81/transformed/out"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
