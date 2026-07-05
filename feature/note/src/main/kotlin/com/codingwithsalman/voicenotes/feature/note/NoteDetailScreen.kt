@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
@@ -235,6 +237,15 @@ fun NoteDetailScreen(
                 onCycleSpeed = viewModel::cyclePlaybackSpeed,
             )
 
+            // Key points sit above the transcript — a smart summary you can tap to jump to.
+            // Renders its own leading spacer only when it has something to show.
+            KeyPointsSection(
+                segments = segments,
+                isPro = isPro,
+                onSeekTo = viewModel::seekToMs,
+                onOpenPaywall = { showPaywall = true },
+            )
+
             Spacer(modifier = Modifier.height(28.dp))
 
             TranscriptSection(
@@ -425,6 +436,88 @@ private fun StaggeredIn(index: Int, content: @Composable () -> Unit) {
 }
 
 @OptIn(ExperimentalFoundationApi::class)
+/**
+ * Extractive "Key points" — tap a line to seek to it. Pro-gated: Pro sees the summary; free sees a
+ * teaser + PRO badge. Only shows when there's enough transcript to summarise usefully.
+ */
+@Composable
+private fun KeyPointsSection(
+    segments: List<TranscriptSegment>,
+    isPro: Boolean,
+    onSeekTo: (Long) -> Unit,
+    onOpenPaywall: () -> Unit,
+) {
+    if (segments.size < 4) return
+    val points = remember(segments, isPro) {
+        if (isPro) TranscriptSummarizer.keyPoints(segments) else emptyList()
+    }
+    if (isPro && points.isEmpty()) return   // transcript too thin to summarise usefully
+    val haptics = LocalHapticFeedback.current
+
+    Spacer(modifier = Modifier.height(28.dp))
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = stringResource(R.string.vn_key_points),
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+        if (!isPro) {
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(50))
+                    .padding(horizontal = 8.dp, vertical = 2.dp),
+            ) {
+                Text(
+                    text = "PRO",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                )
+            }
+        }
+    }
+    Spacer(modifier = Modifier.height(12.dp))
+
+    if (isPro) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            points.forEach { point ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            onSeekTo(point.startMs)
+                        },
+                ) {
+                    Text(
+                        text = formatDurationMs(point.startMs),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 4.dp, end = 12.dp),
+                    )
+                    Text(
+                        text = point.text,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            textDirection = TextDirection.Content,
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+        }
+    } else {
+        InfoCard {
+            Text(
+                text = stringResource(R.string.vn_key_points_locked),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(14.dp))
+            Button(onClick = onOpenPaywall) { Text(stringResource(R.string.vn_see_pro)) }
+        }
+    }
+}
+
 @Composable
 private fun TranscriptSection(
     status: TranscriptionStatus,

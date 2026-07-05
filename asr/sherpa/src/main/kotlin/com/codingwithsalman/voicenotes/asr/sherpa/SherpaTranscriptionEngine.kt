@@ -1,12 +1,14 @@
 package com.codingwithsalman.voicenotes.asr.sherpa
 
 import com.codingwithsalman.voicenotes.asr.api.AsrModelSpec
+import com.codingwithsalman.voicenotes.asr.api.ModelFamily
 import com.codingwithsalman.voicenotes.asr.api.ModelFileRole
 import com.codingwithsalman.voicenotes.asr.api.SegmentResult
 import com.codingwithsalman.voicenotes.asr.api.TranscriptionResult
 import com.codingwithsalman.voicenotes.core.common.di.DefaultDispatcher
 import com.codingwithsalman.voicenotes.core.media.AudioDecoder
 import com.k2fsa.sherpa.onnx.OfflineModelConfig
+import com.k2fsa.sherpa.onnx.OfflineMoonshineModelConfig
 import com.k2fsa.sherpa.onnx.OfflineRecognizer
 import com.k2fsa.sherpa.onnx.OfflineRecognizerConfig
 import com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig
@@ -62,19 +64,7 @@ class SherpaTranscriptionEngine @Inject constructor(
 
         val recognizer = OfflineRecognizer(
             assetManager = null,
-            config = OfflineRecognizerConfig(
-                modelConfig = OfflineModelConfig(
-                    whisper = OfflineWhisperModelConfig(
-                        encoder = modelStore.localFile(spec, spec.file(ModelFileRole.ENCODER)).absolutePath,
-                        decoder = modelStore.localFile(spec, spec.file(ModelFileRole.DECODER)).absolutePath,
-                        language = spec.languageParam,
-                        task = "transcribe",
-                    ),
-                    tokens = modelStore.localFile(spec, spec.file(ModelFileRole.TOKENS)).absolutePath,
-                    modelType = "whisper",
-                    numThreads = Runtime.getRuntime().availableProcessors().coerceIn(2, 4),
-                ),
-            ),
+            config = OfflineRecognizerConfig(modelConfig = buildModelConfig(spec)),
         )
         val vad = Vad(
             assetManager = null,
@@ -140,6 +130,37 @@ class SherpaTranscriptionEngine @Inject constructor(
         } finally {
             vad.release()
             recognizer.release()
+        }
+    }
+
+    /** Build the recognizer's model config for the spec's family (Whisper today; Moonshine is the
+     *  scaffolded low-RAM fallback, dormant until device-validated — see ModelCatalog.moonshineBaseEn). */
+    private fun buildModelConfig(spec: AsrModelSpec): OfflineModelConfig {
+        fun path(role: ModelFileRole) = modelStore.localFile(spec, spec.file(role)).absolutePath
+        val threads = Runtime.getRuntime().availableProcessors().coerceIn(2, 4)
+        return when (spec.family) {
+            ModelFamily.WHISPER -> OfflineModelConfig(
+                whisper = OfflineWhisperModelConfig(
+                    encoder = path(ModelFileRole.ENCODER),
+                    decoder = path(ModelFileRole.DECODER),
+                    language = spec.languageParam,
+                    task = "transcribe",
+                ),
+                tokens = path(ModelFileRole.TOKENS),
+                modelType = "whisper",
+                numThreads = threads,
+            )
+            ModelFamily.MOONSHINE -> OfflineModelConfig(
+                moonshine = OfflineMoonshineModelConfig(
+                    preprocessor = path(ModelFileRole.PREPROCESSOR),
+                    encoder = path(ModelFileRole.ENCODER),
+                    uncachedDecoder = path(ModelFileRole.UNCACHED_DECODER),
+                    cachedDecoder = path(ModelFileRole.CACHED_DECODER),
+                ),
+                tokens = path(ModelFileRole.TOKENS),
+                modelType = "moonshine",
+                numThreads = threads,
+            )
         }
     }
 

@@ -1,37 +1,44 @@
 package com.codingwithsalman.voicenotes.asr.api
 
-/** One downloadable file of a model bundle. Size verified via HTTP HEAD 2026-07-03. */
+/** Which sherpa model family a spec is — selects the recognizer config the engine builds. */
+enum class ModelFamily { WHISPER, MOONSHINE }
+
+/** One downloadable file of a model bundle. Size verified via HTTP HEAD. */
 data class ModelFileSpec(
     val fileName: String,
     val url: String,
     val sizeBytes: Long,
+    val role: ModelFileRole,
 )
+
+enum class ModelFileRole {
+    // Whisper + shared
+    ENCODER, DECODER, TOKENS,
+    // Moonshine-only
+    PREPROCESSOR, UNCACHED_DECODER, CACHED_DECODER,
+}
 
 data class AsrModelSpec(
     val id: String,
     val displayName: String,
     /** ISO 639-1 codes the model targets; empty = multilingual. */
     val languages: List<String>,
-    /** Whisper `language` parameter; "" lets the model auto-detect. */
+    /** Whisper `language` parameter; "" lets the model auto-detect (ignored by Moonshine). */
     val languageParam: String,
     val files: List<ModelFileSpec>,
     val isPro: Boolean,
+    val family: ModelFamily = ModelFamily.WHISPER,
 ) {
     val totalBytes: Long get() = files.sumOf(ModelFileSpec::sizeBytes)
     val approxSizeMb: Int get() = (totalBytes / 1_048_576L).toInt()
 
-    fun file(role: ModelFileRole): ModelFileSpec = when (role) {
-        ModelFileRole.ENCODER -> files[0]
-        ModelFileRole.DECODER -> files[1]
-        ModelFileRole.TOKENS -> files[2]
-    }
+    /** Look a file up by its role — order-independent, so families with different file sets fit. */
+    fun file(role: ModelFileRole): ModelFileSpec = files.first { it.role == role }
 }
 
-enum class ModelFileRole { ENCODER, DECODER, TOKENS }
-
 /**
- * Whisper int8 ONNX bundles from the sherpa-onnx author's HuggingFace mirrors
- * (raw files — no archive extraction needed on device). URLs verified 2026-07-03.
+ * Int8 ONNX bundles from the sherpa-onnx author's HuggingFace mirrors (raw files — no archive
+ * extraction on device). Whisper URLs/sizes verified 2026-07-03; Moonshine 2026-07-05.
  */
 object ModelCatalog {
 
@@ -47,16 +54,19 @@ object ModelCatalog {
                 "tiny.en-encoder.int8.onnx",
                 "$HF/sherpa-onnx-whisper-tiny.en/resolve/main/tiny.en-encoder.int8.onnx",
                 12_937_772L,
+                ModelFileRole.ENCODER,
             ),
             ModelFileSpec(
                 "tiny.en-decoder.int8.onnx",
                 "$HF/sherpa-onnx-whisper-tiny.en/resolve/main/tiny.en-decoder.int8.onnx",
                 89_853_865L,
+                ModelFileRole.DECODER,
             ),
             ModelFileSpec(
                 "tiny.en-tokens.txt",
                 "$HF/sherpa-onnx-whisper-tiny.en/resolve/main/tiny.en-tokens.txt",
                 835_554L,
+                ModelFileRole.TOKENS,
             ),
         ),
         isPro = false,
@@ -72,31 +82,98 @@ object ModelCatalog {
                 "base-encoder.int8.onnx",
                 "$HF/sherpa-onnx-whisper-base/resolve/main/base-encoder.int8.onnx",
                 29_120_534L,
+                ModelFileRole.ENCODER,
             ),
             ModelFileSpec(
                 "base-decoder.int8.onnx",
                 "$HF/sherpa-onnx-whisper-base/resolve/main/base-decoder.int8.onnx",
                 130_672_026L,
+                ModelFileRole.DECODER,
             ),
             ModelFileSpec(
                 "base-tokens.txt",
                 "$HF/sherpa-onnx-whisper-base/resolve/main/base-tokens.txt",
                 816_730L,
+                ModelFileRole.TOKENS,
             ),
         ),
         isPro = false,
     )
 
-    /** silero VAD — tiny, shared by every model; segments long audio for Whisper's 30 s window. */
+    /**
+     * SCAFFOLD (v2.1) — Moonshine base-en int8. Moonshine is lighter at inference than Whisper on
+     * mid-range CPUs, so it's the ready-to-flip English fallback if the owed mid-range F2 device
+     * spike shows Whisper is too slow (see brain/apps/voicenotes/m1-spike-protocol.md).
+     * Deliberately NOT in [all] (not offered in the picker) and NOT the [default] — flipping it on
+     * is a one-line change in [defaultFor] gated on that device validation. Engine path in
+     * SherpaTranscriptionEngine handles [ModelFamily.MOONSHINE]; download uses these verified sizes.
+     */
+    val moonshineBaseEn = AsrModelSpec(
+        id = "moonshine-base-en-int8",
+        displayName = "English · Fast (low-RAM)",
+        languages = listOf("en"),
+        languageParam = "en",
+        family = ModelFamily.MOONSHINE,
+        files = listOf(
+            ModelFileSpec(
+                "preprocess.onnx",
+                "$HF/sherpa-onnx-moonshine-base-en-int8/resolve/main/preprocess.onnx",
+                14_077_290L,
+                ModelFileRole.PREPROCESSOR,
+            ),
+            ModelFileSpec(
+                "encode.int8.onnx",
+                "$HF/sherpa-onnx-moonshine-base-en-int8/resolve/main/encode.int8.onnx",
+                50_311_494L,
+                ModelFileRole.ENCODER,
+            ),
+            ModelFileSpec(
+                "uncached_decode.int8.onnx",
+                "$HF/sherpa-onnx-moonshine-base-en-int8/resolve/main/uncached_decode.int8.onnx",
+                122_120_451L,
+                ModelFileRole.UNCACHED_DECODER,
+            ),
+            ModelFileSpec(
+                "cached_decode.int8.onnx",
+                "$HF/sherpa-onnx-moonshine-base-en-int8/resolve/main/cached_decode.int8.onnx",
+                99_983_837L,
+                ModelFileRole.CACHED_DECODER,
+            ),
+            ModelFileSpec(
+                "tokens.txt",
+                "$HF/sherpa-onnx-moonshine-base-en-int8/resolve/main/tokens.txt",
+                436_688L,
+                ModelFileRole.TOKENS,
+            ),
+        ),
+        isPro = false,
+    )
+
+    /** silero VAD — tiny, shared by every model; segments long audio for the recognizer's window. */
     val vadFile = ModelFileSpec(
         fileName = "silero_vad.onnx",
         url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
         sizeBytes = 643_854L,
+        role = ModelFileRole.ENCODER, // role is unused for the standalone VAD file
     )
 
+    /** Models offered in the picker. Moonshine is intentionally absent until device-validated. */
     val all: List<AsrModelSpec> = listOf(whisperTinyEn, whisperBaseMultilingual)
+
+    /** Scaffolded specs resolvable by id but not shown in the picker. */
+    private val hidden: List<AsrModelSpec> = listOf(moonshineBaseEn)
 
     val default: AsrModelSpec = whisperTinyEn
 
-    fun byId(id: String?): AsrModelSpec = all.firstOrNull { it.id == id } ?: default
+    /** The low-RAM English fallback — see [moonshineBaseEn]. Not yet wired as any device's default. */
+    val lowRamDefault: AsrModelSpec = moonshineBaseEn
+
+    /**
+     * Owner-gated flip point: once the mid-range F2 spike validates Moonshine, call this with
+     * `lowRam = true` from the coordinator's model resolution for low-RAM devices. Until then it
+     * always returns [default] and Moonshine stays dormant.
+     */
+    fun defaultFor(lowRam: Boolean): AsrModelSpec = if (lowRam) lowRamDefault else default
+
+    fun byId(id: String?): AsrModelSpec = (all + hidden).firstOrNull { it.id == id } ?: default
 }
