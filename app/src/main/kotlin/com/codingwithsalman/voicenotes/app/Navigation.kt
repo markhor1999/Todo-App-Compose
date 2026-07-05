@@ -39,12 +39,18 @@ data object OnboardingRoute
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun VoiceNotesNavHost(startAtOnboarding: Boolean) {
+fun VoiceNotesNavHost(
+    startAtOnboarding: Boolean,
+    sharedAudioUris: List<android.net.Uri> = emptyList(),
+    onSharedAudioConsumed: () -> Unit = {},
+) {
     val navController = rememberNavController()
 
     SharedTransitionLayout {
         CompositionLocalProvider(LocalSharedTransitionScope provides this) {
-            VoiceNotesNavGraph(navController, startAtOnboarding)
+            VoiceNotesNavGraph(
+                navController, startAtOnboarding, sharedAudioUris, onSharedAudioConsumed,
+            )
         }
     }
 }
@@ -53,6 +59,8 @@ fun VoiceNotesNavHost(startAtOnboarding: Boolean) {
 private fun VoiceNotesNavGraph(
     navController: androidx.navigation.NavHostController,
     startAtOnboarding: Boolean,
+    sharedAudioUris: List<android.net.Uri>,
+    onSharedAudioConsumed: () -> Unit,
 ) {
     NavHost(
         navController = navController,
@@ -66,6 +74,8 @@ private fun VoiceNotesNavGraph(
                     onRecord = { navController.navigate(CaptureRoute) },
                     onOpenNote = { noteId -> navController.navigate(NoteRoute(noteId)) },
                     onOpenSettings = { navController.navigate(SettingsRoute) },
+                    sharedAudioUris = sharedAudioUris,
+                    onSharedAudioConsumed = onSharedAudioConsumed,
                 )
             }
         }

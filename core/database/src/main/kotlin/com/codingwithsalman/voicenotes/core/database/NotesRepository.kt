@@ -73,13 +73,28 @@ class NotesRepository @Inject constructor(
         )
     }
 
-    /** Deletes the row, its segments, action items, and the audio file on disk. */
-    suspend fun deleteNote(note: Note) {
+    /** Soft delete: hide the note but keep everything on disk so [restore] can bring it back. */
+    suspend fun softDelete(id: Long) =
+        dao.softDeleteNote(id, System.currentTimeMillis())
+
+    /** Undo a [softDelete]. */
+    suspend fun restore(id: Long) = dao.restoreNote(id)
+
+    /** Permanently delete one note: its row, segments, action items, and the audio file. */
+    suspend fun purge(id: Long) {
         withContext(ioDispatcher) {
-            dao.deleteSegments(note.id)
-            dao.deleteActionItemsForNote(note.id)
-            dao.deleteNote(note.id)
-            runCatching { File(note.audioPath).delete() }
+            val audioPath = dao.note(id)?.audioPath
+            dao.deleteSegments(id)
+            dao.deleteActionItemsForNote(id)
+            dao.deleteNote(id)
+            audioPath?.let { runCatching { File(it).delete() } }
+        }
+    }
+
+    /** Sweep any tombstoned notes whose undo window is gone (called on library load). */
+    suspend fun purgeDeleted() {
+        withContext(ioDispatcher) {
+            dao.softDeletedNotes().forEach { purge(it.id) }
         }
     }
 

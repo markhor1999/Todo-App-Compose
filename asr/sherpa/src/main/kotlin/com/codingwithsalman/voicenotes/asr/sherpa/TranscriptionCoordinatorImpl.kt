@@ -3,8 +3,11 @@ package com.codingwithsalman.voicenotes.asr.sherpa
 import android.content.Context
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import com.codingwithsalman.voicenotes.asr.api.AsrModelSpec
 import com.codingwithsalman.voicenotes.asr.api.EngineState
 import com.codingwithsalman.voicenotes.asr.api.ModelCatalog
 import com.codingwithsalman.voicenotes.asr.api.TranscriptionCoordinator
@@ -50,16 +53,21 @@ class TranscriptionCoordinatorImpl @Inject constructor(
 
     override val progressByNote: StateFlow<Map<Long, Float>> = progressBus.progressByNote
 
-    private var downloadJob: Job? = null
+    // Observes the WorkManager download for the current not-installed model. Re-scoped on model
+    // change; also picks up a download already running after a process restart.
+    private var downloadWatchJob: Job? = null
 
     init {
         scope.launch {
             settings.modelId.map(ModelCatalog::byId).collect { spec ->
-                downloadJob?.cancel()
-                _engineState.value =
-                    if (modelStore.isInstalled(spec)) EngineState.Ready(spec)
-                    else EngineState.NotInstalled(spec)
-                if (_engineState.value is EngineState.Ready) requeueUnfinished()
+                downloadWatchJob?.cancel()
+                if (modelStore.isInstalled(spec)) {
+                    _engineState.value = EngineState.Ready(spec)
+                    requeueUnfinished()
+                } else {
+                    _engineState.value = EngineState.NotInstalled(spec)
+                    downloadWatchJob = scope.launch { watchDownload(spec) }
+                }
             }
         }
     }
@@ -70,28 +78,57 @@ class TranscriptionCoordinatorImpl @Inject constructor(
             .forEach { note -> enqueue(note.id) }
     }
 
-    override fun ensureModel() {
-        if (_engineState.value is EngineState.Ready || downloadJob?.isActive == true) return
-        downloadJob = scope.launch {
-            val spec = ModelCatalog.byId(settings.modelId.first())
-            _engineState.value = EngineState.Downloading(spec, 0f)
-            runCatching {
-                modelStore.download(spec).collect { progress ->
-                    _engineState.value = EngineState.Downloading(spec, progress)
+    /** Mirror the download worker's WorkInfo into EngineState. isInstalled is the source of truth
+     *  for terminal states, so a stale SUCCEEDED for a different model can't fake readiness. */
+    private suspend fun watchDownload(spec: AsrModelSpec) {
+        WorkManager.getInstance(context)
+            .getWorkInfosForUniqueWorkFlow(ModelDownloadWorker.UNIQUE_WORK)
+            .collect { infos ->
+                when (infos.firstOrNull()?.state) {
+                    WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING, WorkInfo.State.BLOCKED -> {
+                        val info = infos.first()
+                        val p = info.progress.getFloat(ModelDownloadWorker.KEY_PROGRESS, 0f)
+                        _engineState.value = EngineState.Downloading(spec, p)
+                    }
+                    WorkInfo.State.SUCCEEDED -> {
+                        if (modelStore.isInstalled(spec)) {
+                            _engineState.value = EngineState.Ready(spec)
+                            requeueUnfinished()
+                        } else {
+                            _engineState.value = EngineState.NotInstalled(spec)
+                        }
+                    }
+                    WorkInfo.State.FAILED -> {
+                        val msg = infos.first().outputData
+                            .getString(ModelDownloadWorker.KEY_ERROR) ?: "Download failed"
+                        if (modelStore.isInstalled(spec)) _engineState.value = EngineState.Ready(spec)
+                        else _engineState.value = EngineState.DownloadFailed(spec, msg)
+                    }
+                    WorkInfo.State.CANCELLED, null -> Unit // no active download; keep NotInstalled
                 }
-            }.onSuccess {
-                if (modelStore.isInstalled(spec)) {
-                    _engineState.value = EngineState.Ready(spec)
-                    // Notes recorded/imported while the model was still downloading.
-                    requeueUnfinished()
-                } else {
-                    _engineState.value =
-                        EngineState.DownloadFailed(spec, "Files incomplete — try again")
-                }
-            }.onFailure { e ->
-                _engineState.value =
-                    EngineState.DownloadFailed(spec, e.message ?: "Download failed")
             }
+    }
+
+    override fun ensureModel() {
+        if (_engineState.value is EngineState.Ready) return
+        scope.launch {
+            val spec = ModelCatalog.byId(settings.modelId.first())
+            if (modelStore.isInstalled(spec)) {
+                _engineState.value = EngineState.Ready(spec)
+                requeueUnfinished()
+                return@launch
+            }
+            _engineState.value = EngineState.Downloading(spec, 0f)
+            WorkManager.getInstance(context).enqueueUniqueWork(
+                ModelDownloadWorker.UNIQUE_WORK,
+                ExistingWorkPolicy.KEEP, // a download already running stays; finished record is replaced
+                OneTimeWorkRequestBuilder<ModelDownloadWorker>()
+                    .setInputData(workDataOf(ModelDownloadWorker.KEY_MODEL_ID to spec.id))
+                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    .build(),
+            )
+            downloadWatchJob?.cancel()
+            downloadWatchJob = scope.launch { watchDownload(spec) }
         }
     }
 

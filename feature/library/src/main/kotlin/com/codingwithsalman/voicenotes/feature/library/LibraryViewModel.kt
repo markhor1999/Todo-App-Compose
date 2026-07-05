@@ -56,12 +56,27 @@ class LibraryViewModel @Inject constructor(
             initialValue = emptyList(),
         )
 
+    init {
+        // Purge notes whose undo window elapsed (or was lost to process death) before we list.
+        viewModelScope.launch { repository.purgeDeleted() }
+    }
+
     fun onQueryChange(value: String) {
         _query.value = value
     }
 
+    /** Soft delete — the note vanishes from the list immediately but Undo (or timeout) decides
+     *  its fate. The screen shows a snackbar and calls [undoDelete] or [finalizeDelete]. */
     fun delete(note: Note) {
-        viewModelScope.launch { repository.deleteNote(note) }
+        viewModelScope.launch { repository.softDelete(note.id) }
+    }
+
+    fun undoDelete(noteId: Long) {
+        viewModelScope.launch { repository.restore(noteId) }
+    }
+
+    fun finalizeDelete(noteId: Long) {
+        viewModelScope.launch { repository.purge(noteId) }
     }
 
     /** Copies a SAF-picked audio file into app storage and creates a note for it. */

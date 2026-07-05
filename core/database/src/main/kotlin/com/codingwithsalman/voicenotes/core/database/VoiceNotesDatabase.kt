@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
         TranscriptFtsEntity::class,
         ActionItemEntity::class,
     ],
-    version = 3, // v3 (pre-release): action_items
+    version = 4, // v4 (first shipped migration): notes.deletedAtMs soft-delete tombstone
     exportSchema = false,
 )
 abstract class VoiceNotesDatabase : RoomDatabase() {

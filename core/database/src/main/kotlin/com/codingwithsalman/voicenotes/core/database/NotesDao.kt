@@ -11,7 +11,7 @@ interface NotesDao {
     @Insert
     suspend fun insertNote(note: NoteEntity): Long
 
-    @Query("SELECT * FROM notes ORDER BY createdAtMs DESC")
+    @Query("SELECT * FROM notes WHERE deletedAtMs IS NULL ORDER BY createdAtMs DESC")
     fun observeNotes(): Flow<List<NoteEntity>>
 
     @Query("SELECT * FROM notes WHERE id = :id")
@@ -30,10 +30,13 @@ interface NotesDao {
     @Query(
         """
         SELECT * FROM notes WHERE
-            title LIKE '%' || :raw || '%'
-            OR id IN (
-                SELECT noteId FROM transcript_segments WHERE id IN (
-                    SELECT rowid FROM transcript_fts WHERE transcript_fts MATCH :match
+            deletedAtMs IS NULL
+            AND (
+                title LIKE '%' || :raw || '%'
+                OR id IN (
+                    SELECT noteId FROM transcript_segments WHERE id IN (
+                        SELECT rowid FROM transcript_fts WHERE transcript_fts MATCH :match
+                    )
                 )
             )
         ORDER BY createdAtMs DESC
@@ -49,6 +52,17 @@ interface NotesDao {
 
     @Query("UPDATE notes SET waveform = :waveform WHERE id = :id")
     suspend fun updateWaveform(id: Long, waveform: String)
+
+    /** Soft delete: tombstone the row so it drops out of the lists but Undo can restore it. */
+    @Query("UPDATE notes SET deletedAtMs = :ts WHERE id = :id")
+    suspend fun softDeleteNote(id: Long, ts: Long)
+
+    @Query("UPDATE notes SET deletedAtMs = NULL WHERE id = :id")
+    suspend fun restoreNote(id: Long)
+
+    /** Rows awaiting purge (undo window elapsed or lost to process death) — swept on library load. */
+    @Query("SELECT * FROM notes WHERE deletedAtMs IS NOT NULL")
+    suspend fun softDeletedNotes(): List<NoteEntity>
 
     @Query("DELETE FROM notes WHERE id = :id")
     suspend fun deleteNote(id: Long)

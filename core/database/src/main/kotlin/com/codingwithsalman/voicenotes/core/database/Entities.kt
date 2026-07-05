@@ -22,6 +22,9 @@ data class NoteEntity(
     val summary: String?,
     /** Comma-joined 0..1 floats; cheap to parse, avoids a TypeConverter dependency. */
     val waveform: String?,
+    /** Soft-delete tombstone: null = live; set to now() when the user deletes, so an Undo can
+     *  restore it. A purge sweep (on library load) and the snackbar's timeout hard-delete it. */
+    val deletedAtMs: Long? = null,
 )
 
 @Entity(

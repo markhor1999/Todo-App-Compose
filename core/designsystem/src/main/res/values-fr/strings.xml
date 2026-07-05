@@ -35,6 +35,9 @@
     <string name="vn_delete_dialog_title">Supprimer cette note ?</string>
     <string name="vn_delete_dialog_body">« %1$s » et son audio seront supprimés de cet appareil.</string>
     <string name="vn_delete">Supprimer</string>
+    <string name="vn_note_deleted">Note supprimée</string>
+    <string name="vn_undo">Annuler</string>
+    <string name="vn_shared_import_added">Ajouté à Murmur — transcription…</string>
     <string name="vn_cancel">Annuler</string>
     <string name="vn_save">Enregistrer</string>
     <string name="vn_imported_default_title">Importé — %1$s</string>
@@ -54,6 +57,8 @@
     <string name="vn_notif_transcribing_title">Transcription sur cet appareil</string>
 
     <string name="vn_note_transcript">Transcription</string>
+    <string name="vn_key_points">Points clés</string>
+    <string name="vn_key_points_locked">Obtenez un résumé intelligent de chaque note — les lignes clés, touchez pour y accéder. Inclus dans Murmur Pro.</string>
     <string name="vn_note_queued">En attente…</string>
     <string name="vn_note_transcribing_body">Transcription sur cet appareil…</string>
     <string name="vn_percent_value">%1$d %%</string>

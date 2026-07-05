@@ -2,6 +2,7 @@ package com.codingwithsalman.voicenotes.core.database.di
 
 import android.content.Context
 import androidx.room.Room
+import com.codingwithsalman.voicenotes.core.database.ALL_MIGRATIONS
 import com.codingwithsalman.voicenotes.core.database.NotesDao
 import com.codingwithsalman.voicenotes.core.database.VoiceNotesDatabase
 import dagger.Module
@@ -27,6 +28,7 @@ object DatabaseModule {
         )
             // v3 is the release baseline — every schema change from here ships
             // with a real Migration (no destructive fallback).
+            .addMigrations(*ALL_MIGRATIONS)
             .build()
 
     @Provides

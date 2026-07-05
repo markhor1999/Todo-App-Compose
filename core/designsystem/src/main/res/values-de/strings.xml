@@ -35,6 +35,9 @@
     <string name="vn_delete_dialog_title">Diese Notiz löschen?</string>
     <string name="vn_delete_dialog_body">„%1$s“ und die zugehörige Aufnahme werden von diesem Gerät entfernt.</string>
     <string name="vn_delete">Löschen</string>
+    <string name="vn_note_deleted">Notiz gelöscht</string>
+    <string name="vn_undo">Rückgängig</string>
+    <string name="vn_shared_import_added">Zu Murmur hinzugefügt – wird transkribiert…</string>
     <string name="vn_cancel">Abbrechen</string>
     <string name="vn_save">Speichern</string>
     <string name="vn_imported_default_title">Importiert — %1$s</string>
@@ -54,6 +57,8 @@
     <string name="vn_notif_transcribing_title">Wird auf diesem Gerät transkribiert</string>
 
     <string name="vn_note_transcript">Transkript</string>
+    <string name="vn_key_points">Kernpunkte</string>
+    <string name="vn_key_points_locked">Erhalte eine smarte Zusammenfassung jeder Notiz – die wichtigsten Zeilen, zum Springen antippen. Teil von Murmur Pro.</string>
     <string name="vn_note_queued">In Warteschlange…</string>
     <string name="vn_note_transcribing_body">Wird auf diesem Gerät transkribiert…</string>
     <string name="vn_percent_value">%1$d%%</string>

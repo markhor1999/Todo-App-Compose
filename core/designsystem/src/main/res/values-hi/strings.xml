@@ -35,6 +35,9 @@
     <string name="vn_delete_dialog_title">यह नोट हटाएँ?</string>
     <string name="vn_delete_dialog_body">“%1$s” और इसका ऑडियो इस डिवाइस से हट जाएगा।</string>
     <string name="vn_delete">हटाएँ</string>
+    <string name="vn_note_deleted">नोट हटाया गया</string>
+    <string name="vn_undo">पूर्ववत करें</string>
+    <string name="vn_shared_import_added">Murmur में जोड़ा गया — ट्रांसक्राइब हो रहा है…</string>
     <string name="vn_cancel">रद्द करें</string>
     <string name="vn_save">सेव करें</string>
     <string name="vn_imported_default_title">इंपोर्टेड — %1$s</string>
@@ -54,6 +57,8 @@
     <string name="vn_notif_transcribing_title">इसी डिवाइस पर ट्रांसक्राइब हो रहा है</string>
 
     <string name="vn_note_transcript">ट्रांसक्रिप्ट</string>
+    <string name="vn_key_points">मुख्य बिंदु</string>
+    <string name="vn_key_points_locked">हर नोट का स्मार्ट सारांश पाएँ — मुख्य पंक्तियाँ, जाने के लिए टैप करें। Murmur Pro का हिस्सा।</string>
     <string name="vn_note_queued">कतार में…</string>
     <string name="vn_note_transcribing_body">इसी डिवाइस पर ट्रांसक्राइब हो रहा है…</string>
     <string name="vn_percent_value">%1$d%%</string>

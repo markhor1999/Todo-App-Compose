@@ -43,6 +43,9 @@
     <string name="vn_delete_dialog_title">حذف هذه الملاحظة؟</string>
     <string name="vn_delete_dialog_body">سيتم حذف «%1$s» وتسجيلها الصوتي من هذا الجهاز.</string>
     <string name="vn_delete">حذف</string>
+    <string name="vn_note_deleted">تم حذف الملاحظة</string>
+    <string name="vn_undo">تراجع</string>
+    <string name="vn_shared_import_added">تمت الإضافة إلى Murmur — جارٍ التفريغ…</string>
     <string name="vn_cancel">إلغاء</string>
     <string name="vn_save">حفظ</string>
     <string name="vn_imported_default_title">مستورد — %1$s</string>
@@ -62,6 +65,8 @@
     <string name="vn_notif_transcribing_title">جارٍ التفريغ على هذا الجهاز</string>
 
     <string name="vn_note_transcript">النص المفرّغ</string>
+    <string name="vn_key_points">النقاط الرئيسية</string>
+    <string name="vn_key_points_locked">احصل على ملخّص ذكي لكل ملاحظة — أهم الأسطر، انقر للانتقال. ضمن Murmur Pro.</string>
     <string name="vn_note_queued">في قائمة الانتظار…</string>
     <string name="vn_note_transcribing_body">جارٍ التفريغ على هذا الجهاز…</string>
     <string name="vn_percent_value">%1$d%%</string>

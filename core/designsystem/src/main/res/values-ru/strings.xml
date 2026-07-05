@@ -39,6 +39,9 @@
     <string name="vn_delete_dialog_title">Удалить эту заметку?</string>
     <string name="vn_delete_dialog_body">«%1$s» и её аудио будут удалены с этого устройства.</string>
     <string name="vn_delete">Удалить</string>
+    <string name="vn_note_deleted">Заметка удалена</string>
+    <string name="vn_undo">Отменить</string>
+    <string name="vn_shared_import_added">Добавлено в Murmur — расшифровка…</string>
     <string name="vn_cancel">Отмена</string>
     <string name="vn_save">Сохранить</string>
     <string name="vn_imported_default_title">Импортировано — %1$s</string>
@@ -58,6 +61,8 @@
     <string name="vn_notif_transcribing_title">Расшифровка на этом устройстве</string>
 
     <string name="vn_note_transcript">Расшифровка</string>
+    <string name="vn_key_points">Ключевые моменты</string>
+    <string name="vn_key_points_locked">Умное резюме каждой заметки — ключевые строки, нажмите, чтобы перейти. Входит в Murmur Pro.</string>
     <string name="vn_note_queued">В очереди…</string>
     <string name="vn_note_transcribing_body">Расшифровка на этом устройстве…</string>
     <string name="vn_percent_value">%1$d%%</string>

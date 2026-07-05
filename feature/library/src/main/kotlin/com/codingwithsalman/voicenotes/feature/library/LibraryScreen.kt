@@ -17,27 +17,30 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.ui.res.stringResource
 import com.codingwithsalman.voicenotes.core.designsystem.R
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.codingwithsalman.voicenotes.core.common.util.formatDurationMs
 import com.codingwithsalman.voicenotes.core.common.util.formatNoteDate
@@ -53,19 +56,51 @@ fun LibraryScreen(
     onRecord: () -> Unit,
     onOpenNote: (Long) -> Unit,
     onOpenSettings: () -> Unit,
+    sharedAudioUris: List<android.net.Uri> = emptyList(),
+    onSharedAudioConsumed: () -> Unit = {},
     viewModel: LibraryViewModel = hiltViewModel(),
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val notes by viewModel.notes.collectAsStateWithLifecycle()
     val query by viewModel.query.collectAsStateWithLifecycle()
-    var pendingDelete by remember { mutableStateOf<Note?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val deletedMsg = stringResource(R.string.vn_note_deleted)
+    val undoLabel = stringResource(R.string.vn_undo)
+    val sharedAddedMsg = stringResource(R.string.vn_shared_import_added)
+
+    // Share-to-Murmur: audio handed in from another app → reuse the exact import path, then
+    // confirm. Guarded by isNotEmpty so the post-consume recomposition is a no-op.
+    LaunchedEffect(sharedAudioUris) {
+        if (sharedAudioUris.isNotEmpty()) {
+            sharedAudioUris.forEach(viewModel::importAudio)
+            onSharedAudioConsumed()
+            scope.launch { snackbarHostState.showSnackbar(sharedAddedMsg) }
+        }
+    }
 
     val importLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri -> uri?.let(viewModel::importAudio) }
 
+    // Soft-delete + Undo: the note leaves the list at once; the snackbar's action restores it,
+    // its timeout finalizes the purge. SnackbarDuration.Long ≈ the 10 s window the plan calls for.
+    fun deleteWithUndo(note: Note) {
+        viewModel.delete(note)
+        scope.launch {
+            val result = snackbarHostState.showSnackbar(
+                message = deletedMsg,
+                actionLabel = undoLabel,
+                duration = SnackbarDuration.Long,
+            )
+            if (result == SnackbarResult.ActionPerformed) viewModel.undoDelete(note.id)
+            else viewModel.finalizeDelete(note.id)
+        }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             RecordButton(
                 isRecording = false,
@@ -192,31 +227,12 @@ fun LibraryScreen(
                         status = note.status,
                         waveform = note.waveform,
                         onClick = { onOpenNote(note.id) },
-                        onLongClick = { pendingDelete = note },
+                        onLongClick = { deleteWithUndo(note) },
                         modifier = Modifier.animateItem(),
                         sharedKeyPrefix = "note-${note.id}",
                     )
                 }
             }
         }
-    }
-
-    pendingDelete?.let { note ->
-        AlertDialog(
-            onDismissRequest = { pendingDelete = null },
-            title = { Text(stringResource(R.string.vn_delete_dialog_title)) },
-            text = { Text(stringResource(R.string.vn_delete_dialog_body, note.title)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.delete(note)
-                        pendingDelete = null
-                    }
-                ) { Text(stringResource(R.string.vn_delete), color = MaterialTheme.colorScheme.error) }
-            },
-            dismissButton = {
-                TextButton(onClick = { pendingDelete = null }) { Text(stringResource(R.string.vn_cancel)) }
-            },
-        )
     }
 }

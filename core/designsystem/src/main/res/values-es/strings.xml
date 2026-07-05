@@ -35,6 +35,9 @@
     <string name="vn_delete_dialog_title">¿Eliminar esta nota?</string>
     <string name="vn_delete_dialog_body">«%1$s» y su audio se eliminarán de este dispositivo.</string>
     <string name="vn_delete">Eliminar</string>
+    <string name="vn_note_deleted">Nota eliminada</string>
+    <string name="vn_undo">Deshacer</string>
+    <string name="vn_shared_import_added">Añadido a Murmur: transcribiendo…</string>
     <string name="vn_cancel">Cancelar</string>
     <string name="vn_save">Guardar</string>
     <string name="vn_imported_default_title">Importado — %1$s</string>
@@ -54,6 +57,8 @@
     <string name="vn_notif_transcribing_title">Transcribiendo en este dispositivo</string>
 
     <string name="vn_note_transcript">Transcripción</string>
+    <string name="vn_key_points">Puntos clave</string>
+    <string name="vn_key_points_locked">Obtén un resumen inteligente de cada nota: las líneas clave, toca para saltar. Incluido en Murmur Pro.</string>
     <string name="vn_note_queued">En cola…</string>
     <string name="vn_note_transcribing_body">Transcribiendo en este dispositivo…</string>
     <string name="vn_percent_value">%1$d %%</string>

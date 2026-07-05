@@ -24,8 +24,8 @@ android {
     defaultConfig {
         // Live Play listing is kept — the applicationId predates the rewrite and cannot change.
         applicationId = "com.codingwithsalman.apps.todo.app.compose"
-        versionCode = 7
-        versionName = "2.0.0"
+        versionCode = 8
+        versionName = "2.1.0"
 
         ndk {
             // sherpa-onnx ships native libs; keep the APK/AAB to the ABIs real devices use.
