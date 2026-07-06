@@ -153,4 +153,11 @@
     <string name="vn_start">ابدأ</string>
     <string name="vn_start_anyway">ابدأ على أي حال</string>
     <string name="vn_download_size">تنزيل · %1$d م.ب</string>
+    <string name="vn_live_section">النسخ المباشر (تجريبي)</string>
+    <string name="vn_live_title">شاهد الكلمات أثناء حديثك</string>
+    <string name="vn_live_body">يعرض نسخًا مباشرًا أثناء التسجيل. بالإنجليزية فقط حاليًا — نسختك المحفوظة لا تزال تدعم كل اللغات. تجريبي.</string>
+    <string name="vn_live_downloading">جارٍ تنزيل نموذج اللغة… %1$d%%</string>
+    <string name="vn_live_ready">‏✓ النسخ المباشر جاهز</string>
+    <string name="vn_live_needs_download">‏يعمل بعد تنزيل نموذج إنجليزي لمرة واحدة (~%1$d ميغابايت).</string>
+    <string name="vn_capture_live">مباشر</string>
 </resources>

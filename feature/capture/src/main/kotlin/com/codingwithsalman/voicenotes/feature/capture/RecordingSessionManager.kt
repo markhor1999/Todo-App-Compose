@@ -3,10 +3,14 @@ package com.codingwithsalman.voicenotes.feature.capture
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
+import com.codingwithsalman.voicenotes.asr.api.LiveSession
+import com.codingwithsalman.voicenotes.asr.api.LiveTranscriptionManager
 import com.codingwithsalman.voicenotes.asr.api.TranscriptionCoordinator
 import com.codingwithsalman.voicenotes.core.common.util.formatNoteDate
 import com.codingwithsalman.voicenotes.core.database.NotesRepository
+import com.codingwithsalman.voicenotes.core.datastore.SettingsRepository
 import com.codingwithsalman.voicenotes.core.media.AudioRecorderController
+import com.codingwithsalman.voicenotes.core.media.PcmAudioRecorder
 import com.codingwithsalman.voicenotes.core.media.RecordingsStorage
 import com.codingwithsalman.voicenotes.core.media.WaveformExtractor
 import com.codingwithsalman.voicenotes.core.model.Note
@@ -24,6 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -35,6 +40,9 @@ data class RecordingSessionState(
     val elapsedMs: Long = 0L,
     /** Rolling window for the live waveform (full history kept separately for the note). */
     val amplitudes: List<Float> = emptyList(),
+    /** Provisional live-transcription text (v2.1 #2) — English-only preview, empty unless the
+     *  live path is active. Thrown away on stop; the saved transcript comes from the offline pass. */
+    val liveText: String = "",
 )
 
 sealed interface RecordingSessionEvent {
@@ -47,14 +55,21 @@ sealed interface RecordingSessionEvent {
  * foreground service keeps the process (and microphone access) alive while the
  * user is elsewhere. Recording therefore survives navigation and backgrounding —
  * it ends only via Stop (screen or notification) or Cancel.
+ *
+ * Two capture backends (chosen per recording at [startRecording]): the proven [AudioRecorderController]
+ * (MediaRecorder) by default, or [PcmAudioRecorder] + a [LiveSession] when live transcription is
+ * enabled and its model is installed — everyone else is unaffected by the v2.1 #2 feature.
  */
 @Singleton
 class RecordingSessionManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val recorder: AudioRecorderController,
+    private val pcmRecorder: PcmAudioRecorder,
     private val storage: RecordingsStorage,
     private val repository: NotesRepository,
     private val transcriptionCoordinator: TranscriptionCoordinator,
+    private val settings: SettingsRepository,
+    private val liveManager: LiveTranscriptionManager,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -72,10 +87,34 @@ class RecordingSessionManager @Inject constructor(
     private var accumulatedActiveMs = 0L
     private var lastResumedAtMs = 0L
 
+    // Live-transcription path state (null/false unless the user opted in and the model is present).
+    @Volatile private var liveEnabled = false
+    private var usingLive = false
+    private var liveSession: LiveSession? = null
+    private var liveTextJob: Job? = null
+
+    init {
+        scope.launch { settings.liveTranscriptionEnabled.collect { liveEnabled = it } }
+    }
+
     fun startRecording(): Boolean {
         if (_state.value.isRecording) return true
-        val started = runCatching { recorder.start(storage.newRecordingFile()) }.isSuccess
-        if (!started) return false
+        val file = storage.newRecordingFile()
+
+        val session = if (liveEnabled && liveManager.isModelInstalled()) liveManager.newSession() else null
+        usingLive = session != null
+
+        val started = if (usingLive) {
+            runCatching { pcmRecorder.start(file) { samples -> session!!.accept(samples) } }.isSuccess
+        } else {
+            runCatching { recorder.start(file) }.isSuccess
+        }
+        if (!started) {
+            session?.release()
+            usingLive = false
+            return false
+        }
+        liveSession = session
 
         val now = System.currentTimeMillis()
         fullHistory.clear()
@@ -85,10 +124,14 @@ class RecordingSessionManager @Inject constructor(
 
         context.startForegroundService(Intent(context, RecordingService::class.java))
 
+        liveTextJob = session?.let { s ->
+            scope.launch { s.text.collect { t -> _state.value = _state.value.copy(liveText = t) } }
+        }
+
         meterJob = scope.launch {
             while (true) {
                 if (!_state.value.isPaused) {
-                    val amplitude = recorder.amplitude()
+                    val amplitude = if (usingLive) pcmRecorder.amplitude() else recorder.amplitude()
                     fullHistory.add(amplitude)
                     _state.value = _state.value.copy(
                         elapsedMs = accumulatedActiveMs + (System.currentTimeMillis() - lastResumedAtMs),
@@ -103,7 +146,7 @@ class RecordingSessionManager @Inject constructor(
 
     fun pauseRecording() {
         if (!_state.value.isRecording || _state.value.isPaused) return
-        recorder.pause()
+        if (usingLive) pcmRecorder.pause() else recorder.pause()
         accumulatedActiveMs += System.currentTimeMillis() - lastResumedAtMs
         _state.value = _state.value.copy(isPaused = true, elapsedMs = accumulatedActiveMs)
         updateNotification()
@@ -111,7 +154,7 @@ class RecordingSessionManager @Inject constructor(
 
     fun resumeRecording() {
         if (!_state.value.isRecording || !_state.value.isPaused) return
-        recorder.resume()
+        if (usingLive) pcmRecorder.resume() else recorder.resume()
         lastResumedAtMs = System.currentTimeMillis()
         _state.value = _state.value.copy(isPaused = false)
         updateNotification()
@@ -126,14 +169,23 @@ class RecordingSessionManager @Inject constructor(
         } else {
             accumulatedActiveMs + (System.currentTimeMillis() - lastResumedAtMs)
         }
-        val info = recorder.stop()
-        val waveform = WaveformExtractor.downsamplePeaks(fullHistory.toList())
-        endSession()
-        if (info == null) {
-            _events.tryEmit(RecordingSessionEvent.Discarded)
-            return
-        }
+        val wasLive = usingLive
+        val session = liveSession
+        val historySnapshot = fullHistory.toList()
+        // Reset the UI immediately (screen navigates away); tear down native resources off-thread —
+        // the PCM recorder's stop() joins its capture thread to flush the encoder.
+        resetToIdle()
         scope.launch {
+            val info = withContext(Dispatchers.IO) {
+                val i = if (wasLive) pcmRecorder.stop() else recorder.stop()
+                session?.release()
+                i
+            }
+            if (info == null) {
+                _events.tryEmit(RecordingSessionEvent.Discarded)
+                return@launch
+            }
+            val waveform = WaveformExtractor.downsamplePeaks(historySnapshot)
             val id = repository.createNote(
                 Note(
                     title = context.getString(
@@ -157,8 +209,15 @@ class RecordingSessionManager @Inject constructor(
     fun discard() {
         if (!_state.value.isRecording) return
         meterJob?.cancel()
-        recorder.cancel()
-        endSession()
+        val wasLive = usingLive
+        val session = liveSession
+        resetToIdle()
+        scope.launch {
+            withContext(Dispatchers.IO) {
+                if (wasLive) pcmRecorder.cancel() else recorder.cancel()
+                session?.release()
+            }
+        }
         _events.tryEmit(RecordingSessionEvent.Discarded)
     }
 
@@ -174,7 +233,12 @@ class RecordingSessionManager @Inject constructor(
         }
     }
 
-    private fun endSession() {
+    /** Clear session UI state + stop the foreground service. Native teardown happens separately. */
+    private fun resetToIdle() {
+        liveTextJob?.cancel()
+        liveTextJob = null
+        liveSession = null
+        usingLive = false
         _state.value = RecordingSessionState()
         context.stopService(Intent(context, RecordingService::class.java))
     }

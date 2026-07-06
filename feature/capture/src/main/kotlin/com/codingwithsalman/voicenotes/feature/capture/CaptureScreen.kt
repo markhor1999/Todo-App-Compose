@@ -21,7 +21,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.Pause
@@ -158,6 +160,10 @@ fun CaptureScreen(
                     .height(120.dp),
             )
 
+            // v2.1 #2: provisional live transcript (English-only). Renders only when the live path
+            // is active and words have arrived — layout is unchanged for normal recordings.
+            LiveTranscriptPreview(text = state.liveText)
+
             Spacer(modifier = Modifier.weight(1f))
 
             Row(
@@ -197,6 +203,49 @@ fun CaptureScreen(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 18.dp, bottom = 40.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun LiveTranscriptPreview(text: String) {
+    if (text.isBlank()) return
+    val scroll = rememberScrollState()
+    LaunchedEffect(text) { scroll.animateScrollTo(scroll.maxValue) }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 28.dp, vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .clip(CircleShape)
+                    .background(VnTheme.extended.record),
+            )
+            Text(
+                text = stringResource(R.string.vn_capture_live),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(88.dp)
+                .verticalScroll(scroll),
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

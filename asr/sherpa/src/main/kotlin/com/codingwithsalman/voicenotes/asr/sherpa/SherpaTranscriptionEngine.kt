@@ -161,6 +161,10 @@ class SherpaTranscriptionEngine @Inject constructor(
                 modelType = "moonshine",
                 numThreads = threads,
             )
+            ModelFamily.STREAMING_ZIPFORMER ->
+                // Online transducer — used only by the live-preview path (LiveTranscriber), never
+                // the offline pass. Reaching here means a streaming spec was mis-routed as the model.
+                error("streaming model ${spec.id} is live-preview only, not for the offline pass")
         }
     }
 

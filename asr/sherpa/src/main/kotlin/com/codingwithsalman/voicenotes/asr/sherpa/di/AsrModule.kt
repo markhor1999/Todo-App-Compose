@@ -1,6 +1,8 @@
 package com.codingwithsalman.voicenotes.asr.sherpa.di
 
+import com.codingwithsalman.voicenotes.asr.api.LiveTranscriptionManager
 import com.codingwithsalman.voicenotes.asr.api.TranscriptionCoordinator
+import com.codingwithsalman.voicenotes.asr.sherpa.LiveTranscriptionManagerImpl
 import com.codingwithsalman.voicenotes.asr.sherpa.TranscriptionCoordinatorImpl
 import dagger.Binds
 import dagger.Module
@@ -17,4 +19,10 @@ abstract class AsrModule {
     abstract fun bindsTranscriptionCoordinator(
         impl: TranscriptionCoordinatorImpl,
     ): TranscriptionCoordinator
+
+    @Binds
+    @Singleton
+    abstract fun bindsLiveTranscriptionManager(
+        impl: LiveTranscriptionManagerImpl,
+    ): LiveTranscriptionManager
 }

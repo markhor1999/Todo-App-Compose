@@ -3,6 +3,7 @@ package com.codingwithsalman.voicenotes.core.datastore
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -22,6 +23,7 @@ class SettingsRepository @Inject constructor(
     private object Keys {
         val themeMode = stringPreferencesKey("theme_mode")
         val modelId = stringPreferencesKey("asr_model_id")
+        val liveTranscription = booleanPreferencesKey("live_transcription_enabled")
     }
 
     val themeMode: Flow<ThemeMode> = context.settingsDataStore.data.map { prefs ->
@@ -39,5 +41,15 @@ class SettingsRepository @Inject constructor(
 
     suspend fun setModelId(id: String) {
         context.settingsDataStore.edit { it[Keys.modelId] = id }
+    }
+
+    /** Live transcription (v2.1 #2) — OFF by default; English-only, experimental, needs its own
+     *  streaming-model download. Gated here so the capture path stays on the proven MediaRecorder
+     *  route for everyone who hasn't opted in. */
+    val liveTranscriptionEnabled: Flow<Boolean> =
+        context.settingsDataStore.data.map { prefs -> prefs[Keys.liveTranscription] ?: false }
+
+    suspend fun setLiveTranscriptionEnabled(enabled: Boolean) {
+        context.settingsDataStore.edit { it[Keys.liveTranscription] = enabled }
     }
 }

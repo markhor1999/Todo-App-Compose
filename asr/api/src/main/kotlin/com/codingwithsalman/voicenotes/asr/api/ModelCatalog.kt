@@ -1,7 +1,9 @@
 package com.codingwithsalman.voicenotes.asr.api
 
-/** Which sherpa model family a spec is — selects the recognizer config the engine builds. */
-enum class ModelFamily { WHISPER, MOONSHINE }
+/** Which sherpa model family a spec is — selects the recognizer config the engine builds.
+ *  WHISPER/MOONSHINE are OFFLINE (the saved-transcript pass); STREAMING_ZIPFORMER is an ONLINE
+ *  transducer used only for the live-preview-while-recording feature (v2.1 #2), never the offline pass. */
+enum class ModelFamily { WHISPER, MOONSHINE, STREAMING_ZIPFORMER }
 
 /** One downloadable file of a model bundle. Size verified via HTTP HEAD. */
 data class ModelFileSpec(
@@ -16,6 +18,8 @@ enum class ModelFileRole {
     ENCODER, DECODER, TOKENS,
     // Moonshine-only
     PREPROCESSOR, UNCACHED_DECODER, CACHED_DECODER,
+    // Streaming transducer (zipformer) — encoder/decoder reuse ENCODER/DECODER
+    JOINER,
 }
 
 data class AsrModelSpec(
@@ -149,6 +153,51 @@ object ModelCatalog {
         isPro = false,
     )
 
+    /**
+     * LIVE PREVIEW (v2.1 #2) — English streaming Zipformer transducer, int8 (~41 MB). Powers the
+     * words-as-you-speak preview while recording; the SAVED transcript still comes from the offline
+     * Whisper pass (so notes stay multilingual). Streaming models are language-specific and there is
+     * no viable ur/hi/ar streaming model yet, so live preview is English-only in v2.1 — a real
+     * limitation vs the app's multilingual pitch, deliberately scoped and shipped OFF BY DEFAULT
+     * (SettingsRepository.liveTranscriptionEnabled) until validated on the Play internal track.
+     * Not in [all]; resolvable by id via [hidden]; downloaded on-demand when the toggle is enabled.
+     * Sizes verified via HTTP HEAD 2026-07-06.
+     */
+    val liveEnStreaming = AsrModelSpec(
+        id = "streaming-zipformer-en-20m-int8",
+        displayName = "English · Live",
+        languages = listOf("en"),
+        languageParam = "en",
+        family = ModelFamily.STREAMING_ZIPFORMER,
+        files = listOf(
+            ModelFileSpec(
+                "encoder-epoch-99-avg-1.int8.onnx",
+                "$HF/sherpa-onnx-streaming-zipformer-en-20M-2023-02-17/resolve/main/encoder-epoch-99-avg-1.int8.onnx",
+                42_845_182L,
+                ModelFileRole.ENCODER,
+            ),
+            ModelFileSpec(
+                "decoder-epoch-99-avg-1.int8.onnx",
+                "$HF/sherpa-onnx-streaming-zipformer-en-20M-2023-02-17/resolve/main/decoder-epoch-99-avg-1.int8.onnx",
+                539_499L,
+                ModelFileRole.DECODER,
+            ),
+            ModelFileSpec(
+                "joiner-epoch-99-avg-1.int8.onnx",
+                "$HF/sherpa-onnx-streaming-zipformer-en-20M-2023-02-17/resolve/main/joiner-epoch-99-avg-1.int8.onnx",
+                259_572L,
+                ModelFileRole.JOINER,
+            ),
+            ModelFileSpec(
+                "tokens.txt",
+                "$HF/sherpa-onnx-streaming-zipformer-en-20M-2023-02-17/resolve/main/tokens.txt",
+                5_048L,
+                ModelFileRole.TOKENS,
+            ),
+        ),
+        isPro = false,
+    )
+
     /** silero VAD — tiny, shared by every model; segments long audio for the recognizer's window. */
     val vadFile = ModelFileSpec(
         fileName = "silero_vad.onnx",
@@ -160,8 +209,9 @@ object ModelCatalog {
     /** Models offered in the picker. Moonshine is intentionally absent until device-validated. */
     val all: List<AsrModelSpec> = listOf(whisperTinyEn, whisperBaseMultilingual)
 
-    /** Scaffolded specs resolvable by id but not shown in the picker. */
-    private val hidden: List<AsrModelSpec> = listOf(moonshineBaseEn)
+    /** Specs resolvable by id but not shown in the offline model picker: the dormant Moonshine
+     *  fallback and the live-preview streaming model (downloaded via its own settings toggle). */
+    private val hidden: List<AsrModelSpec> = listOf(moonshineBaseEn, liveEnStreaming)
 
     val default: AsrModelSpec = whisperTinyEn
 

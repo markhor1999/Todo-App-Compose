@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -25,6 +26,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.ui.res.stringResource
 import com.codingwithsalman.voicenotes.core.designsystem.R
@@ -39,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.codingwithsalman.voicenotes.asr.api.EngineState
+import com.codingwithsalman.voicenotes.asr.api.LiveModelState
 import com.codingwithsalman.voicenotes.core.designsystem.components.ProPaywallSheet
 import com.codingwithsalman.voicenotes.core.designsystem.theme.VnTheme
 import com.codingwithsalman.voicenotes.core.model.ThemeMode
@@ -51,6 +54,8 @@ fun SettingsScreen(
     val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
     val selectedModel by viewModel.selectedModel.collectAsStateWithLifecycle()
     val engineState by viewModel.engineState.collectAsStateWithLifecycle()
+    val liveEnabled by viewModel.liveEnabled.collectAsStateWithLifecycle()
+    val liveModelState by viewModel.liveModelState.collectAsStateWithLifecycle()
     val isPro by viewModel.isPro.collectAsStateWithLifecycle()
     val pricing by viewModel.pricing.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
@@ -203,6 +208,76 @@ fun SettingsScreen(
                 }
             }
 
+            SectionTitle(stringResource(R.string.vn_live_section))
+            SettingsCard {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.vn_live_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = stringResource(R.string.vn_live_body),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Switch(checked = liveEnabled, onCheckedChange = viewModel::setLiveEnabled)
+                }
+                if (liveEnabled) {
+                    when (val live = liveModelState) {
+                        is LiveModelState.Downloading -> {
+                            Column(modifier = Modifier.padding(top = 12.dp)) {
+                                LinearProgressIndicator(
+                                    progress = { live.progress },
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                                Text(
+                                    text = stringResource(R.string.vn_live_downloading, (live.progress * 100).toInt()),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(top = 6.dp),
+                                )
+                            }
+                        }
+                        is LiveModelState.Failed -> {
+                            Text(
+                                text = live.message,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.padding(top = 10.dp),
+                            )
+                            Button(
+                                onClick = viewModel::retryLiveDownload,
+                                modifier = Modifier.padding(top = 6.dp),
+                            ) { Text(stringResource(R.string.vn_try_again)) }
+                        }
+                        LiveModelState.Ready -> {
+                            Text(
+                                text = stringResource(R.string.vn_live_ready),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(top = 10.dp),
+                            )
+                        }
+                        LiveModelState.NotInstalled -> {
+                            Text(
+                                text = stringResource(R.string.vn_live_needs_download, viewModel.liveModelSizeMb),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 10.dp),
+                            )
+                        }
+                    }
+                }
+            }
+
             SectionTitle(stringResource(R.string.vn_privacy_section))
             SettingsCard {
                 Text(
@@ -232,7 +307,7 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = stringResource(R.string.vn_version_line, "2.0.0"),
+                text = stringResource(R.string.vn_version_line, "2.1.0"),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier

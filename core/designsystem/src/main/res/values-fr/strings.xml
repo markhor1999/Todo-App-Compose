@@ -145,4 +145,11 @@
     <string name="vn_start">Commencer</string>
     <string name="vn_start_anyway">Commencer quand même</string>
     <string name="vn_download_size">Télécharger · %1$d Mo</string>
+    <string name="vn_live_section">Transcription en direct (bêta)</string>
+    <string name="vn_live_title">Voyez les mots à mesure que vous parlez</string>
+    <string name="vn_live_body">Affiche une transcription en direct pendant l\'enregistrement. En anglais seulement pour l\'instant — votre transcription enregistrée prend toujours en charge toutes les langues. Expérimental.</string>
+    <string name="vn_live_downloading">Téléchargement du modèle linguistique… %1$d%%</string>
+    <string name="vn_live_ready">✓ Transcription en direct prête</string>
+    <string name="vn_live_needs_download">S\'active après un téléchargement unique du modèle anglais (~%1$d Mo).</string>
+    <string name="vn_capture_live">EN DIRECT</string>
 </resources>

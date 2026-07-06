@@ -145,4 +145,11 @@
     <string name="vn_start">شروع کریں</string>
     <string name="vn_start_anyway">پھر بھی شروع کریں</string>
     <string name="vn_download_size">ڈاؤن لوڈ · %1$d MB</string>
+    <string name="vn_live_section">‏لائیو ٹرانسکرپشن (بیٹا)</string>
+    <string name="vn_live_title">بولتے ہی الفاظ دیکھیں</string>
+    <string name="vn_live_body">ریکارڈنگ کے دوران لائیو ٹرانسکرپٹ دکھاتا ہے۔ فی الحال صرف انگریزی — آپ کا محفوظ ٹرانسکرپٹ اب بھی ہر زبان کو سپورٹ کرتا ہے۔ تجرباتی۔</string>
+    <string name="vn_live_downloading">زبان ماڈل ڈاؤن لوڈ ہو رہا ہے… %1$d%%</string>
+    <string name="vn_live_ready">‏✓ لائیو ٹرانسکرپشن تیار</string>
+    <string name="vn_live_needs_download">‏ایک بار ~%1$d MB انگریزی ماڈل ڈاؤن لوڈ کے بعد فعال ہوگا۔</string>
+    <string name="vn_capture_live">لائیو</string>
 </resources>
