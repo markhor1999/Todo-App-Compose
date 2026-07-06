@@ -101,7 +101,7 @@ class RecordingSessionManager @Inject constructor(
         if (_state.value.isRecording) return true
         val file = storage.newRecordingFile()
 
-        val session = if (liveEnabled && liveManager.isModelInstalled()) liveManager.newSession() else null
+        val session = if (liveEnabled && liveManager.isAvailable()) liveManager.newSession() else null
         usingLive = session != null
 
         val started = if (usingLive) {

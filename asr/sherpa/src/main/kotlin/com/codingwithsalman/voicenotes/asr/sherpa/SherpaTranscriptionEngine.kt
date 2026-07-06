@@ -133,6 +133,43 @@ class SherpaTranscriptionEngine @Inject constructor(
         }
     }
 
+    // --- Live-preview support (v2.1 #2, chunked multilingual path) -------------------------------
+    // The live session runs its own recognizer+VAD against the mic feed. It must respect the same
+    // one-native-instance invariant as transcribe(), so it try-locks the same mutex for its whole
+    // session: an in-flight background job wins (no live preview that take, MediaRecorder fallback);
+    // a job arriving mid-recording simply suspends in withLock until the session releases.
+
+    /** Non-blocking claim of the process-wide inference slot for a live session. */
+    internal fun tryLockForLiveSession(): Boolean = transcribeMutex.tryLock()
+
+    /** Release the live session's claim. Safe to call once after a successful [tryLockForLiveSession]. */
+    internal fun unlockLiveSession() {
+        runCatching { transcribeMutex.unlock() }
+    }
+
+    /** A recognizer for [spec] built exactly like the offline pass builds one. Caller releases. */
+    internal fun newRecognizer(spec: AsrModelSpec): OfflineRecognizer = OfflineRecognizer(
+        assetManager = null,
+        config = OfflineRecognizerConfig(modelConfig = buildModelConfig(spec)),
+    )
+
+    /** A silero VAD tuned for live preview: shorter max segment so text commits frequently. */
+    internal fun newLiveVad(): Vad = Vad(
+        assetManager = null,
+        config = VadModelConfig(
+            sileroVadModelConfig = SileroVadModelConfig(
+                model = modelStore.vadLocalFile().absolutePath,
+                threshold = 0.5f,
+                minSilenceDuration = 0.4f,
+                minSpeechDuration = 0.25f,
+                windowSize = VAD_WINDOW,
+                // Latency cap: even continuous speech commits a preview line every ~8 s.
+                maxSpeechDuration = 8f,
+            ),
+            sampleRate = SAMPLE_RATE,
+        ),
+    )
+
     /** Build the recognizer's model config for the spec's family (Whisper today; Moonshine is the
      *  scaffolded low-RAM fallback, dormant until device-validated — see ModelCatalog.moonshineBaseEn). */
     private fun buildModelConfig(spec: AsrModelSpec): OfflineModelConfig {

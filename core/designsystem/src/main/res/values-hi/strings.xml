@@ -147,9 +147,9 @@
     <string name="vn_download_size">डाउनलोड · %1$d MB</string>
     <string name="vn_live_section">लाइव ट्रांसक्रिप्शन (बीटा)</string>
     <string name="vn_live_title">बोलते ही शब्द देखें</string>
-    <string name="vn_live_body">रिकॉर्ड करते समय लाइव ट्रांसक्रिप्ट दिखाता है। फ़िलहाल सिर्फ़ अंग्रेज़ी — आपका सहेजा गया ट्रांसक्रिप्ट अब भी हर भाषा का समर्थन करता है। प्रयोगात्मक।</string>
-    <string name="vn_live_downloading">भाषा मॉडल डाउनलोड हो रहा है… %1$d%%</string>
+    <string name="vn_live_body">रिकॉर्ड करते समय लाइव ट्रांसक्रिप्ट दिखाता है — आपके मॉडल की हर भाषा में। अंग्रेज़ी के लिए शब्द-दर-शब्द मोड। प्रयोगात्मक।</string>
+    <string name="vn_live_downloading">शब्द-दर-शब्द (अंग्रेज़ी) मॉडल डाउनलोड हो रहा है… %1$d%%</string>
     <string name="vn_live_ready">✓ लाइव ट्रांसक्रिप्शन तैयार</string>
-    <string name="vn_live_needs_download">एक बार ~%1$d MB अंग्रेज़ी मॉडल डाउनलोड के बाद चालू होगा।</string>
+    <string name="vn_live_needs_download">पहले एक ट्रांसक्रिप्शन मॉडल इंस्टॉल करें — ऊपर ट्रांसक्रिप्शन इंजन देखें।</string>
     <string name="vn_capture_live">लाइव</string>
 </resources>

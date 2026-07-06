@@ -147,9 +147,9 @@
     <string name="vn_download_size">Herunterladen · %1$d MB</string>
     <string name="vn_live_section">Live-Transkription (Beta)</string>
     <string name="vn_live_title">Wörter sehen, während du sprichst</string>
-    <string name="vn_live_body">Zeigt ein Live-Transkript während der Aufnahme. Vorerst nur Englisch — dein gespeichertes Transkript unterstützt weiterhin jede Sprache. Experimentell.</string>
-    <string name="vn_live_downloading">Sprachmodell wird geladen… %1$d%%</string>
+    <string name="vn_live_body">Zeigt ein Live-Transkript während der Aufnahme — in jeder Sprache deines Modells. Englisch erhält den Wort-für-Wort-Modus. Experimentell.</string>
+    <string name="vn_live_downloading">Wort-für-Wort-Modell (Englisch) wird geladen… %1$d%%</string>
     <string name="vn_live_ready">✓ Live-Transkription bereit</string>
-    <string name="vn_live_needs_download">Wird nach einem einmaligen ~%1$d MB großen englischen Modell-Download aktiviert.</string>
+    <string name="vn_live_needs_download">Installiere zuerst ein Transkriptionsmodell — siehe Transkriptions-Engine oben.</string>
     <string name="vn_capture_live">LIVE</string>
 </resources>

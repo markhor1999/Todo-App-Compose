@@ -147,9 +147,9 @@
     <string name="vn_download_size">Baixar · %1$d MB</string>
     <string name="vn_live_section">Transcrição ao vivo (Beta)</string>
     <string name="vn_live_title">Veja as palavras enquanto fala</string>
-    <string name="vn_live_body">Mostra uma transcrição ao vivo enquanto você grava. Por enquanto só em inglês — sua transcrição salva continua com suporte a todos os idiomas. Experimental.</string>
-    <string name="vn_live_downloading">Baixando modelo de idioma… %1$d%%</string>
+    <string name="vn_live_body">Mostra uma transcrição ao vivo enquanto você grava — em qualquer idioma do seu modelo. O inglês ganha o modo palavra por palavra. Experimental.</string>
+    <string name="vn_live_downloading">Baixando modelo palavra por palavra (inglês)… %1$d%%</string>
     <string name="vn_live_ready">✓ Transcrição ao vivo pronta</string>
-    <string name="vn_live_needs_download">Ativa após um download único do modelo em inglês (~%1$d MB).</string>
+    <string name="vn_live_needs_download">Instale primeiro um modelo de transcrição — veja Mecanismo de transcrição acima.</string>
     <string name="vn_capture_live">AO VIVO</string>
 </resources>

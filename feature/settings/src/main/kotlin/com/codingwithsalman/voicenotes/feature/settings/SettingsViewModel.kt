@@ -69,13 +69,12 @@ class SettingsViewModel @Inject constructor(
 
     val liveModelState: StateFlow<LiveModelState> = liveManager.modelState
 
-    /** Streaming model size for the download label. */
-    val liveModelSizeMb: Int = ModelCatalog.liveEnStreaming.approxSizeMb
-
     fun setLiveEnabled(enabled: Boolean) {
         viewModelScope.launch { settings.setLiveTranscriptionEnabled(enabled) }
-        // Enabling triggers the on-demand streaming-model download (no-op if already installed).
-        if (enabled) liveManager.ensureModelDownloaded()
+        // The word-level streaming download is an ENGLISH latency upgrade — only fetch it when an
+        // English-only model is selected. Multilingual users are instantly ready via the chunked
+        // path on their installed offline model (no extra download).
+        if (enabled && selectedModel.value.languages == listOf("en")) liveManager.ensureModelDownloaded()
     }
 
     fun retryLiveDownload() = liveManager.ensureModelDownloaded()

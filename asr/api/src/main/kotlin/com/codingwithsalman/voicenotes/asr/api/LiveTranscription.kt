@@ -15,24 +15,27 @@ sealed interface LiveModelState {
 }
 
 /**
- * Live transcription (v2.1 #2) — words-as-you-speak while recording. English-only in v2.1 (no
- * viable streaming model for ur/hi/ar yet); the saved transcript is unaffected. Ships OFF BY
- * DEFAULT ([com.codingwithsalman.voicenotes.core.datastore.SettingsRepository.liveTranscriptionEnabled]);
- * the streaming model downloads on-demand when the toggle is enabled.
+ * Live transcription (v2.1 #2) — a transcript preview while recording. Two engines behind one
+ * contract: **word-level English** (optional streaming-model download) and **phrase-level in any
+ * language** (VAD-chunked decoding on the already-installed offline model — no extra download).
+ * The saved transcript is unaffected either way. Ships OFF BY DEFAULT
+ * ([com.codingwithsalman.voicenotes.core.datastore.SettingsRepository.liveTranscriptionEnabled]).
  */
 interface LiveTranscriptionManager {
-    /** Install/download state of the streaming model. */
+    /** Install/download state of the optional word-level (EN) streaming model only — the chunked
+     *  path needs no download and is available whenever the offline model is installed. */
     val modelState: StateFlow<LiveModelState>
 
-    /** True when the streaming model files are present (checked synchronously). */
-    fun isModelInstalled(): Boolean
+    /** True when ANY live path can run right now (offline model installed, or streaming model). */
+    fun isAvailable(): Boolean
 
-    /** Kick a download of the streaming model; progress is reflected in [modelState]. No-op if ready. */
+    /** Kick a download of the word-level streaming model; progress lands in [modelState]. */
     fun ensureModelDownloaded()
 
     /**
-     * A fresh streaming session for one recording, or null if the model isn't installed. The caller
-     * feeds it 16 kHz mono float PCM via [LiveSession.accept] and observes [LiveSession.text].
+     * A fresh live session for one recording, or null when no path is usable (nothing installed, or
+     * a background transcription job currently owns the inference slot). The caller feeds it 16 kHz
+     * mono float PCM via [LiveSession.accept] and observes [LiveSession.text].
      */
     fun newSession(): LiveSession?
 }

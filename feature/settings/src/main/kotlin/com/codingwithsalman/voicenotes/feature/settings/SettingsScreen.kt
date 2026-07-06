@@ -231,6 +231,9 @@ fun SettingsScreen(
                     Switch(checked = liveEnabled, onCheckedChange = viewModel::setLiveEnabled)
                 }
                 if (liveEnabled) {
+                    // Chunked (any language) rides on the installed offline model; the streaming
+                    // download is only the optional word-by-word English upgrade.
+                    val chunkedReady = engineState is EngineState.Ready
                     when (val live = liveModelState) {
                         is LiveModelState.Downloading -> {
                             Column(modifier = Modifier.padding(top = 12.dp)) {
@@ -247,6 +250,14 @@ fun SettingsScreen(
                             }
                         }
                         is LiveModelState.Failed -> {
+                            if (chunkedReady) {
+                                Text(
+                                    text = stringResource(R.string.vn_live_ready),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(top = 10.dp),
+                                )
+                            }
                             Text(
                                 text = live.message,
                                 style = MaterialTheme.typography.bodySmall,
@@ -258,21 +269,22 @@ fun SettingsScreen(
                                 modifier = Modifier.padding(top = 6.dp),
                             ) { Text(stringResource(R.string.vn_try_again)) }
                         }
-                        LiveModelState.Ready -> {
-                            Text(
-                                text = stringResource(R.string.vn_live_ready),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(top = 10.dp),
-                            )
-                        }
-                        LiveModelState.NotInstalled -> {
-                            Text(
-                                text = stringResource(R.string.vn_live_needs_download, viewModel.liveModelSizeMb),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(top = 10.dp),
-                            )
+                        else -> {
+                            if (chunkedReady || live is LiveModelState.Ready) {
+                                Text(
+                                    text = stringResource(R.string.vn_live_ready),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(top = 10.dp),
+                                )
+                            } else {
+                                Text(
+                                    text = stringResource(R.string.vn_live_needs_download),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(top = 10.dp),
+                                )
+                            }
                         }
                     }
                 }

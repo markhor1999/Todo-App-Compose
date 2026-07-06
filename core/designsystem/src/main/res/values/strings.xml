@@ -117,10 +117,10 @@
     <!-- Live transcription (v2.1 #2) -->
     <string name="vn_live_section">Live transcription (Beta)</string>
     <string name="vn_live_title">See words as you speak</string>
-    <string name="vn_live_body">Show a live transcript while you record. English only for now — your saved transcript still supports every language. Experimental.</string>
-    <string name="vn_live_downloading">Downloading language model… %1$d%%</string>
+    <string name="vn_live_body">Show a live transcript while you record — in any language your model supports. English gets word-by-word mode. Experimental.</string>
+    <string name="vn_live_downloading">Downloading word-by-word English model… %1$d%%</string>
     <string name="vn_live_ready">✓ Live transcription ready</string>
-    <string name="vn_live_needs_download">Turns on after a one-time ~%1$d MB English model download.</string>
+    <string name="vn_live_needs_download">Install a transcription model first — see Transcription engine above.</string>
     <string name="vn_capture_live">LIVE</string>
 
     <string name="vn_privacy_section">Privacy</string>

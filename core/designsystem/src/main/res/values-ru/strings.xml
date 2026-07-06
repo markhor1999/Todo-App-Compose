@@ -151,9 +151,9 @@
     <string name="vn_download_size">Скачать · %1$d МБ</string>
     <string name="vn_live_section">Живая расшифровка (бета)</string>
     <string name="vn_live_title">Слова появляются, пока вы говорите</string>
-    <string name="vn_live_body">Показывает живую расшифровку во время записи. Пока только на английском — сохранённая расшифровка по-прежнему поддерживает все языки. Экспериментально.</string>
-    <string name="vn_live_downloading">Загрузка языковой модели… %1$d%%</string>
+    <string name="vn_live_body">Показывает живую расшифровку во время записи — на любом языке вашей модели. Для английского — режим слово за словом. Экспериментально.</string>
+    <string name="vn_live_downloading">Загрузка модели «слово за словом» (английский)… %1$d%%</string>
     <string name="vn_live_ready">✓ Живая расшифровка готова</string>
-    <string name="vn_live_needs_download">Включится после разовой загрузки английской модели (~%1$d МБ).</string>
+    <string name="vn_live_needs_download">Сначала установите модель расшифровки — см. «Движок расшифровки» выше.</string>
     <string name="vn_capture_live">LIVE</string>
 </resources>
