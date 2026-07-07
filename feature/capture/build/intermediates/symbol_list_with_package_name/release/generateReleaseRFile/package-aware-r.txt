@@ -1,2 +1,0 @@
-com.codingwithsalman.voicenotes.feature.capture
-drawable vn_ic_notif_mic

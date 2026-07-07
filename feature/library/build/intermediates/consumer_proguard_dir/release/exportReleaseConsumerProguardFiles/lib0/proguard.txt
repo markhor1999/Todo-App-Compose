@@ -1,2 +1,0 @@
--keep,allowobfuscation,allowshrinking class com.codingwithsalman.voicenotes.feature.library.LibraryViewModel
--keep,allowobfuscation,allowshrinking class com.codingwithsalman.voicenotes.feature.library.LibraryViewModel

@@ -1,14 +1,11 @@
 *.iml
-.gradle
+.gradle/
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+# IntelliJ/Android Studio editor state — regenerated locally, not shared
+.idea/
 .DS_Store
-/build
+# Gradle build output — matches a "build" dir at any depth (app/, core/*/, feature/*/, asr/*/, build-logic/*/, …)
+build/
 /captures
 .externalNativeBuild
 .cxx
@@ -19,3 +16,7 @@ keystore.properties
 *.jks
 *.keystore
 jotjive-legal/
+
+# Release build bundles / installables — never commit these
+*.aab
+*.apk
