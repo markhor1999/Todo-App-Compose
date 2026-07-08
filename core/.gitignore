@@ -1,1 +1,7 @@
 /build
+*/build
+*build
+/*/build
+/*build
+/database/build
+/database/*

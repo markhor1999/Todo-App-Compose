@@ -76,3 +76,6 @@
 # DataStore Preferences
 # ──────────────────────────────────────────────────────────────
 -keep class androidx.datastore.** { *; }
+
+# sherpa-onnx: JNI resolves these classes/fields reflectively; the AAR ships no consumer rules.
+-keep class com.k2fsa.sherpa.onnx.** { *; }
