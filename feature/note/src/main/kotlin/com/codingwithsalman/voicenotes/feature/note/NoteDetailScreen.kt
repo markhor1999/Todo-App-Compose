@@ -279,8 +279,12 @@ fun NoteDetailScreen(
     if (showPaywall) {
         ProPaywallSheet(
             isPro = isPro,
+            weeklyPrice = pricing.weeklyPrice,
             monthlyPrice = pricing.monthlyPrice,
             lifetimePrice = pricing.lifetimePrice,
+            weeklyTrialDays = pricing.weeklyTrialDays,
+            monthlyTrialDays = pricing.monthlyTrialDays,
+            onBuyWeekly = { activity?.let(viewModel::launchWeekly) },
             onBuyMonthly = { activity?.let(viewModel::launchMonthly) },
             onBuyLifetime = { activity?.let(viewModel::launchLifetime) },
             onRestore = viewModel::restorePurchases,

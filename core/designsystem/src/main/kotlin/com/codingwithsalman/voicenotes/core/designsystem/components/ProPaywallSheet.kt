@@ -19,13 +19,14 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.ui.res.stringResource
-import com.codingwithsalman.voicenotes.core.designsystem.R
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.codingwithsalman.voicenotes.core.designsystem.R
 import com.codingwithsalman.voicenotes.core.designsystem.theme.VnTheme
 
 /**
@@ -37,8 +38,12 @@ import com.codingwithsalman.voicenotes.core.designsystem.theme.VnTheme
 @Composable
 fun ProPaywallSheet(
     isPro: Boolean,
+    weeklyPrice: String?,
     monthlyPrice: String?,
     lifetimePrice: String?,
+    weeklyTrialDays: Int?,
+    monthlyTrialDays: Int?,
+    onBuyWeekly: () -> Unit,
     onBuyMonthly: () -> Unit,
     onBuyLifetime: () -> Unit,
     onRestore: () -> Unit,
@@ -47,6 +52,9 @@ fun ProPaywallSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         containerColor = MaterialTheme.colorScheme.surface,
+        sheetState = rememberModalBottomSheetState(
+            skipPartiallyExpanded = true
+        )
     ) {
         Column(
             modifier = Modifier
@@ -85,31 +93,65 @@ fun ProPaywallSheet(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            BenefitRow("∞", stringResource(R.string.vn_benefit1_title), stringResource(R.string.vn_benefit1_body))
-            BenefitRow("🌍", stringResource(R.string.vn_benefit2_title), stringResource(R.string.vn_benefit2_body))
-            BenefitRow("🔒", stringResource(R.string.vn_benefit3_title), stringResource(R.string.vn_benefit3_body))
-            BenefitRow("🌱", stringResource(R.string.vn_benefit4_title), stringResource(R.string.vn_benefit4_body))
+            BenefitRow(
+                "∞",
+                stringResource(R.string.vn_benefit1_title),
+                stringResource(R.string.vn_benefit1_body)
+            )
+            BenefitRow(
+                "🌍",
+                stringResource(R.string.vn_benefit2_title),
+                stringResource(R.string.vn_benefit2_body)
+            )
+            BenefitRow(
+                "🔒",
+                stringResource(R.string.vn_benefit3_title),
+                stringResource(R.string.vn_benefit3_body)
+            )
+            BenefitRow(
+                "🌱",
+                stringResource(R.string.vn_benefit4_title),
+                stringResource(R.string.vn_benefit4_body)
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
+
+            val weeklyCaption = weeklyTrialDays
+                ?.let { stringResource(R.string.vn_free_trial_days, it) }
+                ?: stringResource(R.string.vn_cancel_anytime)
+            val monthlyCaption = monthlyTrialDays
+                ?.let { stringResource(R.string.vn_free_trial_days, it) }
+                ?: stringResource(R.string.vn_cancel_anytime)
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 PriceCard(
                     modifier = Modifier.weight(1f),
-                    title = stringResource(R.string.vn_monthly),
-                    price = monthlyPrice ?: "—",
-                    caption = stringResource(R.string.vn_cancel_anytime),
+                    title = stringResource(R.string.vn_weekly),
+                    price = weeklyPrice ?: "—",
+                    caption = weeklyCaption,
                     highlighted = false,
-                    onClick = onBuyMonthly,
+                    onClick = onBuyWeekly,
                 )
                 PriceCard(
                     modifier = Modifier.weight(1f),
-                    title = stringResource(R.string.vn_lifetime),
-                    price = lifetimePrice ?: "—",
-                    caption = stringResource(R.string.vn_pay_once),
-                    highlighted = true,
-                    onClick = onBuyLifetime,
+                    title = stringResource(R.string.vn_monthly),
+                    price = monthlyPrice ?: "—",
+                    caption = monthlyCaption,
+                    highlighted = false,
+                    onClick = onBuyMonthly,
                 )
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            PriceCard(
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(R.string.vn_lifetime),
+                price = lifetimePrice ?: "—",
+                caption = stringResource(R.string.vn_pay_once),
+                highlighted = true,
+                onClick = onBuyLifetime,
+            )
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -119,7 +161,10 @@ fun ProPaywallSheet(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 TextButton(onClick = onRestore) {
-                    Text(stringResource(R.string.vn_restore_purchase), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        stringResource(R.string.vn_restore_purchase),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
                 Text(
                     text = stringResource(R.string.vn_billed_by),

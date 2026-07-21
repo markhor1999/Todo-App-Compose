@@ -35,6 +35,8 @@ class SettingsViewModel @Inject constructor(
 
     val pricing: StateFlow<ProPricing> = billing.pricing
 
+    fun launchWeekly(activity: android.app.Activity) = billing.launchWeekly(activity)
+
     fun launchMonthly(activity: android.app.Activity) = billing.launchMonthly(activity)
 
     fun launchLifetime(activity: android.app.Activity) = billing.launchLifetime(activity)

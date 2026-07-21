@@ -11,6 +11,7 @@ import com.codingwithsalman.voicenotes.asr.api.EngineState
 import com.codingwithsalman.voicenotes.asr.api.TranscriptionCoordinator
 import com.codingwithsalman.voicenotes.core.common.di.IoDispatcher
 import com.codingwithsalman.voicenotes.core.billing.BillingRepository
+import com.codingwithsalman.voicenotes.core.designsystem.R as DsR
 import com.codingwithsalman.voicenotes.core.billing.ProPricing
 import com.codingwithsalman.voicenotes.core.database.NotesRepository
 import com.codingwithsalman.voicenotes.core.datastore.EntitlementStore
@@ -78,6 +79,8 @@ class NoteDetailViewModel @Inject constructor(
 
     val pricing: StateFlow<ProPricing> = billing.pricing
 
+    fun launchWeekly(activity: android.app.Activity) = billing.launchWeekly(activity)
+
     fun launchMonthly(activity: android.app.Activity) = billing.launchMonthly(activity)
 
     fun launchLifetime(activity: android.app.Activity) = billing.launchLifetime(activity)
@@ -132,8 +135,11 @@ class NoteDetailViewModel @Inject constructor(
     /** Share the transcript text via the system sheet. */
     fun shareTranscript() {
         val current = note.value ?: return
-        val body = TranscriptFormats.plainText(segments.value)
-        if (body.isBlank()) return
+        val transcript = TranscriptFormats.plainText(segments.value)
+        if (transcript.isBlank()) return
+        // Tasteful attribution turns every shared transcript into a small, on-brand pointer back to
+        // Murmur — a cheap discovery loop. Share only; exports (exportTo) stay clean.
+        val body = "$transcript\n\n${context.getString(DsR.string.vn_share_attribution)}"
         startChooser(
             Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"

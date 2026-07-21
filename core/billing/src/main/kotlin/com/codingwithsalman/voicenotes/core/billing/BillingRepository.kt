@@ -26,8 +26,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 data class ProPricing(
+    val weeklyPrice: String? = null,
     val monthlyPrice: String? = null,
     val lifetimePrice: String? = null,
+    /** Free-trial length in days for each subscription, if the console configured a trial offer. */
+    val weeklyTrialDays: Int? = null,
+    val monthlyTrialDays: Int? = null,
 )
 
 /**
@@ -49,6 +53,7 @@ class BillingRepository @Inject constructor(
 
     val isPro = entitlementStore.isPro
 
+    private var weeklyDetails: ProductDetails? = null
     private var monthlyDetails: ProductDetails? = null
     private var lifetimeDetails: ProductDetails? = null
 
@@ -83,19 +88,33 @@ class BillingRepository @Inject constructor(
     private fun queryProducts() {
         val subParams = QueryProductDetailsParams.newBuilder()
             .setProductList(
-                listOf(
+                listOf(PRODUCT_WEEKLY, PRODUCT_MONTHLY).map { id ->
                     QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId(PRODUCT_MONTHLY)
+                        .setProductId(id)
                         .setProductType(BillingClient.ProductType.SUBS)
                         .build()
-                )
+                }
             ).build()
         client.queryProductDetailsAsync(subParams) { result, products ->
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                monthlyDetails = products.firstOrNull()
-                val price = monthlyDetails?.subscriptionOfferDetails?.firstOrNull()
-                    ?.pricingPhases?.pricingPhaseList?.firstOrNull()?.formattedPrice
-                _pricing.value = _pricing.value.copy(monthlyPrice = price)
+                products.forEach { details ->
+                    when (details.productId) {
+                        PRODUCT_WEEKLY -> {
+                            weeklyDetails = details
+                            _pricing.value = _pricing.value.copy(
+                                weeklyPrice = details.recurringPrice(),
+                                weeklyTrialDays = details.trialDays(),
+                            )
+                        }
+                        PRODUCT_MONTHLY -> {
+                            monthlyDetails = details
+                            _pricing.value = _pricing.value.copy(
+                                monthlyPrice = details.recurringPrice(),
+                                monthlyTrialDays = details.trialDays(),
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -138,14 +157,20 @@ class BillingRepository @Inject constructor(
                     val all = subPurchases + inappPurchases
                     acknowledgeNew(all)
                     val owned = all.any { purchase ->
+                        // An active free trial is reported as PURCHASED, so this grants Pro during
+                        // the trial and revokes it once the (unconverted) subscription lapses.
                         purchase.purchaseState == Purchase.PurchaseState.PURCHASED &&
-                            purchase.products.any { it == PRODUCT_MONTHLY || it == PRODUCT_LIFETIME }
+                            purchase.products.any {
+                                it == PRODUCT_WEEKLY || it == PRODUCT_MONTHLY || it == PRODUCT_LIFETIME
+                            }
                     }
                     scope.launch { entitlementStore.setPro(owned) }
                 }
             }
         }
     }
+
+    fun launchWeekly(activity: Activity) = launchFlow(activity, weeklyDetails, isSub = true)
 
     fun launchMonthly(activity: Activity) = launchFlow(activity, monthlyDetails, isSub = true)
 
@@ -160,7 +185,8 @@ class BillingRepository @Inject constructor(
             .setProductDetails(product)
             .apply {
                 if (isSub) {
-                    product.subscriptionOfferDetails?.firstOrNull()?.offerToken?.let(::setOfferToken)
+                    // Prefer the free-trial offer so eligible users actually start the trial.
+                    product.trialEligibleOffer()?.offerToken?.let(::setOfferToken)
                 }
             }
             .build()
@@ -177,7 +203,9 @@ class BillingRepository @Inject constructor(
         acknowledgeNew(purchases)
         val owned = purchases.any { purchase ->
             purchase.purchaseState == Purchase.PurchaseState.PURCHASED &&
-                purchase.products.any { it == PRODUCT_MONTHLY || it == PRODUCT_LIFETIME }
+                purchase.products.any {
+                    it == PRODUCT_WEEKLY || it == PRODUCT_MONTHLY || it == PRODUCT_LIFETIME
+                }
         }
         if (owned) scope.launch { entitlementStore.setPro(true) }
     }
@@ -194,7 +222,37 @@ class BillingRepository @Inject constructor(
             }
     }
 
+    // --- Subscription offer helpers ---------------------------------------------------------
+
+    /** The offer that includes a free (zero-price) phase, if the console configured a trial. */
+    private fun ProductDetails.trialEligibleOffer(): ProductDetails.SubscriptionOfferDetails? {
+        val offers = subscriptionOfferDetails ?: return null
+        return offers.firstOrNull { offer ->
+            offer.pricingPhases.pricingPhaseList.any { it.priceAmountMicros == 0L }
+        } ?: offers.firstOrNull()
+    }
+
+    /**
+     * The recurring (post-trial) price for the paywall — the last non-free pricing phase. Using the
+     * FIRST phase would show the trial's "Free"/zero price once a trial offer exists.
+     */
+    private fun ProductDetails.recurringPrice(): String? {
+        val phases = trialEligibleOffer()?.pricingPhases?.pricingPhaseList ?: return null
+        return phases.lastOrNull { it.priceAmountMicros > 0L }?.formattedPrice
+            ?: phases.lastOrNull()?.formattedPrice
+    }
+
+    /** Free-trial length in days, if the offer has a free phase (e.g. "P3D" -> 3, "P1W" -> 7). */
+    private fun ProductDetails.trialDays(): Int? {
+        val free = trialEligibleOffer()?.pricingPhases?.pricingPhaseList
+            ?.firstOrNull { it.priceAmountMicros == 0L } ?: return null
+        val m = Regex("""P(?:(\d+)W)?(?:(\d+)D)?""").matchEntire(free.billingPeriod) ?: return null
+        val days = (m.groupValues[1].toIntOrNull() ?: 0) * 7 + (m.groupValues[2].toIntOrNull() ?: 0)
+        return days.takeIf { it > 0 }
+    }
+
     companion object {
+        const val PRODUCT_WEEKLY = "pro_weekly"
         const val PRODUCT_MONTHLY = "pro_monthly"
         const val PRODUCT_LIFETIME = "pro_lifetime"
         private const val TAG = "VnBilling"

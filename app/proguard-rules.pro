@@ -26,23 +26,13 @@
     kotlinx.serialization.KSerializer serializer(...);
 }
 
-# Keep the NavigationRoute sealed hierarchy (all @Serializable sub-types)
--keep class com.codingwithsalman.apps.todo.app.compose.jotjives.presentation.navigation.** { *; }
-
-# ──────────────────────────────────────────────────────────────
-# Koin  (4.x)
-# singleOf / viewModelOf compile to direct constructor lambdas,
-# so most references are resolved at compile time.
-# Keep Koin internals that use reflection for module scanning.
-# ──────────────────────────────────────────────────────────────
--keepnames class org.koin.** { *; }
--keep class org.koin.android.** { *; }
--keep class org.koin.androidx.** { *; }
+# The @Serializable navigation routes (Navigation Compose type-safe routes) are already covered
+# by the generic @kotlinx.serialization.Serializable keep above.
 
 # ──────────────────────────────────────────────────────────────
 # ViewModel
-# Koin creates ViewModels via direct constructor references in lambdas,
-# but the constructor keep guards against aggressive R8 inlining.
+# Hilt creates ViewModels via generated factories; the constructor keep guards
+# against aggressive R8 inlining. (Hilt/Dagger ship their own consumer rules.)
 # ──────────────────────────────────────────────────────────────
 -keepclassmembers class * extends androidx.lifecycle.ViewModel {
     <init>(...);
@@ -50,13 +40,6 @@
 -keepclassmembers class * extends androidx.lifecycle.AndroidViewModel {
     <init>(android.app.Application, ...);
 }
-
-# ──────────────────────────────────────────────────────────────
-# Glance App Widget
-# Widget receiver class name is referenced in AndroidManifest.xml.
-# ──────────────────────────────────────────────────────────────
--keep class * extends androidx.glance.appwidget.GlanceAppWidget { *; }
--keep class * extends androidx.glance.appwidget.GlanceAppWidgetReceiver { *; }
 
 # ──────────────────────────────────────────────────────────────
 # Coroutines
@@ -76,6 +59,13 @@
 # DataStore Preferences
 # ──────────────────────────────────────────────────────────────
 -keep class androidx.datastore.** { *; }
+
+# ──────────────────────────────────────────────────────────────
+# Google Play In-App Review (review-ktx)
+# The Billing + Review AARs ship their own consumer keep rules; R8 only needs this
+# Play Services compile-time annotation (absent at runtime) suppressed.
+# ──────────────────────────────────────────────────────────────
+-dontwarn com.google.android.gms.common.annotation.NoNullnessRewrite
 
 # sherpa-onnx: JNI resolves these classes/fields reflectively; the AAR ships no consumer rules.
 -keep class com.k2fsa.sherpa.onnx.** { *; }

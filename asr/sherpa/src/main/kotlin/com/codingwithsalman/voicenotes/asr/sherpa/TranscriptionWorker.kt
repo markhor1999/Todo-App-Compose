@@ -96,6 +96,7 @@ class TranscriptionWorker @AssistedInject constructor(
             }
             repository.updateStatus(noteId, TranscriptionStatus.DONE)
             entitlementStore.consume(note.durationMs)
+            entitlementStore.recordTranscriptionSuccess()
             Result.success()
         } catch (e: Exception) {
             Log.e(TAG, "transcription failed for note=$noteId", e)

@@ -14,9 +14,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.core.content.IntentCompat
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.codingwithsalman.voicenotes.core.billing.BillingRepository
 import com.codingwithsalman.voicenotes.core.datastore.EntitlementStore
 import com.codingwithsalman.voicenotes.core.datastore.SettingsRepository
@@ -45,6 +50,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         billing.connect()
+        observeInAppReview()
         // Only process the launch intent on a fresh start — on a config-change recreation
         // savedInstanceState is non-null, and re-reading getIntent() would double-import.
         if (savedInstanceState == null) {
@@ -85,6 +91,26 @@ class MainActivity : ComponentActivity() {
                         sharedAudioUris = sharedAudioUris.value,
                         onSharedAudioConsumed = { sharedAudioUris.value = emptyList() },
                     )
+                }
+            }
+        }
+    }
+
+    /**
+     * After [EntitlementStore.REVIEW_AFTER_SUCCESSES] successful transcriptions, ask for a Play
+     * in-app review — once per install, at a natural post-success moment (the flag flips right after
+     * a transcription finishes). Play rate-limits whether the card actually shows and never reports
+     * the outcome, so this is fire-and-forget with no analytics (Murmur's MUR-03 no-analytics stance).
+     * The "asked" flag is set only on a successful request, so an offline / no-Play-Store device
+     * simply retries the next time it's in the foreground.
+     */
+    private fun observeInAppReview() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                entitlementStore.reviewDue.distinctUntilChanged().collect { due ->
+                    if (due && runCatching { launchInAppReview() }.isSuccess) {
+                        entitlementStore.markReviewRequested()
+                    }
                 }
             }
         }

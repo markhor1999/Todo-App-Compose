@@ -22,10 +22,9 @@ android {
     namespace = "com.codingwithsalman.voicenotes.app"
 
     defaultConfig {
-        // Live Play listing is kept — the applicationId predates the rewrite and cannot change.
         applicationId = "com.codingwithsalman.apps.todo.app.compose"
-        versionCode = 8
-        versionName = "2.1.0"
+        versionCode = 10
+        versionName = "2.1.1"
 
         ndk {
             // sherpa-onnx ships native libs; keep the APK/AAB to the ABIs real devices use.
@@ -83,6 +82,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.play.review.ktx)
     implementation(libs.androidx.work.ktx)
     implementation(libs.hilt.ext.work)
     ksp(libs.hilt.ext.compiler)

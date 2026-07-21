@@ -1,5 +1,6 @@
 package com.codingwithsalman.voicenotes.feature.settings
 
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.codingwithsalman.voicenotes.core.designsystem.R
 import androidx.compose.runtime.Composable
@@ -308,8 +310,12 @@ fun SettingsScreen(
             if (showPaywall) {
                 ProPaywallSheet(
                     isPro = isPro,
+                    weeklyPrice = pricing.weeklyPrice,
                     monthlyPrice = pricing.monthlyPrice,
                     lifetimePrice = pricing.lifetimePrice,
+                    weeklyTrialDays = pricing.weeklyTrialDays,
+                    monthlyTrialDays = pricing.monthlyTrialDays,
+                    onBuyWeekly = { activity?.let(viewModel::launchWeekly) },
                     onBuyMonthly = { activity?.let(viewModel::launchMonthly) },
                     onBuyLifetime = { activity?.let(viewModel::launchLifetime) },
                     onRestore = viewModel::restorePurchases,
@@ -317,9 +323,42 @@ fun SettingsScreen(
                 )
             }
 
+            SectionTitle(stringResource(R.string.vn_share_section))
+            val shareContext = LocalContext.current
+            Surface(
+                shape = RoundedCornerShape(20.dp),
+                color = MaterialTheme.colorScheme.surface,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        border = BorderStroke(1.dp, VnTheme.extended.cardStroke),
+                        shape = RoundedCornerShape(20.dp),
+                    )
+                    .clickable {
+                        val send = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, shareContext.getString(R.string.vn_tell_friend_text))
+                        }
+                        shareContext.startActivity(Intent.createChooser(send, null))
+                    },
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = stringResource(R.string.vn_tell_friend_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = stringResource(R.string.vn_tell_friend_subtitle),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = stringResource(R.string.vn_version_line, "2.1.0"),
+                text = stringResource(R.string.vn_version_line, "2.1.1"),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier

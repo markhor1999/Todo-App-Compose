@@ -30,6 +30,8 @@ class EntitlementStore @Inject constructor(
         val meterDate = stringPreferencesKey("meter_date")
         val meterUsedMs = longPreferencesKey("meter_used_ms")
         val onboardingDone = booleanPreferencesKey("onboarding_done")
+        val transcriptionSuccessCount = longPreferencesKey("transcription_success_count")
+        val reviewRequested = booleanPreferencesKey("review_requested")
     }
 
     val isPro: Flow<Boolean> = context.entitlementDataStore.data.map { it[Keys.isPro] ?: false }
@@ -69,11 +71,39 @@ class EntitlementStore @Inject constructor(
         }
     }
 
+    /**
+     * Bump the lifetime count of successful transcriptions. Its only use is to gate the one-time
+     * in-app review request ([reviewDue]).
+     */
+    suspend fun recordTranscriptionSuccess() {
+        context.entitlementDataStore.edit { prefs ->
+            prefs[Keys.transcriptionSuccessCount] = (prefs[Keys.transcriptionSuccessCount] ?: 0L) + 1L
+        }
+    }
+
+    /**
+     * True once the user has completed [REVIEW_AFTER_SUCCESSES] transcriptions and we have not yet
+     * asked for a Play review. Play itself further decides whether the review card actually shows.
+     */
+    val reviewDue: Flow<Boolean> = context.entitlementDataStore.data.map { prefs ->
+        val count = prefs[Keys.transcriptionSuccessCount] ?: 0L
+        val alreadyAsked = prefs[Keys.reviewRequested] ?: false
+        !alreadyAsked && count >= REVIEW_AFTER_SUCCESSES
+    }
+
+    /** Remember we've asked, so the review request fires at most once per install. */
+    suspend fun markReviewRequested() {
+        context.entitlementDataStore.edit { it[Keys.reviewRequested] = true }
+    }
+
     private fun today(): String =
         SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
 
     companion object {
         /** Free tier: 10 minutes of transcription per day. */
         const val FREE_DAILY_MS = 10 * 60 * 1000L
+
+        /** Ask for a Play in-app review after this many successful transcriptions (once per install). */
+        const val REVIEW_AFTER_SUCCESSES = 2L
     }
 }
