@@ -8,6 +8,7 @@ import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
@@ -66,7 +67,10 @@ class BillingRepository @Inject constructor(
 
     private val client: BillingClient = BillingClient.newBuilder(context)
         .setListener(purchasesListener)
-        .enablePendingPurchases()
+        // Billing 8 removed the no-arg overload; one-time products = our pro_lifetime INAPP.
+        .enablePendingPurchases(
+            PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+        )
         .build()
 
     fun connect() {
@@ -95,9 +99,9 @@ class BillingRepository @Inject constructor(
                         .build()
                 }
             ).build()
-        client.queryProductDetailsAsync(subParams) { result, products ->
+        client.queryProductDetailsAsync(subParams) { result, queryResult ->
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                products.forEach { details ->
+                queryResult.productDetailsList.forEach { details ->
                     when (details.productId) {
                         PRODUCT_WEEKLY -> {
                             weeklyDetails = details
@@ -127,9 +131,9 @@ class BillingRepository @Inject constructor(
                         .build()
                 )
             ).build()
-        client.queryProductDetailsAsync(inappParams) { result, products ->
+        client.queryProductDetailsAsync(inappParams) { result, queryResult ->
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                lifetimeDetails = products.firstOrNull()
+                lifetimeDetails = queryResult.productDetailsList.firstOrNull()
                 _pricing.value = _pricing.value.copy(
                     lifetimePrice = lifetimeDetails?.oneTimePurchaseOfferDetails?.formattedPrice
                 )
