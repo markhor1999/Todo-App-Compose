@@ -15,3 +15,10 @@ dependencies {
 
     testImplementation(libs.junit)
 }
+
+// The SDK's own sources obviously use its engine internals; the opt-in fence exists for consumers.
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=com.tricodestudio.voicekit.VoiceKitInternalApi")
+    }
+}

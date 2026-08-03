@@ -14,9 +14,11 @@ import java.net.URL
 public class ModelStore constructor(
     private val context: Context,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    /** Overrides where model files land. Null uses the app's internal storage. */
+    private val rootOverride: File? = null,
 ) {
     private val modelsRoot: File
-        get() = File(context.filesDir, "models").apply { mkdirs() }
+        get() = (rootOverride ?: File(context.filesDir, "models")).apply { mkdirs() }
 
     fun modelDir(spec: AsrModelSpec): File =
         File(modelsRoot, spec.id).apply { mkdirs() }
@@ -102,5 +104,10 @@ public class ModelStore constructor(
         } finally {
             connection.disconnect()
         }
+    }
+
+    /** Deletes [spec]'s files. The shared VAD model is left alone — other models need it. */
+    fun remove(spec: AsrModelSpec) {
+        modelDir(spec).deleteRecursively()
     }
 }

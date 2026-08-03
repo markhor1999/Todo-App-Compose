@@ -62,12 +62,54 @@ class PublicApiShapeTest {
 
     @Test
     fun multilingualModelsAcceptAnyLanguageAndEnglishOnlyDoesNot() {
-        assertTrue(VoiceModel.MULTILINGUAL_FAST.isMultilingual)
-        assertTrue(VoiceModel.MULTILINGUAL_FAST.supports("ur"))
+        assertTrue(VoiceModel.MULTILINGUAL.isMultilingual)
+        assertTrue(VoiceModel.MULTILINGUAL.supports("ur"))
 
         assertTrue(!VoiceModel.ENGLISH_FAST.isMultilingual)
         assertTrue(VoiceModel.ENGLISH_FAST.supports("EN"))
         assertTrue(!VoiceModel.ENGLISH_FAST.supports("ur"))
+    }
+
+    /**
+     * Every model must be backed by a real bundle, and the advertised size must come from that
+     * bundle. A tier that exists only in the enum is a promise the downloader cannot keep — the
+     * previous MULTILINGUAL_ACCURATE entry was exactly that, with a size invented to look plausible.
+     */
+    @Test
+    fun everyModelIsBackedByRealFilesAndReportsTheirRealSize() {
+        VoiceModel.entries.forEach { m ->
+            assertTrue("\$m has no files", m.spec.files.isNotEmpty())
+            assertTrue("\$m reports \${m.approxSizeMb} MB", m.approxSizeMb > 0)
+            m.spec.files.forEach { f ->
+                assertTrue("\$m file \${f.fileName} has no size", f.sizeBytes > 0)
+                assertTrue("\$m file \${f.fileName} has no url", f.url.startsWith("http"))
+            }
+        }
+    }
+
+    @Test
+    fun callsBeforeInitializeFailWithNotInitializedRatherThanNpe() {
+        VoiceKit.resetForTesting()
+        assertTrue(!VoiceKit.isInitialized)
+        try {
+            VoiceKit.models
+            throw AssertionError("expected NotInitialized")
+        } catch (e: VoiceKitException.NotInitialized) {
+            assertTrue(e.message!!.contains("initialize"))
+        }
+    }
+
+    @Test
+    fun blankLicenseKeyIsRejectedAsMalformed() {
+        listOf("", "   ", "\n").forEach { bad ->
+            try {
+                VoiceKit.validateLicenseShape(bad)
+                throw AssertionError("expected InvalidLicense for '\$bad'")
+            } catch (e: VoiceKitException.InvalidLicense) {
+                assertEquals(VoiceKitException.InvalidLicense.Reason.MALFORMED, e.reason)
+            }
+        }
+        VoiceKit.validateLicenseShape("vk_live_anything")
     }
 
     /**

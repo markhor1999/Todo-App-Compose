@@ -5,27 +5,47 @@ package com.tricodestudio.voicekit
  * how fast, how much disk.
  *
  * The engine internals (Whisper vs Moonshine, int8 ONNX bundles, encoder/decoder/tokens file roles,
- * where the weights are mirrored) are deliberately absent from this type. Absorbing that complexity
- * is the product; leaking it would just be `AsrModelSpec` with a new name.
+ * where the weights are mirrored) are deliberately absent. Absorbing that is the product; leaking it
+ * would just be `AsrModelSpec` with a new name.
+ *
+ * Every entry here is backed by a real bundle in [ModelCatalog], and [approxSizeMb] and [languages]
+ * are read from it rather than restated — a size that drifts from the files being downloaded is the
+ * kind of small lie that costs trust the first time a developer measures it.
  */
-public enum class VoiceModel(
-    /** ISO 639-1 codes this model targets. Empty means multilingual. */
-    public val languages: Set<String>,
-    /** Rough on-disk size once installed. Budget for it in your onboarding copy. */
-    public val approxSizeMb: Int,
-) {
+public enum class VoiceModel {
+
     /** Fastest and smallest. English only. */
-    ENGLISH_FAST(setOf("en"), 40),
+    ENGLISH_FAST,
 
-    /** The default. Multilingual, good accuracy, still comfortable on mid-range hardware. */
-    MULTILINGUAL_FAST(emptySet(), 90),
+    /**
+     * English, tuned for low-RAM devices. Same job as [ENGLISH_FAST] with a different architecture
+     * that behaves better under memory pressure — reach for it if you support cheap hardware.
+     */
+    ENGLISH_COMPACT,
 
-    /** Highest accuracy, noticeably slower and larger. Prefer it for long-form audio. */
-    MULTILINGUAL_ACCURATE(emptySet(), 220),
+    /** Multilingual with auto-detection. The default. */
+    MULTILINGUAL,
     ;
 
-    /** True when this model has no fixed language list and will auto-detect. */
-    public val isMultilingual: Boolean get() = languages.isEmpty()
+    internal val spec: AsrModelSpec
+        get() = when (this) {
+            ENGLISH_FAST -> ModelCatalog.whisperTinyEn
+            ENGLISH_COMPACT -> ModelCatalog.moonshineBaseEn
+            MULTILINGUAL -> ModelCatalog.whisperBaseMultilingual
+        }
+
+    /** ISO 639-1 codes this model targets. Empty means multilingual with auto-detection. */
+    public val languages: Set<String> get() = spec.languages.toSet()
+
+    /**
+     * On-disk size once installed, including the shared voice-activity-detection model.
+     * Read from the actual download manifest, so it cannot drift from reality.
+     */
+    public val approxSizeMb: Int
+        get() = ((spec.totalBytes + ModelCatalog.vadFile.sizeBytes) / 1_048_576L).toInt()
+
+    /** True when this model auto-detects rather than targeting a fixed language list. */
+    public val isMultilingual: Boolean get() = spec.languages.isEmpty()
 
     /** Whether this model can be asked for [languageCode]. */
     public fun supports(languageCode: String): Boolean =
