@@ -6,7 +6,7 @@ import com.codingwithsalman.voicenotes.asr.api.ModelFileRole
 import com.codingwithsalman.voicenotes.asr.api.SegmentResult
 import com.codingwithsalman.voicenotes.asr.api.TranscriptionResult
 import com.codingwithsalman.voicenotes.core.common.di.DefaultDispatcher
-import com.codingwithsalman.voicenotes.core.media.AudioDecoder
+import com.tricodestudio.voicekit.AudioDecoder
 import com.k2fsa.sherpa.onnx.OfflineModelConfig
 import com.k2fsa.sherpa.onnx.OfflineMoonshineModelConfig
 import com.k2fsa.sherpa.onnx.OfflineRecognizer

@@ -7,6 +7,7 @@ android { namespace = "com.codingwithsalman.voicenotes.asr.sherpa" }
 
 dependencies {
     api(projects.asr.api)
+    implementation(projects.voicekit)
     implementation(projects.core.model)
     implementation(projects.core.common)
     implementation(projects.core.database)

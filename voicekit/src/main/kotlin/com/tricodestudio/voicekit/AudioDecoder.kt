@@ -1,22 +1,46 @@
-package com.codingwithsalman.voicenotes.core.media
+package com.tricodestudio.voicekit
 
 import android.media.MediaCodec
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import java.io.File
 import java.nio.ByteOrder
-import javax.inject.Inject
 
 /**
- * Decodes any platform-supported audio file (m4a/AAC, wav, mp3, ogg…) to
- * 16 kHz mono float PCM — the input sherpa-onnx models expect.
- * CPU-bound; call from a background dispatcher.
+ * Decodes any platform-supported audio file (m4a/AAC, wav, mp3, ogg…) to **16 kHz mono float PCM**,
+ * resampling if needed.
+ *
+ * This is public API rather than an internal helper, and deliberately so: [LiveSession.accept] takes
+ * 16 kHz mono normalized floats, which is a real burden to produce correctly — channel downmixing
+ * and resampling are exactly the kind of thing that silently half-works and degrades accuracy with
+ * no error. Shipping the decoder is part of absorbing the integration week rather than leaving it
+ * on the caller.
+ *
+ * No DI annotations. A library that forces Hilt (or any container) on its consumers is one nobody
+ * can adopt; construct it directly, or provide it from your own graph — Murmur does the latter, in
+ * `core:media`'s `MediaModule`.
+ *
+ * CPU-bound and blocking. Call it from a background dispatcher.
  */
-class AudioDecoder @Inject constructor() {
+public class AudioDecoder {
 
-    fun decodeToMono16k(file: File, onProgress: (Float) -> Unit = {}): FloatArray {
+    /**
+     * @param onProgress 0f..1f, driven by presentation timestamps. Only meaningful when the
+     *   container declares a duration.
+     * @throws VoiceKitException.UnsupportedAudio if the file has no audio track or cannot be decoded.
+     */
+    public fun decodeToMono16k(file: File, onProgress: (Float) -> Unit = {}): FloatArray {
+        if (!file.exists()) {
+            throw VoiceKitException.UnsupportedAudio("no file at ${file.absolutePath}")
+        }
+
         val extractor = MediaExtractor()
-        extractor.setDataSource(file.absolutePath)
+        try {
+            extractor.setDataSource(file.absolutePath)
+        } catch (e: Exception) {
+            extractor.release()
+            throw VoiceKitException.UnsupportedAudio("${file.name} could not be opened (${e.message})")
+        }
 
         var trackIndex = -1
         var format: MediaFormat? = null
@@ -30,7 +54,9 @@ class AudioDecoder @Inject constructor() {
         }
         val trackFormat = format ?: run {
             extractor.release()
-            error("No audio track in ${file.name}")
+            // Was `error(...)`, i.e. an IllegalStateException with no guidance. An SDK failure
+            // should say what is wrong with the input, because the caller is the one who can fix it.
+            throw VoiceKitException.UnsupportedAudio("no audio track in ${file.name}")
         }
         extractor.selectTrack(trackIndex)
 
@@ -39,9 +65,15 @@ class AudioDecoder @Inject constructor() {
             trackFormat.getLong(MediaFormat.KEY_DURATION)
         } else 0L
 
-        val codec = MediaCodec.createDecoderByType(mime)
-        codec.configure(trackFormat, null, null, 0)
-        codec.start()
+        val codec = try {
+            MediaCodec.createDecoderByType(mime).also {
+                it.configure(trackFormat, null, null, 0)
+                it.start()
+            }
+        } catch (e: Exception) {
+            extractor.release()
+            throw VoiceKitException.UnsupportedAudio("no decoder for $mime on this device (${e.message})")
+        }
 
         // Output format can change after start (and often carries the real values).
         var sampleRate = trackFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE)
@@ -109,6 +141,10 @@ class AudioDecoder @Inject constructor() {
                     }
                 }
             }
+        } catch (e: VoiceKitException) {
+            throw e
+        } catch (e: Exception) {
+            throw VoiceKitException.UnsupportedAudio("decoding ${file.name} failed (${e.message})")
         } finally {
             runCatching { codec.stop() }
             codec.release()
@@ -141,7 +177,8 @@ class AudioDecoder @Inject constructor() {
         return output
     }
 
-    companion object {
-        const val TARGET_SAMPLE_RATE = 16_000
+    public companion object {
+        /** Sample rate every model in [VoiceModel] expects. */
+        public const val TARGET_SAMPLE_RATE: Int = 16_000
     }
 }
