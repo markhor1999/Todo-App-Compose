@@ -38,6 +38,10 @@ include(":core:media")
 include(":core:billing")
 include(":asr:api")
 include(":asr:sherpa")
+// The SDK surface being extracted from :asr:* — see brain/ventures/ondevice-voice-sdk-api-sketch.md.
+// Deliberately depends on NO :core:* module and NO Hilt: a library must not impose a DI framework
+// on the apps that consume it. Murmur will consume this module, which is how the API gets proven.
+include(":voicekit")
 include(":feature:capture")
 include(":feature:library")
 include(":feature:note")
