@@ -1,5 +1,8 @@
+@file:OptIn(com.tricodestudio.voicekit.VoiceKitInternalApi::class)
+
 package com.codingwithsalman.voicenotes.asr.sherpa
 
+import com.tricodestudio.voicekit.ModelStore
 import android.content.Context
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -7,9 +10,9 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.codingwithsalman.voicenotes.asr.api.AsrModelSpec
+import com.tricodestudio.voicekit.AsrModelSpec
 import com.codingwithsalman.voicenotes.asr.api.EngineState
-import com.codingwithsalman.voicenotes.asr.api.ModelCatalog
+import com.tricodestudio.voicekit.ModelCatalog
 import com.codingwithsalman.voicenotes.asr.api.TranscriptionCoordinator
 import com.codingwithsalman.voicenotes.core.database.NotesRepository
 import com.codingwithsalman.voicenotes.core.datastore.EntitlementStore

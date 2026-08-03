@@ -10,6 +10,8 @@ android { namespace = "com.tricodestudio.voicekit" }
 // constructor parameter — never through a shared module.
 dependencies {
     implementation(libs.kotlinx.coroutines.android)
+    // The recognizer itself now lives here. This is the SDK's only heavyweight dependency.
+    api(libs.sherpa.onnx.android)
 
     testImplementation(libs.junit)
 }

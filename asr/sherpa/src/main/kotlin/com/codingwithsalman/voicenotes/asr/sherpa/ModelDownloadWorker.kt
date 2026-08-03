@@ -1,12 +1,15 @@
+@file:OptIn(com.tricodestudio.voicekit.VoiceKitInternalApi::class)
+
 package com.codingwithsalman.voicenotes.asr.sherpa
 
+import com.tricodestudio.voicekit.ModelStore
 import android.content.Context
 import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.codingwithsalman.voicenotes.asr.api.ModelCatalog
+import com.tricodestudio.voicekit.ModelCatalog
 import com.codingwithsalman.voicenotes.core.datastore.SettingsRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

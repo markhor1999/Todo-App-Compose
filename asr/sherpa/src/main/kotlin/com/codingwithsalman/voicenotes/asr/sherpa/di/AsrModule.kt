@@ -26,3 +26,32 @@ abstract class AsrModule {
         impl: LiveTranscriptionManagerImpl,
     ): LiveTranscriptionManager
 }
+
+/**
+ * Provides the VoiceKit engine internals into Murmur's graph.
+ *
+ * These used to be `@Inject`-annotated classes in `:asr:sherpa`. They now ship in `:voicekit`, which
+ * carries no DI annotations, so the app constructs them — the same three lines any integrator would
+ * write. When the migration behind [com.tricodestudio.voicekit.VoiceKit] finishes, this module goes
+ * away entirely and the app calls `VoiceKit.transcribe()` instead.
+ */
+@dagger.Module
+@dagger.hilt.InstallIn(dagger.hilt.components.SingletonComponent::class)
+object VoiceKitEngineModule {
+
+    @dagger.Provides
+    @javax.inject.Singleton
+    @OptIn(com.tricodestudio.voicekit.VoiceKitInternalApi::class)
+    fun provideModelStore(
+        @dagger.hilt.android.qualifiers.ApplicationContext context: android.content.Context,
+    ): com.tricodestudio.voicekit.ModelStore = com.tricodestudio.voicekit.ModelStore(context)
+
+    @dagger.Provides
+    @javax.inject.Singleton
+    @OptIn(com.tricodestudio.voicekit.VoiceKitInternalApi::class)
+    fun provideTranscriptionEngine(
+        modelStore: com.tricodestudio.voicekit.ModelStore,
+        audioDecoder: com.tricodestudio.voicekit.AudioDecoder,
+    ): com.tricodestudio.voicekit.SherpaTranscriptionEngine =
+        com.tricodestudio.voicekit.SherpaTranscriptionEngine(modelStore, audioDecoder)
+}

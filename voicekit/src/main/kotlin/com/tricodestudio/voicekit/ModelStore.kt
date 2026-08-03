@@ -1,25 +1,19 @@
-package com.codingwithsalman.voicenotes.asr.sherpa
+package com.tricodestudio.voicekit
 
 import android.content.Context
-import com.codingwithsalman.voicenotes.asr.api.AsrModelSpec
-import com.codingwithsalman.voicenotes.asr.api.ModelCatalog
-import com.codingwithsalman.voicenotes.asr.api.ModelFileSpec
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.CoroutineDispatcher
-import com.codingwithsalman.voicenotes.core.common.di.IoDispatcher
+import kotlinx.coroutines.Dispatchers
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ModelStore @Inject constructor(
-    @ApplicationContext private val context: Context,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+@VoiceKitInternalApi
+public class ModelStore constructor(
+    private val context: Context,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val modelsRoot: File
         get() = File(context.filesDir, "models").apply { mkdirs() }

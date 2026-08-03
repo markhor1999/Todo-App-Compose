@@ -1,12 +1,5 @@
-package com.codingwithsalman.voicenotes.asr.sherpa
+package com.tricodestudio.voicekit
 
-import com.codingwithsalman.voicenotes.asr.api.AsrModelSpec
-import com.codingwithsalman.voicenotes.asr.api.ModelFamily
-import com.codingwithsalman.voicenotes.asr.api.ModelFileRole
-import com.codingwithsalman.voicenotes.asr.api.SegmentResult
-import com.codingwithsalman.voicenotes.asr.api.TranscriptionResult
-import com.codingwithsalman.voicenotes.core.common.di.DefaultDispatcher
-import com.tricodestudio.voicekit.AudioDecoder
 import com.k2fsa.sherpa.onnx.OfflineModelConfig
 import com.k2fsa.sherpa.onnx.OfflineMoonshineModelConfig
 import com.k2fsa.sherpa.onnx.OfflineRecognizer
@@ -16,23 +9,22 @@ import com.k2fsa.sherpa.onnx.SileroVadModelConfig
 import com.k2fsa.sherpa.onnx.Vad
 import com.k2fsa.sherpa.onnx.VadModelConfig
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * On-device Whisper via sherpa-onnx: decode → 16 kHz mono floats → silero-VAD
  * speech segments (capped under Whisper's 30 s window) → one OfflineRecognizer
  * decode per segment → segments with absolute timestamps. Fully offline.
  */
-@Singleton
-class SherpaTranscriptionEngine @Inject constructor(
+@VoiceKitInternalApi
+public class SherpaTranscriptionEngine constructor(
     private val modelStore: ModelStore,
     private val audioDecoder: AudioDecoder,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
 
     fun isReady(spec: AsrModelSpec): Boolean = modelStore.isInstalled(spec)
@@ -60,7 +52,15 @@ class SherpaTranscriptionEngine @Inject constructor(
             onProgress(p * DECODE_SHARE)
         }
         onProgress(DECODE_SHARE)
-        if (samples.isEmpty()) return@withContext TranscriptionResult(emptyList(), spec.languageParam.ifEmpty { null })
+        // Length of what was actually decoded, not what the container claims.
+        val durationMs = samples.size * 1000L / AudioDecoder.TARGET_SAMPLE_RATE
+        if (samples.isEmpty()) {
+            return@withContext TranscriptionResult(
+                segments = emptyList(),
+                language = spec.languageParam.ifEmpty { null },
+                durationMs = 0,
+            )
+        }
 
         val recognizer = OfflineRecognizer(
             assetManager = null,
@@ -83,7 +83,7 @@ class SherpaTranscriptionEngine @Inject constructor(
         )
 
         try {
-            val segments = mutableListOf<SegmentResult>()
+            val segments = mutableListOf<Segment>()
 
             fun drainVad() {
                 while (!vad.empty()) {
@@ -97,7 +97,7 @@ class SherpaTranscriptionEngine @Inject constructor(
                         if (text.isNotEmpty()) {
                             val startMs = speech.start * 1000L / SAMPLE_RATE
                             val endMs = startMs + speech.samples.size * 1000L / SAMPLE_RATE
-                            segments += SegmentResult(startMs = startMs, endMs = endMs, text = text)
+                            segments += Segment(startMs = startMs, endMs = endMs, text = text)
                         }
                     } finally {
                         stream.release()
@@ -125,7 +125,8 @@ class SherpaTranscriptionEngine @Inject constructor(
 
             TranscriptionResult(
                 segments = segments,
-                languageCode = spec.languageParam.ifEmpty { null },
+                language = spec.languageParam.ifEmpty { null },
+                durationMs = durationMs,
             )
         } finally {
             vad.release()
@@ -140,21 +141,21 @@ class SherpaTranscriptionEngine @Inject constructor(
     // a job arriving mid-recording simply suspends in withLock until the session releases.
 
     /** Non-blocking claim of the process-wide inference slot for a live session. */
-    internal fun tryLockForLiveSession(): Boolean = transcribeMutex.tryLock()
+    public fun tryLockForLiveSession(): Boolean = transcribeMutex.tryLock()
 
     /** Release the live session's claim. Safe to call once after a successful [tryLockForLiveSession]. */
-    internal fun unlockLiveSession() {
+    public fun unlockLiveSession() {
         runCatching { transcribeMutex.unlock() }
     }
 
     /** A recognizer for [spec] built exactly like the offline pass builds one. Caller releases. */
-    internal fun newRecognizer(spec: AsrModelSpec): OfflineRecognizer = OfflineRecognizer(
+    public fun newRecognizer(spec: AsrModelSpec): OfflineRecognizer = OfflineRecognizer(
         assetManager = null,
         config = OfflineRecognizerConfig(modelConfig = buildModelConfig(spec)),
     )
 
     /** A silero VAD tuned for live preview: shorter max segment so text commits frequently. */
-    internal fun newLiveVad(): Vad = Vad(
+    public fun newLiveVad(): Vad = Vad(
         assetManager = null,
         config = VadModelConfig(
             sileroVadModelConfig = SileroVadModelConfig(

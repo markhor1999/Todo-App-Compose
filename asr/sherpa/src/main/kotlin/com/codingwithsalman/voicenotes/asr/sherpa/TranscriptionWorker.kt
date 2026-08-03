@@ -1,5 +1,8 @@
+@file:OptIn(com.tricodestudio.voicekit.VoiceKitInternalApi::class)
+
 package com.codingwithsalman.voicenotes.asr.sherpa
 
+import com.tricodestudio.voicekit.SherpaTranscriptionEngine
 import android.app.NotificationManager
 import android.content.Context
 import android.util.Log
@@ -9,7 +12,7 @@ import com.codingwithsalman.voicenotes.core.designsystem.R as DsR
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.codingwithsalman.voicenotes.asr.api.ModelCatalog
+import com.tricodestudio.voicekit.ModelCatalog
 import com.codingwithsalman.voicenotes.core.database.NotesRepository
 import com.codingwithsalman.voicenotes.core.datastore.EntitlementStore
 import com.codingwithsalman.voicenotes.core.datastore.SettingsRepository

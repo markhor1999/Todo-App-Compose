@@ -1,3 +1,5 @@
+@file:OptIn(com.tricodestudio.voicekit.VoiceKitInternalApi::class)
+
 package com.codingwithsalman.voicenotes.asr.api
 
 import kotlinx.coroutines.flow.StateFlow

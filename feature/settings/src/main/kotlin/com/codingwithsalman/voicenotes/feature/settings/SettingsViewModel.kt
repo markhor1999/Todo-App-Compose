@@ -1,12 +1,14 @@
+@file:OptIn(com.tricodestudio.voicekit.VoiceKitInternalApi::class)
+
 package com.codingwithsalman.voicenotes.feature.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.codingwithsalman.voicenotes.asr.api.AsrModelSpec
+import com.tricodestudio.voicekit.AsrModelSpec
 import com.codingwithsalman.voicenotes.asr.api.EngineState
 import com.codingwithsalman.voicenotes.asr.api.LiveModelState
 import com.codingwithsalman.voicenotes.asr.api.LiveTranscriptionManager
-import com.codingwithsalman.voicenotes.asr.api.ModelCatalog
+import com.tricodestudio.voicekit.ModelCatalog
 import com.codingwithsalman.voicenotes.asr.api.TranscriptionCoordinator
 import com.codingwithsalman.voicenotes.core.billing.BillingRepository
 import com.codingwithsalman.voicenotes.core.billing.ProPricing

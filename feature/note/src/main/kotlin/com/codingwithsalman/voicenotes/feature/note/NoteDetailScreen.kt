@@ -1,3 +1,5 @@
+@file:OptIn(com.tricodestudio.voicekit.VoiceKitInternalApi::class)
+
 package com.codingwithsalman.voicenotes.feature.note
 
 import androidx.activity.compose.LocalActivity

@@ -1,11 +1,13 @@
-package com.codingwithsalman.voicenotes.asr.api
+package com.tricodestudio.voicekit
 
 /** Which sherpa model family a spec is — selects the recognizer config the engine builds.
  *  WHISPER/MOONSHINE are OFFLINE (the saved-transcript pass); STREAMING_ZIPFORMER is an ONLINE
  *  transducer used only for the live-preview-while-recording feature (v2.1 #2), never the offline pass. */
+@VoiceKitInternalApi
 enum class ModelFamily { WHISPER, MOONSHINE, STREAMING_ZIPFORMER }
 
 /** One downloadable file of a model bundle. Size verified via HTTP HEAD. */
+@VoiceKitInternalApi
 data class ModelFileSpec(
     val fileName: String,
     val url: String,
@@ -13,6 +15,7 @@ data class ModelFileSpec(
     val role: ModelFileRole,
 )
 
+@VoiceKitInternalApi
 enum class ModelFileRole {
     // Whisper + shared
     ENCODER, DECODER, TOKENS,
@@ -22,6 +25,7 @@ enum class ModelFileRole {
     JOINER,
 }
 
+@VoiceKitInternalApi
 data class AsrModelSpec(
     val id: String,
     val displayName: String,
@@ -44,7 +48,8 @@ data class AsrModelSpec(
  * Int8 ONNX bundles from the sherpa-onnx author's HuggingFace mirrors (raw files — no archive
  * extraction on device). Whisper URLs/sizes verified 2026-07-03; Moonshine 2026-07-05.
  */
-object ModelCatalog {
+@VoiceKitInternalApi
+public object ModelCatalog {
 
     private const val HF = "https://huggingface.co/csukuangfj"
 

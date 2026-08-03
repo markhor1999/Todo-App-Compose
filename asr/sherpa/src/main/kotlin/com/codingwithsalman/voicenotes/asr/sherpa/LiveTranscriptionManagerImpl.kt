@@ -1,12 +1,16 @@
+@file:OptIn(com.tricodestudio.voicekit.VoiceKitInternalApi::class)
+
 package com.codingwithsalman.voicenotes.asr.sherpa
 
+import com.tricodestudio.voicekit.SherpaTranscriptionEngine
+import com.tricodestudio.voicekit.ModelStore
 import android.util.Log
-import com.codingwithsalman.voicenotes.asr.api.AsrModelSpec
+import com.tricodestudio.voicekit.AsrModelSpec
 import com.codingwithsalman.voicenotes.asr.api.LiveModelState
 import com.codingwithsalman.voicenotes.asr.api.LiveSession
 import com.codingwithsalman.voicenotes.asr.api.LiveTranscriptionManager
-import com.codingwithsalman.voicenotes.asr.api.ModelCatalog
-import com.codingwithsalman.voicenotes.asr.api.ModelFileRole
+import com.tricodestudio.voicekit.ModelCatalog
+import com.tricodestudio.voicekit.ModelFileRole
 import com.codingwithsalman.voicenotes.core.datastore.SettingsRepository
 import com.k2fsa.sherpa.onnx.EndpointConfig
 import com.k2fsa.sherpa.onnx.FeatureConfig
