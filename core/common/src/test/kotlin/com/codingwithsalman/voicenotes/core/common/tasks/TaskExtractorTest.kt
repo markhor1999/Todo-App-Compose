@@ -154,6 +154,33 @@ class TaskExtractorTest {
     }
 
     @Test
+    fun `meeting-flow narration is not an action item`() {
+        // The one false positive from the 2026-08-15 device run: "let's" is a commitment cue, but
+        // here it is narrating the meeting rather than assigning anything.
+        val items = extract(
+            "Okay let's wrap up the quarterly review.",
+            "Let's take a look at the numbers together.",
+            "Alright, let's get started with the agenda.",
+        )
+        assertTrue("expected nothing, got $items", items.isEmpty())
+    }
+
+    @Test
+    fun `a flow phrase with a real deadline is still an action item`() {
+        // The disqualifier must not swallow genuine commitments that happen to share a verb.
+        val items = extract("Let's go over the numbers by Thursday.")
+        assertEquals(1, items.size)
+        assertNotNull(items[0].dueAtMs)
+    }
+
+    @Test
+    fun `a flow phrase with a merely narrated date stays disqualified`() {
+        // "on Thursday" is narration, not a deadline (see the on-Tuesday case above), so this is
+        // still just meeting flow and must not become a task.
+        assertTrue(extract("Let's go over the numbers on Thursday.").isEmpty())
+    }
+
+    @Test
     fun `empty input is safe`() {
         assertTrue(TaskExtractor.extract(emptyList(), reference).isEmpty())
     }

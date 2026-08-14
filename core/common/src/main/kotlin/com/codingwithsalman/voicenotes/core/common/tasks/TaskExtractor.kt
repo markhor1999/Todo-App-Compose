@@ -77,6 +77,17 @@ object TaskExtractor {
         "used to", "would have", "should have", "could have", "didn't", "did not", "wasn't",
     )
 
+    /**
+     * Meeting-flow phrases. "Let's" is a real commitment cue ("let's book the venue"), but the same
+     * word runs the meeting itself — and *"okay let's wrap up the quarterly review"* is narration of
+     * what is happening right now, not a task anyone leaves with. Caught on a real device run:
+     * it was the only false positive in a five-item transcript.
+     */
+    private val FLOW_PHRASES = listOf(
+        "wrap up", "get started", "let's begin", "let's start", "move on", "take a look",
+        "let's see", "go over", "talk about", "dive in", "kick off", "circle back to that",
+    )
+
     private val SENTENCE_SPLIT = Regex("(?<=[.!?])\\s+")
     private val WORD_SPLIT = Regex("\\s+")
 
@@ -105,11 +116,19 @@ object TaskExtractor {
                 if (DISQUALIFIERS.any { it in lower }) continue
                 if (COMMITMENT_CUES.none { it in lower }) continue
 
-                val key = clean.normalizedForCompare()
-                if (!seen.add(key)) continue
-
                 val deadline = DeadlineParser.parse(clean, referenceMs)
                     ?.takeIf { it.isDueDate(lower) }
+
+                // Flow phrases only disqualify a sentence with no real deadline: "let's go over the
+                // numbers by Thursday" schedules something, while a bare "let's go over the numbers"
+                // is what the meeting is doing right now. Note this deliberately reuses the same
+                // is-this-really-a-deadline test as the attachment above — an earlier version asked
+                // only whether a date-shaped phrase existed, which let "...on Thursday" (narration)
+                // through the filter and then attached no date to it anyway.
+                if (deadline == null && FLOW_PHRASES.any { it in lower }) continue
+
+                val key = clean.normalizedForCompare()
+                if (!seen.add(key)) continue
 
                 out += TaskCandidate(
                     text = clean.take(MAX_CHARS).trim(),
