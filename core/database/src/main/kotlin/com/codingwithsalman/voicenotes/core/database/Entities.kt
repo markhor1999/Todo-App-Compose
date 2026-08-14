@@ -57,6 +57,12 @@ data class ActionItemEntity(
     val text: String,
     val done: Boolean,
     val createdAtMs: Long,
+    /** Deadline as epoch millis, or null for an item with no date. A reminder exists iff this is
+     *  set and the item is not [done]. */
+    val dueAtMs: Long? = null,
+    /** For items lifted out of the transcript: where in the audio they were said, so the item can
+     *  seek like a transcript line does. Null for hand-typed items. */
+    val sourceStartMs: Long? = null,
 )
 
 fun ActionItemEntity.asModel(): ActionItem = ActionItem(
@@ -65,6 +71,8 @@ fun ActionItemEntity.asModel(): ActionItem = ActionItem(
     text = text,
     done = done,
     createdAtMs = createdAtMs,
+    dueAtMs = dueAtMs,
+    sourceStartMs = sourceStartMs,
 )
 
 fun NoteEntity.asModel(): Note = Note(

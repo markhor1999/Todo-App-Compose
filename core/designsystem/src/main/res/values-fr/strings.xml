@@ -161,4 +161,18 @@
     <string name="vn_tell_friend_text">J\'utilise Murmur — des notes vocales privées, hors ligne, transcrites directement sur le téléphone. https://play.google.com/store/apps/details?id=com.codingwithsalman.apps.todo.app.compose</string>
     <string name="vn_rate_title">Noter Murmur</string>
     <string name="vn_rate_subtitle">Laissez un avis sur Google Play</string>
+    <string name="vn_reminder_notification_title">Tâche à échéance</string>
+    <string name="vn_reminder_channel_name">Rappels</string>
+    <string name="vn_reminder_channel_desc">Notifications lorsqu\'une tâche arrive à échéance</string>
+    <string name="vn_autotasks_section">Tâches</string>
+    <string name="vn_autotasks_title">Détecter tâches et échéances</string>
+    <string name="vn_autotasks_body">Après la transcription, extraire ce que vous vous êtes engagé à faire — et créer un rappel si une date a été dite. Fonctionne sur votre téléphone, en anglais pour l\'instant.</string>
+    <string name="vn_due_set">Définir une date</string>
+    <string name="vn_due_clear">Retirer la date</string>
+    <string name="vn_due_today">À faire aujourd\'hui</string>
+    <string name="vn_due_tomorrow">À faire demain</string>
+    <string name="vn_due_on">Échéance le %1$s</string>
+    <string name="vn_due_overdue">En retard · %1$s</string>
+    <string name="vn_cd_set_due_date">Définir une échéance</string>
+    <string name="vn_autotasks_found">%1$d détectée(s) dans vos propos</string>
 </resources>

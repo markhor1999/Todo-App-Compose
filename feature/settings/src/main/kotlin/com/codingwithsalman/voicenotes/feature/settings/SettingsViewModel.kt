@@ -82,4 +82,13 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun retryLiveDownload() = liveManager.ensureModelDownloaded()
+
+    // --- Action items & deadline reminders (2.3.0) — opt-in, English-only extraction ---
+
+    val autoTasksEnabled: StateFlow<Boolean> = settings.autoTasksEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    fun setAutoTasksEnabled(enabled: Boolean) {
+        viewModelScope.launch { settings.setAutoTasksEnabled(enabled) }
+    }
 }

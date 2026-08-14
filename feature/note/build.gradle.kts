@@ -10,5 +10,6 @@ dependencies {
     implementation(projects.asr.api)
     implementation(projects.core.datastore)
     implementation(projects.core.billing)
+    implementation(projects.core.reminders)
     implementation(libs.androidx.activity.compose)
 }

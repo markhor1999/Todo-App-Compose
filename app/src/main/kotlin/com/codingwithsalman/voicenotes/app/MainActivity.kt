@@ -23,6 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.codingwithsalman.voicenotes.core.billing.BillingRepository
+import com.codingwithsalman.voicenotes.core.reminders.ReminderWorker
 import com.codingwithsalman.voicenotes.core.datastore.EntitlementStore
 import com.codingwithsalman.voicenotes.core.datastore.SettingsRepository
 import com.codingwithsalman.voicenotes.core.designsystem.theme.VoiceNotesTheme
@@ -45,6 +46,9 @@ class MainActivity : ComponentActivity() {
     /** Audio Uris handed to us by a share/view intent, awaiting import. Observed by Compose. */
     private val sharedAudioUris = mutableStateOf<List<Uri>>(emptyList())
 
+    /** Note to open straight away, set when a reminder notification launched us. */
+    private val openNoteId = mutableStateOf<Long?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -55,6 +59,7 @@ class MainActivity : ComponentActivity() {
         // savedInstanceState is non-null, and re-reading getIntent() would double-import.
         if (savedInstanceState == null) {
             sharedAudioUris.value = extractAudioUris(intent)
+            openNoteId.value = extractNoteId(intent)
         }
         val launchedFromShare = sharedAudioUris.value.isNotEmpty()
         setContent {
@@ -88,6 +93,8 @@ class MainActivity : ComponentActivity() {
                     VoiceNotesNavHost(
                         // A share/view launch skips onboarding so the imported note lands right away.
                         startAtOnboarding = !done && !launchedFromShare,
+                        openNoteId = openNoteId.value,
+                        onNoteOpened = { openNoteId.value = null },
                         sharedAudioUris = sharedAudioUris.value,
                         onSharedAudioConsumed = { sharedAudioUris.value = emptyList() },
                     )
@@ -122,7 +129,12 @@ class MainActivity : ComponentActivity() {
         setIntent(intent)
         val uris = extractAudioUris(intent)
         if (uris.isNotEmpty()) sharedAudioUris.value = uris
+        extractNoteId(intent)?.let { openNoteId.value = it }
     }
+
+    /** The note a reminder notification is pointing at, or null for an ordinary launch. */
+    private fun extractNoteId(intent: Intent?): Long? =
+        intent?.getLongExtra(ReminderWorker.EXTRA_NOTE_ID, -1L)?.takeIf { it > 0 }
 
     /** Pull audio Uri(s) out of a SEND / SEND_MULTIPLE / VIEW intent. */
     private fun extractAudioUris(intent: Intent?): List<Uri> = when (intent?.action) {

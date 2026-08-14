@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -41,10 +42,20 @@ data object OnboardingRoute
 @Composable
 fun VoiceNotesNavHost(
     startAtOnboarding: Boolean,
+    openNoteId: Long? = null,
+    onNoteOpened: () -> Unit = {},
     sharedAudioUris: List<android.net.Uri> = emptyList(),
     onSharedAudioConsumed: () -> Unit = {},
 ) {
     val navController = rememberNavController()
+
+    // A reminder notification names a note; navigate once it arrives, on top of Library so Back
+    // lands somewhere sensible rather than closing the app.
+    LaunchedEffect(openNoteId) {
+        val noteId = openNoteId ?: return@LaunchedEffect
+        navController.navigate(NoteRoute(noteId)) { launchSingleTop = true }
+        onNoteOpened()
+    }
 
     SharedTransitionLayout {
         CompositionLocalProvider(LocalSharedTransitionScope provides this) {

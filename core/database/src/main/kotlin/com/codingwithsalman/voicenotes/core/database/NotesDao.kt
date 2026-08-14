@@ -85,6 +85,20 @@ interface NotesDao {
     @Query("UPDATE action_items SET done = :done WHERE id = :id")
     suspend fun setActionItemDone(id: Long, done: Boolean)
 
+    @Query("UPDATE action_items SET dueAtMs = :dueAtMs WHERE id = :id")
+    suspend fun setActionItemDue(id: Long, dueAtMs: Long?)
+
+    @Query("SELECT * FROM action_items WHERE id = :id")
+    suspend fun actionItem(id: Long): ActionItemEntity?
+
+    /** Every outstanding deadline, soonest first — the set the scheduler re-arms from. */
+    @Query("SELECT * FROM action_items WHERE dueAtMs IS NOT NULL AND done = 0 ORDER BY dueAtMs ASC")
+    suspend fun pendingReminders(): List<ActionItemEntity>
+
+    /** Existing item texts for a note, used to keep re-extraction from re-suggesting known items. */
+    @Query("SELECT text FROM action_items WHERE noteId = :noteId")
+    suspend fun actionItemTexts(noteId: Long): List<String>
+
     @Query("DELETE FROM action_items WHERE id = :id")
     suspend fun deleteActionItem(id: Long)
 

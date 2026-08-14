@@ -169,4 +169,18 @@
     <string name="vn_tell_friend_text">أستخدم Murmur — ملاحظات صوتية خاصة تعمل دون اتصال وتُفرَّغ نصيًا على الهاتف نفسه. https://play.google.com/store/apps/details?id=com.codingwithsalman.apps.todo.app.compose</string>
     <string name="vn_rate_title">قيّم Murmur</string>
     <string name="vn_rate_subtitle">اترك مراجعة على Google Play</string>
+    <string name="vn_reminder_notification_title">مهمة مستحقة</string>
+    <string name="vn_reminder_channel_name">التذكيرات</string>
+    <string name="vn_reminder_channel_desc">إشعارات عند حلول موعد مهمة</string>
+    <string name="vn_autotasks_section">المهام</string>
+    <string name="vn_autotasks_title">استخراج المهام والمواعيد</string>
+    <string name="vn_autotasks_body">بعد التفريغ، استخرج ما التزمت به — وأضف تذكيرًا إذا ذُكر تاريخ. يعمل على هاتفك، وبالإنجليزية فقط حاليًا.</string>
+    <string name="vn_due_set">تحديد تاريخ</string>
+    <string name="vn_due_clear">إزالة التاريخ</string>
+    <string name="vn_due_today">مستحقة اليوم</string>
+    <string name="vn_due_tomorrow">مستحقة غدًا</string>
+    <string name="vn_due_on">مستحقة في %1$s</string>
+    <string name="vn_due_overdue">متأخرة · %1$s</string>
+    <string name="vn_cd_set_due_date">تحديد موعد الاستحقاق</string>
+    <string name="vn_autotasks_found">تم العثور على %1$d مما قيل</string>
 </resources>

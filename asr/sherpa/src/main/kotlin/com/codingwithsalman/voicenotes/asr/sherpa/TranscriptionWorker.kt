@@ -13,9 +13,12 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.tricodestudio.voicekit.ModelCatalog
+import com.codingwithsalman.voicenotes.core.common.tasks.TaskExtractor
+import com.codingwithsalman.voicenotes.core.common.tasks.TaskSourceLine
 import com.codingwithsalman.voicenotes.core.database.NotesRepository
 import com.codingwithsalman.voicenotes.core.datastore.EntitlementStore
 import com.codingwithsalman.voicenotes.core.datastore.SettingsRepository
+import com.codingwithsalman.voicenotes.core.reminders.ReminderScheduler
 import com.codingwithsalman.voicenotes.core.model.TranscriptSegment
 import com.codingwithsalman.voicenotes.core.model.TranscriptionStatus
 import dagger.assisted.Assisted
@@ -36,6 +39,7 @@ class TranscriptionWorker @AssistedInject constructor(
     private val settings: SettingsRepository,
     private val entitlementStore: EntitlementStore,
     private val progressBus: TranscriptionProgressBus,
+    private val reminderScheduler: ReminderScheduler,
 ) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
@@ -100,6 +104,7 @@ class TranscriptionWorker @AssistedInject constructor(
             repository.updateStatus(noteId, TranscriptionStatus.DONE)
             entitlementStore.consume(note.durationMs)
             entitlementStore.recordTranscriptionSuccess()
+            extractActionItems(noteId, note.createdAtMs, result.segments)
             Result.success()
         } catch (e: Exception) {
             Log.e(TAG, "transcription failed for note=$noteId", e)
@@ -109,6 +114,41 @@ class TranscriptionWorker @AssistedInject constructor(
             progressBus.clear(noteId)
             notificationManager.cancel(notificationId(noteId))
         }
+    }
+
+    /**
+     * Opt-in (Settings → Action items): pull commitments out of the finished transcript, store them
+     * as action items, and arm a reminder for any that carry a deadline.
+     *
+     * Dates resolve against the note's **recording** time, not now — "tomorrow" said last Tuesday
+     * means last Wednesday, and a stale deadline is dropped by the scheduler rather than fired late.
+     *
+     * Failures here never fail the job: the transcript is the product, action items are a bonus, and
+     * a note that transcribed fine must not be marked FAILED because a regex misbehaved.
+     */
+    private suspend fun extractActionItems(
+        noteId: Long,
+        recordedAtMs: Long,
+        segments: List<com.tricodestudio.voicekit.Segment>,
+    ) {
+        if (!settings.autoTasksEnabled.first()) return
+        runCatching {
+            val candidates = TaskExtractor.extract(
+                lines = segments.map { TaskSourceLine(it.text, it.startMs) },
+                referenceMs = recordedAtMs,
+                existingTexts = repository.actionItemTexts(noteId),
+            )
+            for (candidate in candidates) {
+                val id = repository.addActionItem(
+                    noteId = noteId,
+                    text = candidate.text,
+                    dueAtMs = candidate.dueAtMs,
+                    sourceStartMs = candidate.sourceStartMs,
+                )
+                val due = candidate.dueAtMs
+                if (id > 0 && due != null) reminderScheduler.schedule(id, due, noteId)
+            }
+        }.onFailure { Log.w(TAG, "action-item extraction failed for note=$noteId", it) }
     }
 
     private val notificationManager: NotificationManager

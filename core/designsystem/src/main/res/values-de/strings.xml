@@ -161,4 +161,18 @@
     <string name="vn_tell_friend_text">Ich nutze Murmur — private, offline Sprachnotizen, die direkt auf dem Handy transkribiert werden. https://play.google.com/store/apps/details?id=com.codingwithsalman.apps.todo.app.compose</string>
     <string name="vn_rate_title">Murmur bewerten</string>
     <string name="vn_rate_subtitle">Hinterlasse eine Rezension bei Google Play</string>
+    <string name="vn_reminder_notification_title">Aufgabe fällig</string>
+    <string name="vn_reminder_channel_name">Erinnerungen</string>
+    <string name="vn_reminder_channel_desc">Benachrichtigungen, wenn eine Aufgabe fällig ist</string>
+    <string name="vn_autotasks_section">Aufgaben</string>
+    <string name="vn_autotasks_title">Aufgaben und Fristen finden</string>
+    <string name="vn_autotasks_body">Nach der Transkription Zugesagtes heraussuchen — und eine Erinnerung setzen, wenn ein Datum genannt wurde. Läuft auf deinem Gerät, vorerst nur Englisch.</string>
+    <string name="vn_due_set">Datum setzen</string>
+    <string name="vn_due_clear">Datum entfernen</string>
+    <string name="vn_due_today">Heute fällig</string>
+    <string name="vn_due_tomorrow">Morgen fällig</string>
+    <string name="vn_due_on">Fällig am %1$s</string>
+    <string name="vn_due_overdue">Überfällig · %1$s</string>
+    <string name="vn_cd_set_due_date">Fälligkeitsdatum setzen</string>
+    <string name="vn_autotasks_found">%1$d aus dem Gesagten gefunden</string>
 </resources>

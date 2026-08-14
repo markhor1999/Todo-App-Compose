@@ -38,6 +38,10 @@ data class ActionItem(
     val text: String,
     val done: Boolean,
     val createdAtMs: Long,
+    /** Deadline as epoch millis, or null for an item with no date. */
+    val dueAtMs: Long? = null,
+    /** Audio position this item was lifted from; null for hand-typed items. */
+    val sourceStartMs: Long? = null,
 )
 
 enum class ThemeMode { SYSTEM, DARK, LIGHT }

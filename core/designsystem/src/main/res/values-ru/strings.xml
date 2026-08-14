@@ -165,4 +165,18 @@
     <string name="vn_tell_friend_text">Я пользуюсь Murmur — приватные офлайн-голосовые заметки, которые расшифровываются прямо на телефоне. https://play.google.com/store/apps/details?id=com.codingwithsalman.apps.todo.app.compose</string>
     <string name="vn_rate_title">Оценить Murmur</string>
     <string name="vn_rate_subtitle">Оставьте отзыв в Google Play</string>
+    <string name="vn_reminder_notification_title">Срок задачи</string>
+    <string name="vn_reminder_channel_name">Напоминания</string>
+    <string name="vn_reminder_channel_desc">Уведомления, когда наступает срок задачи</string>
+    <string name="vn_autotasks_section">Задачи</string>
+    <string name="vn_autotasks_title">Находить задачи и сроки</string>
+    <string name="vn_autotasks_body">После расшифровки выделять то, что вы пообещали, и ставить напоминание, если была названа дата. Работает на телефоне, пока только для английского.</string>
+    <string name="vn_due_set">Указать дату</string>
+    <string name="vn_due_clear">Убрать дату</string>
+    <string name="vn_due_today">Срок сегодня</string>
+    <string name="vn_due_tomorrow">Срок завтра</string>
+    <string name="vn_due_on">Срок: %1$s</string>
+    <string name="vn_due_overdue">Просрочено · %1$s</string>
+    <string name="vn_cd_set_due_date">Указать срок</string>
+    <string name="vn_autotasks_found">Найдено из сказанного: %1$d</string>
 </resources>

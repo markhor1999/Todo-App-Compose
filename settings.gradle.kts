@@ -36,6 +36,7 @@ include(":core:database")
 include(":core:datastore")
 include(":core:media")
 include(":core:billing")
+include(":core:reminders")
 include(":asr:api")
 include(":asr:sherpa")
 // The SDK surface being extracted from :asr:* — see brain/ventures/ondevice-voice-sdk-api-sketch.md.

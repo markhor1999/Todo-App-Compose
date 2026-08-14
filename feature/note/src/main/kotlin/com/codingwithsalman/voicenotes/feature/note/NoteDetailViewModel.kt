@@ -19,6 +19,7 @@ import com.codingwithsalman.voicenotes.core.database.NotesRepository
 import com.codingwithsalman.voicenotes.core.datastore.EntitlementStore
 import com.codingwithsalman.voicenotes.core.media.AudioPlayerController
 import com.codingwithsalman.voicenotes.core.model.ActionItem
+import com.codingwithsalman.voicenotes.core.reminders.ReminderScheduler
 import com.codingwithsalman.voicenotes.core.model.Note
 import com.codingwithsalman.voicenotes.core.model.TranscriptSegment
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,6 +46,7 @@ class NoteDetailViewModel @Inject constructor(
     private val transcriptionCoordinator: TranscriptionCoordinator,
     private val entitlementStore: EntitlementStore,
     private val billing: BillingRepository,
+    private val reminderScheduler: ReminderScheduler,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     val player: AudioPlayerController,
 ) : ViewModel() {
@@ -127,11 +129,28 @@ class NoteDetailViewModel @Inject constructor(
     }
 
     fun toggleActionItem(item: ActionItem) {
-        viewModelScope.launch { repository.setActionItemDone(item.id, !item.done) }
+        viewModelScope.launch {
+            val nowDone = !item.done
+            repository.setActionItemDone(item.id, nowDone)
+            // A ticked-off item must stop nagging; un-ticking one re-arms its deadline.
+            val due = item.dueAtMs
+            when {
+                nowDone -> reminderScheduler.cancel(item.id)
+                due != null -> reminderScheduler.schedule(item.id, due, noteId)
+            }
+        }
     }
 
     fun deleteActionItem(item: ActionItem) {
-        viewModelScope.launch { repository.deleteActionItem(item.id) }
+        viewModelScope.launch {
+            reminderScheduler.cancel(item.id)
+            repository.deleteActionItem(item.id)
+        }
+    }
+
+    /** Set or clear an item's deadline; the reminder follows automatically. */
+    fun setActionItemDue(item: ActionItem, dueAtMs: Long?) {
+        viewModelScope.launch { reminderScheduler.setDueDate(item.id, noteId, dueAtMs) }
     }
 
     /** Share the transcript text via the system sheet. */

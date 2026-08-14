@@ -154,6 +154,20 @@
     <string name="vn_tell_friend_subtitle">Share Murmur with someone</string>
     <string name="vn_rate_title">Rate Murmur</string>
     <string name="vn_rate_subtitle">Leave a review on Google Play</string>
+    <string name="vn_reminder_notification_title">Action item due</string>
+    <string name="vn_reminder_channel_name">Reminders</string>
+    <string name="vn_reminder_channel_desc">Notifications when an action item is due</string>
+    <string name="vn_autotasks_section">Action items</string>
+    <string name="vn_autotasks_title">Find tasks and deadlines</string>
+    <string name="vn_autotasks_body">After a note is transcribed, pull out things you committed to — and set a reminder when a date was said. Runs on your phone, English only for now.</string>
+    <string name="vn_due_set">Set date</string>
+    <string name="vn_due_clear">Clear date</string>
+    <string name="vn_due_today">Due today</string>
+    <string name="vn_due_tomorrow">Due tomorrow</string>
+    <string name="vn_due_on">Due %1$s</string>
+    <string name="vn_due_overdue">Overdue · %1$s</string>
+    <string name="vn_cd_set_due_date">Set a due date</string>
+    <string name="vn_autotasks_found">Found %1$d from what was said</string>
     <string name="vn_tell_friend_text">I\'ve been using Murmur — private, offline voice notes that transcribe right on your phone. https://play.google.com/store/apps/details?id=com.codingwithsalman.apps.todo.app.compose</string>
     <string name="vn_restore_purchase">Restore purchase</string>
     <string name="vn_billed_by">Billed by Google Play</string>

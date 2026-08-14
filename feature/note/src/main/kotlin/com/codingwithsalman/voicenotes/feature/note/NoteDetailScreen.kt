@@ -33,12 +33,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledIconButton
@@ -52,6 +57,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.platform.LocalContext
+import com.codingwithsalman.voicenotes.core.common.tasks.DeadlineParser
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import androidx.compose.ui.res.stringResource
 import com.codingwithsalman.voicenotes.core.designsystem.R
 import androidx.compose.runtime.Composable
@@ -272,6 +284,7 @@ fun NoteDetailScreen(
                 onAdd = viewModel::addActionItem,
                 onToggle = viewModel::toggleActionItem,
                 onDelete = viewModel::deleteActionItem,
+                onSetDue = viewModel::setActionItemDue,
             )
 
             Spacer(modifier = Modifier.height(48.dp))
@@ -765,9 +778,26 @@ private fun ActionItemsSection(
     onAdd: (String) -> Unit,
     onToggle: (ActionItem) -> Unit,
     onDelete: (ActionItem) -> Unit,
+    onSetDue: (ActionItem, Long?) -> Unit,
 ) {
     val haptics = LocalHapticFeedback.current
     var draft by remember { mutableStateOf("") }
+    var pickingDateFor by remember { mutableStateOf<ActionItem?>(null) }
+
+    pickingDateFor?.let { target ->
+        DueDatePickerDialog(
+            initialMs = target.dueAtMs,
+            onDismiss = { pickingDateFor = null },
+            onClear = {
+                onSetDue(target, null)
+                pickingDateFor = null
+            },
+            onPick = { millis ->
+                onSetDue(target, millis)
+                pickingDateFor = null
+            },
+        )
+    }
 
     Text(
         text = stringResource(R.string.vn_actions_title),
@@ -791,14 +821,27 @@ private fun ActionItemsSection(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(checked = item.done, onCheckedChange = { onToggle(item) })
-                Text(
-                    text = item.text,
-                    style = MaterialTheme.typography.bodyLarge,
-                    textDecoration = if (item.done) TextDecoration.LineThrough else null,
-                    color = if (item.done) MaterialTheme.colorScheme.onSurfaceVariant
-                    else MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.alpha(if (item.done) 0.7f else 1f),
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = item.text,
+                        style = MaterialTheme.typography.bodyLarge,
+                        textDecoration = if (item.done) TextDecoration.LineThrough else null,
+                        color = if (item.done) MaterialTheme.colorScheme.onSurfaceVariant
+                        else MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.alpha(if (item.done) 0.7f else 1f),
+                    )
+                    item.dueAtMs?.let { due ->
+                        DueDateLabel(dueAtMs = due, done = item.done)
+                    }
+                }
+                IconButton(onClick = { pickingDateFor = item }) {
+                    Icon(
+                        imageVector = Icons.Rounded.DateRange,
+                        contentDescription = stringResource(R.string.vn_cd_set_due_date),
+                        tint = if (item.dueAtMs != null) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
         }
         if (items.isEmpty()) {
@@ -834,6 +877,93 @@ private fun ActionItemsSection(
             }
         }
     }
+}
+
+/**
+ * "Due tomorrow" / "Due Sep 3" / "Overdue · Aug 2". Overdue items turn red — but only while they're
+ * still open, since a completed item's past deadline is just history, not a problem.
+ */
+@Composable
+private fun DueDateLabel(dueAtMs: Long, done: Boolean) {
+    val context = LocalContext.current
+    val now = System.currentTimeMillis()
+    val overdue = !done && dueAtMs < now
+
+    val text = remember(dueAtMs, done, now) {
+        val due = Calendar.getInstance().apply { timeInMillis = dueAtMs }
+        val today = Calendar.getInstance().apply { timeInMillis = now }
+        val tomorrow = (today.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, 1) }
+        fun sameDay(a: Calendar, b: Calendar) =
+            a.get(Calendar.YEAR) == b.get(Calendar.YEAR) &&
+                a.get(Calendar.DAY_OF_YEAR) == b.get(Calendar.DAY_OF_YEAR)
+
+        val pattern = if (due.get(Calendar.YEAR) == today.get(Calendar.YEAR)) "MMM d" else "MMM d, yyyy"
+        val formatted = SimpleDateFormat(pattern, Locale.getDefault()).format(Date(dueAtMs))
+        when {
+            overdue -> context.getString(R.string.vn_due_overdue, formatted)
+            sameDay(due, today) -> context.getString(R.string.vn_due_today)
+            sameDay(due, tomorrow) -> context.getString(R.string.vn_due_tomorrow)
+            else -> context.getString(R.string.vn_due_on, formatted)
+        }
+    }
+
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelMedium,
+        color = when {
+            overdue -> MaterialTheme.colorScheme.error
+            done -> MaterialTheme.colorScheme.onSurfaceVariant
+            else -> MaterialTheme.colorScheme.primary
+        },
+        modifier = Modifier.alpha(if (done) 0.7f else 1f),
+    )
+}
+
+/**
+ * Date picker for an item's deadline. The chosen day is normalised to
+ * [DeadlineParser.DEFAULT_HOUR] local time, matching where extracted deadlines land, so a
+ * hand-picked date and a spoken one behave identically.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DueDatePickerDialog(
+    initialMs: Long?,
+    onDismiss: () -> Unit,
+    onClear: () -> Unit,
+    onPick: (Long) -> Unit,
+) {
+    val state = rememberDatePickerState(initialSelectedDateMillis = initialMs)
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = { state.selectedDateMillis?.let { onPick(it.atDefaultReminderHour()) } },
+                enabled = state.selectedDateMillis != null,
+            ) { Text(stringResource(R.string.vn_due_set)) }
+        },
+        dismissButton = {
+            if (initialMs != null) {
+                TextButton(onClick = onClear) { Text(stringResource(R.string.vn_due_clear)) }
+            }
+        },
+    ) {
+        DatePicker(state = state)
+    }
+}
+
+/**
+ * The picker hands back UTC midnight for the chosen day. Reinterpret those calendar fields in the
+ * local zone at the reminder hour — otherwise a user east of UTC gets a reminder on the wrong day.
+ */
+private fun Long.atDefaultReminderHour(): Long {
+    val utc = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply { timeInMillis = this@atDefaultReminderHour }
+    return Calendar.getInstance().apply {
+        set(utc.get(Calendar.YEAR), utc.get(Calendar.MONTH), utc.get(Calendar.DAY_OF_MONTH))
+        set(Calendar.HOUR_OF_DAY, DeadlineParser.DEFAULT_HOUR)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
 }
 
 @Composable

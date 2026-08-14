@@ -161,4 +161,18 @@
     <string name="vn_tell_friend_text">Estou usando o Murmur — notas de voz privadas e offline, transcritas no próprio celular. https://play.google.com/store/apps/details?id=com.codingwithsalman.apps.todo.app.compose</string>
     <string name="vn_rate_title">Avaliar o Murmur</string>
     <string name="vn_rate_subtitle">Deixe uma avaliação no Google Play</string>
+    <string name="vn_reminder_notification_title">Tarefa no prazo</string>
+    <string name="vn_reminder_channel_name">Lembretes</string>
+    <string name="vn_reminder_channel_desc">Avisos quando uma tarefa vence</string>
+    <string name="vn_autotasks_section">Tarefas</string>
+    <string name="vn_autotasks_title">Encontrar tarefas e prazos</string>
+    <string name="vn_autotasks_body">Depois da transcrição, extrair o que você assumiu — e criar um lembrete se uma data foi dita. Roda no seu celular, por enquanto só em inglês.</string>
+    <string name="vn_due_set">Definir data</string>
+    <string name="vn_due_clear">Remover data</string>
+    <string name="vn_due_today">Vence hoje</string>
+    <string name="vn_due_tomorrow">Vence amanhã</string>
+    <string name="vn_due_on">Vence em %1$s</string>
+    <string name="vn_due_overdue">Atrasada · %1$s</string>
+    <string name="vn_cd_set_due_date">Definir data de vencimento</string>
+    <string name="vn_autotasks_found">%1$d encontradas no que foi dito</string>
 </resources>

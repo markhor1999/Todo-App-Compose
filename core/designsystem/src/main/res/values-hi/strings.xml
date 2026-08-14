@@ -161,4 +161,18 @@
     <string name="vn_tell_friend_text">मैं Murmur इस्तेमाल कर रहा/रही हूँ — निजी, ऑफ़लाइन वॉइस नोट्स जो फ़ोन पर ही ट्रांसक्राइब हो जाते हैं। https://play.google.com/store/apps/details?id=com.codingwithsalman.apps.todo.app.compose</string>
     <string name="vn_rate_title">Murmur को रेट करें</string>
     <string name="vn_rate_subtitle">Google Play पर समीक्षा दें</string>
+    <string name="vn_reminder_notification_title">काम की समय-सीमा</string>
+    <string name="vn_reminder_channel_name">रिमाइंडर</string>
+    <string name="vn_reminder_channel_desc">जब किसी काम की समय-सीमा आए तो सूचना</string>
+    <string name="vn_autotasks_section">काम</string>
+    <string name="vn_autotasks_title">काम और समय-सीमाएँ पहचानें</string>
+    <string name="vn_autotasks_body">ट्रांसक्रिप्शन के बाद आपने जो करने को कहा उसे निकालें — और तारीख बोली गई हो तो रिमाइंडर लगाएँ। आपके फ़ोन पर ही चलता है, फ़िलहाल सिर्फ़ अंग्रेज़ी में।</string>
+    <string name="vn_due_set">तारीख़ चुनें</string>
+    <string name="vn_due_clear">तारीख़ हटाएँ</string>
+    <string name="vn_due_today">आज तक</string>
+    <string name="vn_due_tomorrow">कल तक</string>
+    <string name="vn_due_on">%1$s तक</string>
+    <string name="vn_due_overdue">समय बीत गया · %1$s</string>
+    <string name="vn_cd_set_due_date">समय-सीमा तय करें</string>
+    <string name="vn_autotasks_found">कही गई बातों से %1$d मिले</string>
 </resources>

@@ -59,6 +59,7 @@ fun SettingsScreen(
     val selectedModel by viewModel.selectedModel.collectAsStateWithLifecycle()
     val engineState by viewModel.engineState.collectAsStateWithLifecycle()
     val liveEnabled by viewModel.liveEnabled.collectAsStateWithLifecycle()
+    val autoTasksEnabled by viewModel.autoTasksEnabled.collectAsStateWithLifecycle()
     val liveModelState by viewModel.liveModelState.collectAsStateWithLifecycle()
     val isPro by viewModel.isPro.collectAsStateWithLifecycle()
     val pricing by viewModel.pricing.collectAsStateWithLifecycle()
@@ -291,6 +292,30 @@ fun SettingsScreen(
                             }
                         }
                     }
+                }
+            }
+
+            SectionTitle(stringResource(R.string.vn_autotasks_section))
+            SettingsCard {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.vn_autotasks_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = stringResource(R.string.vn_autotasks_body),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Switch(checked = autoTasksEnabled, onCheckedChange = viewModel::setAutoTasksEnabled)
                 }
             }
 

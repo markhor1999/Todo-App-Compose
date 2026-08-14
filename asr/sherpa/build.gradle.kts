@@ -16,6 +16,8 @@ dependencies {
     implementation(projects.core.datastore)
     implementation(projects.core.designsystem)
     implementation(projects.core.media)
+    // Extraction runs at the end of a transcription job, so the worker arms reminders directly.
+    implementation(projects.core.reminders)
     implementation(libs.sherpa.onnx.android)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.work.ktx)

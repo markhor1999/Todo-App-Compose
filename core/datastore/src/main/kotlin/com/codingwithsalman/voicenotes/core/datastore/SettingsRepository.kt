@@ -24,6 +24,7 @@ class SettingsRepository @Inject constructor(
         val themeMode = stringPreferencesKey("theme_mode")
         val modelId = stringPreferencesKey("asr_model_id")
         val liveTranscription = booleanPreferencesKey("live_transcription_enabled")
+        val autoTasks = booleanPreferencesKey("auto_tasks_enabled")
     }
 
     val themeMode: Flow<ThemeMode> = context.settingsDataStore.data.map { prefs ->
@@ -62,5 +63,20 @@ class SettingsRepository @Inject constructor(
 
     suspend fun setLiveTranscriptionEnabled(enabled: Boolean) {
         context.settingsDataStore.edit { it[Keys.liveTranscription] = enabled }
+    }
+
+    /**
+     * Automatic action items + deadline reminders (2.3.0) — **OFF by default, opt-in.**
+     *
+     * Unlike live transcription, this one writes into the user's note and can raise a notification,
+     * so it asks first. Extraction is heuristic and English-only; silently adding checkboxes nobody
+     * asked for — or worse, buzzing a phone at 9am about a misheard date — is exactly the failure
+     * this default avoids. The user turns it on knowing what it does.
+     */
+    val autoTasksEnabled: Flow<Boolean> =
+        context.settingsDataStore.data.map { prefs -> prefs[Keys.autoTasks] ?: false }
+
+    suspend fun setAutoTasksEnabled(enabled: Boolean) {
+        context.settingsDataStore.edit { it[Keys.autoTasks] = enabled }
     }
 }

@@ -101,20 +101,37 @@ class NotesRepository @Inject constructor(
     fun observeActionItems(noteId: Long): Flow<List<ActionItem>> =
         dao.observeActionItems(noteId).map { entities -> entities.map(ActionItemEntity::asModel) }
 
-    suspend fun addActionItem(noteId: Long, text: String) {
+    /** Returns the new row id, or -1 when the text was blank and nothing was inserted. */
+    suspend fun addActionItem(
+        noteId: Long,
+        text: String,
+        dueAtMs: Long? = null,
+        sourceStartMs: Long? = null,
+    ): Long {
         val trimmed = text.trim()
-        if (trimmed.isEmpty()) return
-        dao.insertActionItem(
+        if (trimmed.isEmpty()) return -1L
+        return dao.insertActionItem(
             ActionItemEntity(
                 noteId = noteId,
                 text = trimmed,
                 done = false,
                 createdAtMs = System.currentTimeMillis(),
+                dueAtMs = dueAtMs,
+                sourceStartMs = sourceStartMs,
             )
         )
     }
 
     suspend fun setActionItemDone(id: Long, done: Boolean) = dao.setActionItemDone(id, done)
+
+    suspend fun setActionItemDue(id: Long, dueAtMs: Long?) = dao.setActionItemDue(id, dueAtMs)
+
+    suspend fun actionItem(id: Long): ActionItem? = dao.actionItem(id)?.asModel()
+
+    suspend fun pendingReminders(): List<ActionItem> =
+        dao.pendingReminders().map(ActionItemEntity::asModel)
+
+    suspend fun actionItemTexts(noteId: Long): List<String> = dao.actionItemTexts(noteId)
 
     suspend fun deleteActionItem(id: Long) = dao.deleteActionItem(id)
 }
