@@ -103,7 +103,15 @@ class EntitlementStore @Inject constructor(
         /** Free tier: 10 minutes of transcription per day. */
         const val FREE_DAILY_MS = 10 * 60 * 1000L
 
-        /** Ask for a Play in-app review after this many successful transcriptions (once per install). */
-        const val REVIEW_AFTER_SUCCESSES = 2L
+        /**
+         * Ask for a Play in-app review after this many successful transcriptions (once per install).
+         *
+         * **1 since 2.2.0, was 2.** MUR-07 shipped in 2.1.1 and produced zero ratings in three
+         * weeks; Play still generates no ratings file at all for the package. With ~23 active
+         * devices, requiring a *second* completed transcription shrank an already tiny eligible pool
+         * to roughly nobody. One finished transcript is the app's whole value proposition delivered,
+         * which makes it a fair moment to ask.
+         */
+        const val REVIEW_AFTER_SUCCESSES = 1L
     }
 }

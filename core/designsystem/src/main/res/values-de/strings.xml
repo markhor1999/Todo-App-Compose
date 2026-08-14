@@ -152,4 +152,13 @@
     <string name="vn_live_ready">✓ Live-Transkription bereit</string>
     <string name="vn_live_needs_download">Installiere zuerst ein Transkriptionsmodell — siehe Transkriptions-Engine oben.</string>
     <string name="vn_capture_live">LIVE</string>
+    <string name="vn_weekly">Wöchentlich</string>
+    <string name="vn_free_trial_days">%1$d Tage gratis</string>
+    <string name="vn_share_attribution">— Offline transkribiert mit Murmur</string>
+    <string name="vn_share_section">Weitersagen</string>
+    <string name="vn_tell_friend_title">Freunden empfehlen</string>
+    <string name="vn_tell_friend_subtitle">Teile Murmur mit jemandem</string>
+    <string name="vn_tell_friend_text">Ich nutze Murmur — private, offline Sprachnotizen, die direkt auf dem Handy transkribiert werden. https://play.google.com/store/apps/details?id=com.codingwithsalman.apps.todo.app.compose</string>
+    <string name="vn_rate_title">Murmur bewerten</string>
+    <string name="vn_rate_subtitle">Hinterlasse eine Rezension bei Google Play</string>
 </resources>

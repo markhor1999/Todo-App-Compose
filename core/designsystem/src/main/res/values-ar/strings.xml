@@ -160,4 +160,13 @@
     <string name="vn_live_ready">‏✓ النسخ المباشر جاهز</string>
     <string name="vn_live_needs_download">ثبّت نموذج النسخ أولًا — انظر محرك النسخ أعلاه.</string>
     <string name="vn_capture_live">مباشر</string>
+    <string name="vn_weekly">أسبوعي</string>
+    <string name="vn_free_trial_days">%1$d أيام مجانًا</string>
+    <string name="vn_share_attribution">— تم التفريغ دون اتصال عبر Murmur</string>
+    <string name="vn_share_section">انشر الخبر</string>
+    <string name="vn_tell_friend_title">أخبر صديقًا</string>
+    <string name="vn_tell_friend_subtitle">شارك Murmur مع أحدهم</string>
+    <string name="vn_tell_friend_text">أستخدم Murmur — ملاحظات صوتية خاصة تعمل دون اتصال وتُفرَّغ نصيًا على الهاتف نفسه. https://play.google.com/store/apps/details?id=com.codingwithsalman.apps.todo.app.compose</string>
+    <string name="vn_rate_title">قيّم Murmur</string>
+    <string name="vn_rate_subtitle">اترك مراجعة على Google Play</string>
 </resources>

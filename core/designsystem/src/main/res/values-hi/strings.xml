@@ -152,4 +152,13 @@
     <string name="vn_live_ready">✓ लाइव ट्रांसक्रिप्शन तैयार</string>
     <string name="vn_live_needs_download">पहले एक ट्रांसक्रिप्शन मॉडल इंस्टॉल करें — ऊपर ट्रांसक्रिप्शन इंजन देखें।</string>
     <string name="vn_capture_live">लाइव</string>
+    <string name="vn_weekly">साप्ताहिक</string>
+    <string name="vn_free_trial_days">%1$d दिन मुफ़्त</string>
+    <string name="vn_share_attribution">— Murmur से ऑफ़लाइन ट्रांसक्राइब किया गया</string>
+    <string name="vn_share_section">औरों को बताएँ</string>
+    <string name="vn_tell_friend_title">किसी दोस्त को बताएँ</string>
+    <string name="vn_tell_friend_subtitle">Murmur किसी के साथ साझा करें</string>
+    <string name="vn_tell_friend_text">मैं Murmur इस्तेमाल कर रहा/रही हूँ — निजी, ऑफ़लाइन वॉइस नोट्स जो फ़ोन पर ही ट्रांसक्राइब हो जाते हैं। https://play.google.com/store/apps/details?id=com.codingwithsalman.apps.todo.app.compose</string>
+    <string name="vn_rate_title">Murmur को रेट करें</string>
+    <string name="vn_rate_subtitle">Google Play पर समीक्षा दें</string>
 </resources>

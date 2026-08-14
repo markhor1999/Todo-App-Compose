@@ -156,4 +156,13 @@
     <string name="vn_live_ready">✓ Живая расшифровка готова</string>
     <string name="vn_live_needs_download">Сначала установите модель расшифровки — см. «Движок расшифровки» выше.</string>
     <string name="vn_capture_live">LIVE</string>
+    <string name="vn_weekly">Еженедельно</string>
+    <string name="vn_free_trial_days">%1$d дней бесплатно</string>
+    <string name="vn_share_attribution">— Расшифровано офлайн в Murmur</string>
+    <string name="vn_share_section">Расскажите другим</string>
+    <string name="vn_tell_friend_title">Рассказать другу</string>
+    <string name="vn_tell_friend_subtitle">Поделитесь Murmur с кем-нибудь</string>
+    <string name="vn_tell_friend_text">Я пользуюсь Murmur — приватные офлайн-голосовые заметки, которые расшифровываются прямо на телефоне. https://play.google.com/store/apps/details?id=com.codingwithsalman.apps.todo.app.compose</string>
+    <string name="vn_rate_title">Оценить Murmur</string>
+    <string name="vn_rate_subtitle">Оставьте отзыв в Google Play</string>
 </resources>

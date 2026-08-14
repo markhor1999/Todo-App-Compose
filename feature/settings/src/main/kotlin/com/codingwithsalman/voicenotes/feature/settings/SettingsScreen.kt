@@ -327,40 +327,38 @@ fun SettingsScreen(
 
             SectionTitle(stringResource(R.string.vn_share_section))
             val shareContext = LocalContext.current
-            Surface(
-                shape = RoundedCornerShape(20.dp),
-                color = MaterialTheme.colorScheme.surface,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        border = BorderStroke(1.dp, VnTheme.extended.cardStroke),
-                        shape = RoundedCornerShape(20.dp),
-                    )
-                    .clickable {
-                        val send = Intent(Intent.ACTION_SEND).apply {
-                            type = "text/plain"
-                            putExtra(Intent.EXTRA_TEXT, shareContext.getString(R.string.vn_tell_friend_text))
-                        }
-                        shareContext.startActivity(Intent.createChooser(send, null))
-                    },
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = stringResource(R.string.vn_tell_friend_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Text(
-                        text = stringResource(R.string.vn_tell_friend_subtitle),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
+            ActionCard(
+                title = stringResource(R.string.vn_tell_friend_title),
+                subtitle = stringResource(R.string.vn_tell_friend_subtitle),
+                onClick = {
+                    val send = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_TEXT, shareContext.getString(R.string.vn_tell_friend_text))
+                    }
+                    shareContext.startActivity(Intent.createChooser(send, null))
+                },
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // The in-app review card (MUR-07) is quota-limited by Play and may simply never appear;
+            // it produced zero ratings in its first three weeks live. This is the path that always
+            // works — the user asks for it, so there is no quota and no silent no-op.
+            ActionCard(
+                title = stringResource(R.string.vn_rate_title),
+                subtitle = stringResource(R.string.vn_rate_subtitle),
+                onClick = { shareContext.openPlayStoreListing() },
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
+            // Read from the package, not a literal: this line shipped stale in both 2.1.1 and 2.1.2.
+            val versionName = remember(shareContext) {
+                runCatching {
+                    shareContext.packageManager.getPackageInfo(shareContext.packageName, 0).versionName
+                }.getOrNull().orEmpty()
+            }
             Text(
-                text = stringResource(R.string.vn_version_line, "2.1.1"),
+                text = stringResource(R.string.vn_version_line, versionName),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
@@ -369,6 +367,51 @@ fun SettingsScreen(
             )
         }
     }
+}
+
+/** A tappable title/subtitle card — the shape the "Spread the word" section's rows share. */
+@Composable
+private fun ActionCard(title: String, subtitle: String, onClick: () -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surface,
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                border = BorderStroke(1.dp, VnTheme.extended.cardStroke),
+                shape = RoundedCornerShape(20.dp),
+            )
+            .clickable(onClick = onClick),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/**
+ * Open the Play listing on its review surface. The `market://` scheme goes straight to the installed
+ * Play app; devices without it (or with Play disabled) fall back to the browser, and a device with
+ * neither simply does nothing rather than throwing [android.content.ActivityNotFoundException].
+ */
+private fun android.content.Context.openPlayStoreListing() {
+    val market = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("market://details?id=$packageName"))
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    if (runCatching { startActivity(market) }.isSuccess) return
+    val web = Intent(
+        Intent.ACTION_VIEW,
+        android.net.Uri.parse("https://play.google.com/store/apps/details?id=$packageName"),
+    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    runCatching { startActivity(web) }
 }
 
 @Composable

@@ -43,11 +43,22 @@ class SettingsRepository @Inject constructor(
         context.settingsDataStore.edit { it[Keys.modelId] = id }
     }
 
-    /** Live transcription (v2.1 #2) — OFF by default; English-only, experimental, needs its own
-     *  streaming-model download. Gated here so the capture path stays on the proven MediaRecorder
-     *  route for everyone who hasn't opted in. */
+    /**
+     * Live transcription (v2.1 #2) — **ON by default since 2.2.0.** The original OFF default dated
+     * from #2's English-only draft, which needed its own streaming-model download; #2b replaced that
+     * with VAD-chunked decoding on the offline model the user already has, so the feature is
+     * multilingual and needs no extra download. It shipped hidden through 2.1.0–2.1.2 and was never
+     * exposed, i.e. never seen by a single user.
+     *
+     * Turning it on switches the capture path from MediaRecorder to [PcmAudioRecorder] for everyone
+     * whose offline model is installed. That is the real risk in this flip, so
+     * `RecordingSessionManager.startRecording` now falls back to the MediaRecorder route whenever the
+     * PCM path fails to start — a device whose AAC encoder rejects 16 kHz mono loses the live
+     * preview, never the recording. Users who explicitly turned the toggle off keep it off (an
+     * absent key is what defaults, and only the toggle writes one).
+     */
     val liveTranscriptionEnabled: Flow<Boolean> =
-        context.settingsDataStore.data.map { prefs -> prefs[Keys.liveTranscription] ?: false }
+        context.settingsDataStore.data.map { prefs -> prefs[Keys.liveTranscription] ?: true }
 
     suspend fun setLiveTranscriptionEnabled(enabled: Boolean) {
         context.settingsDataStore.edit { it[Keys.liveTranscription] = enabled }

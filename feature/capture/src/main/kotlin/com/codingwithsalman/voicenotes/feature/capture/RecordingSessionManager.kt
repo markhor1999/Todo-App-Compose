@@ -2,6 +2,7 @@ package com.codingwithsalman.voicenotes.feature.capture
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import com.codingwithsalman.voicenotes.asr.api.LiveSession
 import com.codingwithsalman.voicenotes.asr.api.LiveTranscriptionManager
@@ -104,17 +105,27 @@ class RecordingSessionManager @Inject constructor(
         val session = if (liveEnabled && liveManager.isAvailable()) liveManager.newSession() else null
         usingLive = session != null
 
-        val started = if (usingLive) {
+        // The live path hand-rolls AudioRecord + a 16 kHz mono AAC MediaCodec, which some OEM
+        // encoders reject outright. Since 2.2.0 makes it the default route, a failure here must
+        // never cost the user the recording itself: drop the live preview and record on the proven
+        // MediaRecorder path instead. (Validated on a Pixel 6 only — this is the safety net for
+        // every device we have not seen.)
+        var started = if (usingLive) {
             runCatching { pcmRecorder.start(file) { samples -> session!!.accept(samples) } }.isSuccess
         } else {
             runCatching { recorder.start(file) }.isSuccess
         }
-        if (!started) {
+        if (!started && usingLive) {
+            Log.w(TAG, "live capture path failed to start; falling back to MediaRecorder")
             session?.release()
+            usingLive = false
+            started = runCatching { recorder.start(file) }.isSuccess
+        }
+        if (!started) {
             usingLive = false
             return false
         }
-        liveSession = session
+        liveSession = session.takeIf { usingLive }
 
         val now = System.currentTimeMillis()
         fullHistory.clear()
@@ -124,7 +135,8 @@ class RecordingSessionManager @Inject constructor(
 
         context.startForegroundService(Intent(context, RecordingService::class.java))
 
-        liveTextJob = session?.let { s ->
+        // liveSession, not session — after a fallback the latter is non-null but already released.
+        liveTextJob = liveSession?.let { s ->
             scope.launch { s.text.collect { t -> _state.value = _state.value.copy(liveText = t) } }
         }
 
@@ -244,6 +256,7 @@ class RecordingSessionManager @Inject constructor(
     }
 
     private companion object {
+        const val TAG = "RecordingSession"
         const val METER_PERIOD_MS = 50L
         const val LIVE_BARS = 160
     }

@@ -152,4 +152,13 @@
     <string name="vn_live_ready">✓ Transcription en direct prête</string>
     <string name="vn_live_needs_download">Installez d\'abord un modèle de transcription — voir Moteur de transcription ci-dessus.</string>
     <string name="vn_capture_live">EN DIRECT</string>
+    <string name="vn_weekly">Hebdomadaire</string>
+    <string name="vn_free_trial_days">%1$d jours offerts</string>
+    <string name="vn_share_attribution">— Transcrit hors ligne avec Murmur</string>
+    <string name="vn_share_section">Faites passer le mot</string>
+    <string name="vn_tell_friend_title">En parler à un ami</string>
+    <string name="vn_tell_friend_subtitle">Partagez Murmur avec quelqu\'un</string>
+    <string name="vn_tell_friend_text">J\'utilise Murmur — des notes vocales privées, hors ligne, transcrites directement sur le téléphone. https://play.google.com/store/apps/details?id=com.codingwithsalman.apps.todo.app.compose</string>
+    <string name="vn_rate_title">Noter Murmur</string>
+    <string name="vn_rate_subtitle">Laissez un avis sur Google Play</string>
 </resources>
