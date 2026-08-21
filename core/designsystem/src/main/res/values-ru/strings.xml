@@ -84,6 +84,7 @@
     <string name="vn_meter_left">Сегодня осталось %1$d бесплатных мин.</string>
     <string name="vn_go_unlimited">Сделать безлимитным</string>
     <string name="vn_menu_rename">Переименовать</string>
+    <string name="vn_menu_find_actions">Найти задачи</string>
     <string name="vn_menu_share_transcript">Поделиться текстом</string>
     <string name="vn_menu_share_audio">Поделиться аудио</string>
     <string name="vn_menu_export_txt">Экспорт в .txt</string>
@@ -179,4 +180,10 @@
     <string name="vn_due_overdue">Просрочено · %1$s</string>
     <string name="vn_cd_set_due_date">Указать срок</string>
     <string name="vn_autotasks_found">Найдено из сказанного: %1$d</string>
+    <string name="vn_autotasks_new_title">Новое: задачи</string>
+    <string name="vn_autotasks_new_body">Murmur теперь находит в встрече то, что вы пообещали сделать, и напоминает, если была названа дата. Ваши прежние заметки расшифрованы до появления этой функции.</string>
+    <string name="vn_autotasks_new_cta">Найти в моих заметках</string>
+    <string name="vn_autotasks_new_dismiss">Не сейчас</string>
+    <string name="vn_autotasks_backfill_done">Найдено %1$d в %2$d заметках</string>
+    <string name="vn_autotasks_backfill_none">В прежних заметках ничего не найдено</string>
 </resources>

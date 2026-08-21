@@ -80,6 +80,7 @@
     <string name="vn_meter_left">%1$d min gratuites restantes aujourd\'hui</string>
     <string name="vn_go_unlimited">Passer en illimité</string>
     <string name="vn_menu_rename">Renommer</string>
+    <string name="vn_menu_find_actions">Trouver les tâches</string>
     <string name="vn_menu_share_transcript">Partager la transcription</string>
     <string name="vn_menu_share_audio">Partager l\'audio</string>
     <string name="vn_menu_export_txt">Exporter en .txt</string>
@@ -175,4 +176,10 @@
     <string name="vn_due_overdue">En retard · %1$s</string>
     <string name="vn_cd_set_due_date">Définir une échéance</string>
     <string name="vn_autotasks_found">%1$d détectée(s) dans vos propos</string>
+    <string name="vn_autotasks_new_title">Nouveau : tâches</string>
+    <string name="vn_autotasks_new_body">Murmur peut désormais extraire d\'une réunion ce que vous vous êtes engagé à faire, et vous le rappeler si une date a été dite. Vos notes actuelles ont été transcrites avant cette fonction.</string>
+    <string name="vn_autotasks_new_cta">Chercher dans mes notes</string>
+    <string name="vn_autotasks_new_dismiss">Plus tard</string>
+    <string name="vn_autotasks_backfill_done">%1$d trouvées dans %2$d notes</string>
+    <string name="vn_autotasks_backfill_none">Rien trouvé dans vos notes existantes</string>
 </resources>

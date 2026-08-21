@@ -80,6 +80,7 @@
     <string name="vn_meter_left">आज %1$d मिनट फ्री बचे हैं</string>
     <string name="vn_go_unlimited">अनलिमिटेड करें</string>
     <string name="vn_menu_rename">नाम बदलें</string>
+    <string name="vn_menu_find_actions">काम खोजें</string>
     <string name="vn_menu_share_transcript">ट्रांसक्रिप्ट शेयर करें</string>
     <string name="vn_menu_share_audio">ऑडियो शेयर करें</string>
     <string name="vn_menu_export_txt">.txt में एक्सपोर्ट करें</string>
@@ -175,4 +176,10 @@
     <string name="vn_due_overdue">समय बीत गया · %1$s</string>
     <string name="vn_cd_set_due_date">समय-सीमा तय करें</string>
     <string name="vn_autotasks_found">कही गई बातों से %1$d मिले</string>
+    <string name="vn_autotasks_new_title">नया: काम की सूची</string>
+    <string name="vn_autotasks_new_body">Murmur अब मीटिंग से वे बातें निकाल सकता है जिनका आपने वादा किया, और तारीख कही गई हो तो याद दिलाता है। आपके पुराने नोट इस सुविधा से पहले लिखे गए थे।</string>
+    <string name="vn_autotasks_new_cta">मेरे नोट में खोजें</string>
+    <string name="vn_autotasks_new_dismiss">अभी नहीं</string>
+    <string name="vn_autotasks_backfill_done">%2$d नोट में %1$d मिले</string>
+    <string name="vn_autotasks_backfill_none">आपके पुराने नोट में कुछ नहीं मिला</string>
 </resources>

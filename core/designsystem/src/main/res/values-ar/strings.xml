@@ -88,6 +88,7 @@
     <string name="vn_meter_left">تبقّى %1$d دقيقة مجانية اليوم</string>
     <string name="vn_go_unlimited">اجعله بلا حدود</string>
     <string name="vn_menu_rename">إعادة تسمية</string>
+    <string name="vn_menu_find_actions">استخراج المهام</string>
     <string name="vn_menu_share_transcript">مشاركة النص</string>
     <string name="vn_menu_share_audio">مشاركة الصوت</string>
     <string name="vn_menu_export_txt">تصدير ‎.txt</string>
@@ -183,4 +184,10 @@
     <string name="vn_due_overdue">متأخرة · %1$s</string>
     <string name="vn_cd_set_due_date">تحديد موعد الاستحقاق</string>
     <string name="vn_autotasks_found">تم العثور على %1$d مما قيل</string>
+    <string name="vn_autotasks_new_title">جديد: المهام</string>
+    <string name="vn_autotasks_new_body">يستطيع Murmur الآن استخراج ما التزمت به في الاجتماع، وتذكيرك إذا ذُكر تاريخ. أما ملاحظاتك الحالية فقد فُرّغت قبل وجود هذه الميزة.</string>
+    <string name="vn_autotasks_new_cta">ابحث في ملاحظاتي</string>
+    <string name="vn_autotasks_new_dismiss">ليس الآن</string>
+    <string name="vn_autotasks_backfill_done">تم العثور على %1$d في %2$d ملاحظة</string>
+    <string name="vn_autotasks_backfill_none">لا يوجد شيء في ملاحظاتك الحالية</string>
 </resources>

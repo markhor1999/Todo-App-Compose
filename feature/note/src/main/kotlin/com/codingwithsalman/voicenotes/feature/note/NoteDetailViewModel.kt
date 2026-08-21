@@ -19,6 +19,7 @@ import com.codingwithsalman.voicenotes.core.database.NotesRepository
 import com.codingwithsalman.voicenotes.core.datastore.EntitlementStore
 import com.codingwithsalman.voicenotes.core.media.AudioPlayerController
 import com.codingwithsalman.voicenotes.core.model.ActionItem
+import com.codingwithsalman.voicenotes.core.reminders.ActionItemBackfiller
 import com.codingwithsalman.voicenotes.core.reminders.ReminderScheduler
 import com.codingwithsalman.voicenotes.core.model.Note
 import com.codingwithsalman.voicenotes.core.model.TranscriptSegment
@@ -47,6 +48,7 @@ class NoteDetailViewModel @Inject constructor(
     private val entitlementStore: EntitlementStore,
     private val billing: BillingRepository,
     private val reminderScheduler: ReminderScheduler,
+    private val backfiller: ActionItemBackfiller,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     val player: AudioPlayerController,
 ) : ViewModel() {
@@ -216,5 +218,23 @@ class NoteDetailViewModel @Inject constructor(
     override fun onCleared() {
         player.release()
         super.onCleared()
+    }
+
+    /**
+     * Run extraction over this note's existing transcript, from the overflow menu.
+     *
+     * The automatic pass only ever runs once, when the transcript is produced, and only if the
+     * setting was on then — so this is the sole route for a note transcribed while the feature was
+     * off, or one the user reached after dismissing the library's one-time offer. No re-transcription
+     * is involved: it reads segments already in the database, which is why it returns instantly
+     * where "Retry" would re-run minutes of inference.
+     *
+     * No result message is needed — the items appear in the action-items card under the
+     * "Found N from what was said" label, which is where the user is already looking.
+     */
+    fun findActionItems() {
+        viewModelScope.launch {
+            withContext(ioDispatcher) { backfiller.runForNote(noteId) }
+        }
     }
 }

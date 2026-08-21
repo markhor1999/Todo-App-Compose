@@ -176,6 +176,11 @@ fun NoteDetailScreen(
                             onClick = { showMenu = false; showRename = true },
                         )
                         DropdownMenuItem(
+                            text = { Text(stringResource(R.string.vn_menu_find_actions)) },
+                            enabled = hasTranscript,
+                            onClick = { showMenu = false; viewModel.findActionItems() },
+                        )
+                        DropdownMenuItem(
                             text = { Text(stringResource(R.string.vn_menu_share_transcript)) },
                             enabled = hasTranscript,
                             onClick = { showMenu = false; viewModel.shareTranscript() },
@@ -806,7 +811,20 @@ private fun ActionItemsSection(
     )
     Spacer(modifier = Modifier.height(12.dp))
 
+    // Items Murmur lifted out of the transcript carry a source position; hand-typed ones don't.
+    // Saying so matters: without it, extraction is indistinguishable from the user's own typing,
+    // and a feature the user can't see the app doing is one they never credit it for.
+    val extractedCount = items.count { it.sourceStartMs != null }
+
     InfoCard {
+        if (extractedCount > 0) {
+            Text(
+                text = stringResource(R.string.vn_autotasks_found, extractedCount),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+        }
         items.forEach { item ->
             Row(
                 modifier = Modifier

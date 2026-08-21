@@ -14,9 +14,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +34,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.res.stringResource
 import com.codingwithsalman.voicenotes.core.designsystem.R
 import androidx.compose.ui.res.pluralStringResource
@@ -62,6 +69,7 @@ fun LibraryScreen(
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val notes by viewModel.notes.collectAsStateWithLifecycle()
+    val highlight by viewModel.highlight.collectAsStateWithLifecycle()
     val query by viewModel.query.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -198,6 +206,16 @@ fun LibraryScreen(
                 )
             }
 
+            if (highlight != LibraryViewModel.Highlight.Hidden) {
+                item(key = "autotasks-highlight") {
+                    ActionItemsHighlightCard(
+                        state = highlight,
+                        onRun = viewModel::runBackfill,
+                        onDismiss = viewModel::dismissHighlight,
+                    )
+                }
+            }
+
             if (notes.isEmpty()) {
                 item(key = "empty") {
                     Box(
@@ -231,6 +249,80 @@ fun LibraryScreen(
                         modifier = Modifier.animateItem(),
                         sharedKeyPrefix = "note-${note.id}",
                     )
+                }
+            }
+        }
+    }
+}
+
+
+/**
+ * One-time card offering to run extraction over notes that predate the feature.
+ *
+ * It reports back in place rather than vanishing on tap: someone who just asked the app to read
+ * their whole library deserves to be told what it found, and "Found 12 in 4 notes" is the only
+ * moment where the feature demonstrates itself on the user's *own* content.
+ */
+@Composable
+private fun ActionItemsHighlightCard(
+    state: LibraryViewModel.Highlight,
+    onRun: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.vn_autotasks_new_title),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = stringResource(R.string.vn_autotasks_new_body),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            when (state) {
+                is LibraryViewModel.Highlight.Done -> {
+                    val result = state.result
+                    Text(
+                        text = if (result.itemCount == 0) {
+                            stringResource(R.string.vn_autotasks_backfill_none)
+                        } else {
+                            stringResource(
+                                R.string.vn_autotasks_backfill_done,
+                                result.itemCount,
+                                result.noteCount,
+                            )
+                        },
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TextButton(onClick = onDismiss) {
+                        Text(stringResource(android.R.string.ok))
+                    }
+                }
+
+                LibraryViewModel.Highlight.Running -> {
+                    CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.dp)
+                }
+
+                else -> {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Button(onClick = onRun) {
+                            Text(stringResource(R.string.vn_autotasks_new_cta))
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        TextButton(onClick = onDismiss) {
+                            Text(stringResource(R.string.vn_autotasks_new_dismiss))
+                        }
+                    }
                 }
             }
         }

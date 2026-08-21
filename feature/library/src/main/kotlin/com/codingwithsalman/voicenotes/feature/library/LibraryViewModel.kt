@@ -10,6 +10,9 @@ import com.codingwithsalman.voicenotes.asr.api.TranscriptionCoordinator
 import com.codingwithsalman.voicenotes.core.common.di.IoDispatcher
 import com.codingwithsalman.voicenotes.core.common.util.formatNoteDate
 import com.codingwithsalman.voicenotes.core.database.NotesRepository
+import com.codingwithsalman.voicenotes.core.datastore.SettingsRepository
+import com.codingwithsalman.voicenotes.core.reminders.ActionItemBackfiller
+import com.codingwithsalman.voicenotes.core.reminders.BackfillResult
 import com.codingwithsalman.voicenotes.core.media.AudioProbe
 import com.codingwithsalman.voicenotes.core.media.RecordingsStorage
 import com.codingwithsalman.voicenotes.core.media.WaveformExtractor
@@ -25,6 +28,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -41,6 +45,8 @@ class LibraryViewModel @Inject constructor(
     private val audioProbe: AudioProbe,
     private val waveformExtractor: WaveformExtractor,
     private val transcriptionCoordinator: TranscriptionCoordinator,
+    private val settings: SettingsRepository,
+    private val backfiller: ActionItemBackfiller,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
@@ -56,9 +62,51 @@ class LibraryViewModel @Inject constructor(
             initialValue = emptyList(),
         )
 
+    /**
+     * State of the one-time "action items are new" card.
+     *
+     * Shown only to someone who **has notes but has never had one extracted from** — that is
+     * precisely the user who upgraded into 2.3.1 and whose library predates the feature. A fresh
+     * install extracts on its first transcript and so never qualifies, which is why the gate is
+     * "no extracted items exist" rather than a version check.
+     */
+    sealed interface Highlight {
+        data object Hidden : Highlight
+        data object Offer : Highlight
+        data object Running : Highlight
+        data class Done(val result: BackfillResult) : Highlight
+    }
+
+    private val _highlight = MutableStateFlow<Highlight>(Highlight.Hidden)
+    val highlight: StateFlow<Highlight> = _highlight.asStateFlow()
+
     init {
         // Purge notes whose undo window elapsed (or was lost to process death) before we list.
         viewModelScope.launch { repository.purgeDeleted() }
+        viewModelScope.launch {
+            if (settings.autoTasksHighlightSeen.first()) return@launch
+            if (!settings.autoTasksEnabled.first()) return@launch
+            val hasHistory = repository.notesByStatuses(TranscriptionStatus.DONE).isNotEmpty()
+            if (hasHistory && repository.extractedActionItemCount() == 0) {
+                _highlight.value = Highlight.Offer
+            }
+        }
+    }
+
+    /** Runs extraction across the existing library, then reports what it found in place. */
+    fun runBackfill() {
+        if (_highlight.value != Highlight.Offer) return
+        _highlight.value = Highlight.Running
+        viewModelScope.launch {
+            val result = withContext(ioDispatcher) { backfiller.run() }
+            settings.setAutoTasksHighlightSeen()
+            _highlight.value = Highlight.Done(result)
+        }
+    }
+
+    fun dismissHighlight() {
+        viewModelScope.launch { settings.setAutoTasksHighlightSeen() }
+        _highlight.value = Highlight.Hidden
     }
 
     fun onQueryChange(value: String) {

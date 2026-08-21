@@ -86,6 +86,7 @@
     <string name="vn_meter_left">%1$d min free left today</string>
     <string name="vn_go_unlimited">Go unlimited</string>
     <string name="vn_menu_rename">Rename</string>
+    <string name="vn_menu_find_actions">Find action items</string>
     <string name="vn_menu_share_transcript">Share transcript</string>
     <string name="vn_menu_share_audio">Share audio</string>
     <string name="vn_menu_export_txt">Export as .txt</string>
@@ -168,6 +169,12 @@
     <string name="vn_due_overdue">Overdue · %1$s</string>
     <string name="vn_cd_set_due_date">Set a due date</string>
     <string name="vn_autotasks_found">Found %1$d from what was said</string>
+    <string name="vn_autotasks_new_title">New: action items</string>
+    <string name="vn_autotasks_new_body">Murmur can now pull what you committed to out of a meeting, and remind you when a date was said. Notes you already have were transcribed before this existed.</string>
+    <string name="vn_autotasks_new_cta">Find them in my notes</string>
+    <string name="vn_autotasks_new_dismiss">Not now</string>
+    <string name="vn_autotasks_backfill_done">Found %1$d in %2$d notes</string>
+    <string name="vn_autotasks_backfill_none">Nothing to find in your existing notes</string>
     <string name="vn_tell_friend_text">I\'ve been using Murmur — private, offline voice notes that transcribe right on your phone. https://play.google.com/store/apps/details?id=com.codingwithsalman.apps.todo.app.compose</string>
     <string name="vn_restore_purchase">Restore purchase</string>
     <string name="vn_billed_by">Billed by Google Play</string>

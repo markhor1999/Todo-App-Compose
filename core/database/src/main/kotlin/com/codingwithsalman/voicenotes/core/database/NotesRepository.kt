@@ -133,5 +133,8 @@ class NotesRepository @Inject constructor(
 
     suspend fun actionItemTexts(noteId: Long): List<String> = dao.actionItemTexts(noteId)
 
+    /** How many action items were lifted from a transcript rather than typed by the user. */
+    suspend fun extractedActionItemCount(): Int = dao.extractedActionItemCount()
+
     suspend fun deleteActionItem(id: Long) = dao.deleteActionItem(id)
 }

@@ -99,6 +99,10 @@ interface NotesDao {
     @Query("SELECT text FROM action_items WHERE noteId = :noteId")
     suspend fun actionItemTexts(noteId: Long): List<String>
 
+    /** Extracted items carry a source position; hand-typed ones don't. */
+    @Query("SELECT COUNT(*) FROM action_items WHERE sourceStartMs IS NOT NULL")
+    suspend fun extractedActionItemCount(): Int
+
     @Query("DELETE FROM action_items WHERE id = :id")
     suspend fun deleteActionItem(id: Long)
 

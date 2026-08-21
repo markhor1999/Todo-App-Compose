@@ -80,6 +80,7 @@
     <string name="vn_meter_left">Heute noch %1$d Min. gratis</string>
     <string name="vn_go_unlimited">Unbegrenzt freischalten</string>
     <string name="vn_menu_rename">Umbenennen</string>
+    <string name="vn_menu_find_actions">Aufgaben finden</string>
     <string name="vn_menu_share_transcript">Transkript teilen</string>
     <string name="vn_menu_share_audio">Audio teilen</string>
     <string name="vn_menu_export_txt">Als .txt exportieren</string>
@@ -175,4 +176,10 @@
     <string name="vn_due_overdue">Überfällig · %1$s</string>
     <string name="vn_cd_set_due_date">Fälligkeitsdatum setzen</string>
     <string name="vn_autotasks_found">%1$d aus dem Gesagten gefunden</string>
+    <string name="vn_autotasks_new_title">Neu: Aufgaben</string>
+    <string name="vn_autotasks_new_body">Murmur kann jetzt aus einem Meeting heraussuchen, was du zugesagt hast, und dich erinnern, wenn ein Datum genannt wurde. Deine bisherigen Notizen wurden transkribiert, bevor es das gab.</string>
+    <string name="vn_autotasks_new_cta">In meinen Notizen suchen</string>
+    <string name="vn_autotasks_new_dismiss">Später</string>
+    <string name="vn_autotasks_backfill_done">%1$d in %2$d Notizen gefunden</string>
+    <string name="vn_autotasks_backfill_none">In deinen bisherigen Notizen nichts gefunden</string>
 </resources>
