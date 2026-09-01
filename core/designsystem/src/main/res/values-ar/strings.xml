@@ -112,6 +112,7 @@
     <string name="vn_engine_section">محرك التفريغ</string>
     <string name="vn_model_name_fast">الإنجليزية · سريع</string>
     <string name="vn_model_name_all">كل اللغات</string>
+    <string name="vn_model_name_all_compact">كل اللغات · مُصغّر</string>
     <string name="vn_model_sub_fast">%1$d م.ب · إنجليزية فقط، الأسرع</string>
     <string name="vn_model_sub_all">%1$d م.ب · 99 لغة منها العربية</string>
     <string name="vn_engine_installed">✓ %1$s مثبّت وجاهز</string>

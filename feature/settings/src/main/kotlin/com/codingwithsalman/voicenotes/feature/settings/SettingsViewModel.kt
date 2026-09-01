@@ -8,6 +8,7 @@ import com.tricodestudio.voicekit.AsrModelSpec
 import com.codingwithsalman.voicenotes.asr.api.EngineState
 import com.codingwithsalman.voicenotes.asr.api.LiveModelState
 import com.codingwithsalman.voicenotes.asr.api.LiveTranscriptionManager
+import com.tricodestudio.voicekit.DeviceCapabilities
 import com.tricodestudio.voicekit.ModelCatalog
 import com.codingwithsalman.voicenotes.asr.api.TranscriptionCoordinator
 import com.codingwithsalman.voicenotes.core.billing.BillingRepository
@@ -29,6 +30,7 @@ class SettingsViewModel @Inject constructor(
     private val transcriptionCoordinator: TranscriptionCoordinator,
     private val liveManager: LiveTranscriptionManager,
     private val billing: BillingRepository,
+    private val capabilities: DeviceCapabilities,
     entitlementStore: EntitlementStore,
 ) : ViewModel() {
 
@@ -54,7 +56,15 @@ class SettingsViewModel @Inject constructor(
 
     val engineState: StateFlow<EngineState> = transcriptionCoordinator.engineState
 
-    val models: List<AsrModelSpec> = ModelCatalog.all
+    /**
+     * Models this device can actually load. On a low-RAM phone the multilingual `whisper-base`
+     * bundle (~160 MB of weights, ~1 GB of native heap once loaded) is filtered out rather than
+     * offered and then crashed on — see [DeviceCapabilities] and the 2026-09-01 crash cluster.
+     */
+    val models: List<AsrModelSpec> = ModelCatalog.all.filter(capabilities::fits)
+
+    /** True when this hardware cannot run on-device ASR at all (no 64-bit ABI). */
+    val asrUnsupported: Boolean = !capabilities.supportsNativeAsr
 
     fun setThemeMode(mode: ThemeMode) {
         viewModelScope.launch { settings.setThemeMode(mode) }

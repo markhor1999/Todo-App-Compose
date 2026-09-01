@@ -46,12 +46,29 @@ object VoiceKitEngineModule {
         @dagger.hilt.android.qualifiers.ApplicationContext context: android.content.Context,
     ): com.tricodestudio.voicekit.ModelStore = com.tricodestudio.voicekit.ModelStore(context)
 
+    /**
+     * What this hardware can survive. Probed once — see
+     * `brain/apps/voicenotes/2026-09-01-crash-diagnosis-lowend-devices.md`.
+     */
+    @dagger.Provides
+    @javax.inject.Singleton
+    @OptIn(com.tricodestudio.voicekit.VoiceKitInternalApi::class)
+    fun provideDeviceCapabilities(
+        @dagger.hilt.android.qualifiers.ApplicationContext context: android.content.Context,
+    ): com.tricodestudio.voicekit.DeviceCapabilities =
+        com.tricodestudio.voicekit.DeviceCapabilities.from(context)
+
     @dagger.Provides
     @javax.inject.Singleton
     @OptIn(com.tricodestudio.voicekit.VoiceKitInternalApi::class)
     fun provideTranscriptionEngine(
         modelStore: com.tricodestudio.voicekit.ModelStore,
         audioDecoder: com.tricodestudio.voicekit.AudioDecoder,
+        capabilities: com.tricodestudio.voicekit.DeviceCapabilities,
     ): com.tricodestudio.voicekit.SherpaTranscriptionEngine =
-        com.tricodestudio.voicekit.SherpaTranscriptionEngine(modelStore, audioDecoder)
+        com.tricodestudio.voicekit.SherpaTranscriptionEngine(
+            modelStore = modelStore,
+            audioDecoder = audioDecoder,
+            capabilities = capabilities,
+        )
 }

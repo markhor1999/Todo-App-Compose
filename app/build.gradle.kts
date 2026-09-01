@@ -23,8 +23,8 @@ android {
 
     defaultConfig {
         applicationId = "com.codingwithsalman.apps.todo.app.compose"
-        versionCode = 14
-        versionName = "2.3.1"
+        versionCode = 15
+        versionName = "2.4.0"
 
         ndk {
             // sherpa-onnx ships native libs; keep the APK/AAB to the ABIs real devices use.

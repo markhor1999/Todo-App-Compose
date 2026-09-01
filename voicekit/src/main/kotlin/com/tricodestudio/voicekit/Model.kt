@@ -25,6 +25,19 @@ public enum class VoiceModel {
 
     /** Multilingual with auto-detection. The default. */
     MULTILINGUAL,
+
+    /**
+     * English, **streaming** — the only model that produces word-by-word output as audio arrives.
+     * Use it with [VoiceKit.startLiveSession] when you want a caption-style running transcript.
+     *
+     * Streaming acoustic models are language-specific by construction, and English is the only one
+     * that exists for this architecture today — so this is not a placeholder for a family. For live
+     * preview in any other language, pass a normal model to [VoiceKit.startLiveSession] and you get
+     * the phrase-level path instead: text commits at natural pauses, with no extra download.
+     *
+     * Not usable with [VoiceKit.transcribe] — it decodes a stream, not a file.
+     */
+    ENGLISH_STREAMING,
     ;
 
     internal val spec: AsrModelSpec
@@ -32,17 +45,31 @@ public enum class VoiceModel {
             ENGLISH_FAST -> ModelCatalog.whisperTinyEn
             ENGLISH_COMPACT -> ModelCatalog.moonshineBaseEn
             MULTILINGUAL -> ModelCatalog.whisperBaseMultilingual
+            ENGLISH_STREAMING -> ModelCatalog.liveEnStreaming
         }
+
+    /**
+     * True for models that decode incrementally as audio arrives ([ENGLISH_STREAMING]).
+     * Streaming models work with [VoiceKit.startLiveSession] and not with [VoiceKit.transcribe].
+     */
+    public val isStreaming: Boolean get() = this == ENGLISH_STREAMING
 
     /** ISO 639-1 codes this model targets. Empty means multilingual with auto-detection. */
     public val languages: Set<String> get() = spec.languages.toSet()
 
     /**
-     * On-disk size once installed, including the shared voice-activity-detection model.
-     * Read from the actual download manifest, so it cannot drift from reality.
+     * On-disk size once installed, including the shared voice-activity-detection model where that
+     * model needs it. Read from the actual download manifest, so it cannot drift from reality.
+     *
+     * [ENGLISH_STREAMING] decodes continuously and never segments on silence, so it is the one
+     * model that does not pull in the VAD bundle — reporting it as larger than it is would be a
+     * small lie a developer discovers the first time they measure the download.
      */
     public val approxSizeMb: Int
-        get() = ((spec.totalBytes + ModelCatalog.vadFile.sizeBytes) / 1_048_576L).toInt()
+        get() {
+            val vad = if (isStreaming) 0L else ModelCatalog.vadFile.sizeBytes
+            return ((spec.totalBytes + vad) / 1_048_576L).toInt()
+        }
 
     /** True when this model auto-detects rather than targeting a fixed language list. */
     public val isMultilingual: Boolean get() = spec.languages.isEmpty()

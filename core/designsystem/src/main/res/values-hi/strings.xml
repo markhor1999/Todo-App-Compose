@@ -20,11 +20,11 @@
     <string name="vn_library_title">नोट्स</string>
     <string name="vn_library_empty_hint">शुरू करने के लिए रिकॉर्ड या इंपोर्ट करें</string>
     <plurals name="vn_recordings_count">
-        <item quantity="one">1 रिकॉर्डिंग</item>
+        <item quantity="one">%1$d रिकॉर्डिंग</item>
         <item quantity="other">%1$d रिकॉर्डिंग</item>
     </plurals>
     <plurals name="vn_matches_count">
-        <item quantity="one">1 नतीजा</item>
+        <item quantity="one">%1$d नतीजा</item>
         <item quantity="other">%1$d नतीजे</item>
     </plurals>
     <string name="vn_search_placeholder">अपने शब्दों में खोजें…</string>
@@ -104,6 +104,7 @@
     <string name="vn_engine_section">ट्रांसक्रिप्शन इंजन</string>
     <string name="vn_model_name_fast">अंग्रेज़ी · तेज़</string>
     <string name="vn_model_name_all">सभी भाषाएँ</string>
+    <string name="vn_model_name_all_compact">सभी भाषाएँ · संक्षिप्त</string>
     <string name="vn_model_sub_fast">%1$d MB · सिर्फ़ अंग्रेज़ी, सबसे तेज़</string>
     <string name="vn_model_sub_all">%1$d MB · हिन्दी समेत 99 भाषाएँ</string>
     <string name="vn_engine_installed">✓ %1$s इंस्टॉल है और तैयार है</string>

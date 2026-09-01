@@ -20,11 +20,11 @@
     <string name="vn_library_title">Notas</string>
     <string name="vn_library_empty_hint">Grave ou importe para começar</string>
     <plurals name="vn_recordings_count">
-        <item quantity="one">1 gravação</item>
+        <item quantity="one">%1$d gravação</item>
         <item quantity="other">%1$d gravações</item>
     </plurals>
     <plurals name="vn_matches_count">
-        <item quantity="one">1 resultado</item>
+        <item quantity="one">%1$d resultado</item>
         <item quantity="other">%1$d resultados</item>
     </plurals>
     <string name="vn_search_placeholder">Busque nas suas palavras…</string>
@@ -104,6 +104,7 @@
     <string name="vn_engine_section">Motor de transcrição</string>
     <string name="vn_model_name_fast">Inglês · Rápido</string>
     <string name="vn_model_name_all">Todos os idiomas</string>
+    <string name="vn_model_name_all_compact">Todos os idiomas · Compacto</string>
     <string name="vn_model_sub_fast">%1$d MB · Só inglês, o mais rápido</string>
     <string name="vn_model_sub_all">%1$d MB · 99 idiomas incluindo português</string>
     <string name="vn_engine_installed">✓ %1$s instalado e pronto</string>

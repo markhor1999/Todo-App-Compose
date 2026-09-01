@@ -1,2 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!--
+          Inference runs in its own process on purpose. sherpa-onnx can die on a SIGBUS, which is a
+          signal rather than an exception and cannot be caught; isolating it means the worst case is
+          this child process dying and the note being marked FAILED, instead of the whole app going
+          down. See brain/apps/voicenotes/2026-09-01-crash-diagnosis-lowend-devices.md.
+
+          Not exported: only this app may bind to it.
+        -->
+        <service
+            android:name="com.codingwithsalman.voicenotes.asr.sherpa.remote.RemoteAsrService"
+            android:process=":asr"
+            android:exported="false" />
+    </application>
+
+</manifest>

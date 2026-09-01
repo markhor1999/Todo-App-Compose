@@ -2,6 +2,8 @@
 
 package com.codingwithsalman.voicenotes.asr.sherpa
 
+import android.util.Log
+import com.tricodestudio.voicekit.DeviceCapabilities
 import com.tricodestudio.voicekit.ModelStore
 import android.content.Context
 import androidx.work.ExistingWorkPolicy
@@ -45,6 +47,7 @@ class TranscriptionCoordinatorImpl @Inject constructor(
     private val repository: NotesRepository,
     private val settings: SettingsRepository,
     private val entitlementStore: EntitlementStore,
+    private val capabilities: DeviceCapabilities,
     progressBus: TranscriptionProgressBus,
 ) : TranscriptionCoordinator {
 
@@ -116,6 +119,18 @@ class TranscriptionCoordinatorImpl @Inject constructor(
         if (_engineState.value is EngineState.Ready) return
         scope.launch {
             val spec = ModelCatalog.byId(settings.modelId.first())
+            // Never spend ~104 MB of someone's mobile data on weights this device cannot load.
+            // On a phone with no 64-bit ABI the load is a SIGBUS, not a catchable failure.
+            capabilities.refusalReason(spec)?.let { reason ->
+                Log.w(TAG, "model download refused: $reason")
+                // The screen renders this string as-is, so show the prose one and keep the
+                // diagnostic detail in the log above.
+                _engineState.value = EngineState.DownloadFailed(
+                    spec,
+                    capabilities.refusalMessage(spec) ?: reason,
+                )
+                return@launch
+            }
             if (modelStore.isInstalled(spec)) {
                 _engineState.value = EngineState.Ready(spec)
                 requeueUnfinished()
@@ -156,3 +171,5 @@ class TranscriptionCoordinatorImpl @Inject constructor(
         )
     }
 }
+
+private const val TAG = "VnAsrCoordinator"

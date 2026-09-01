@@ -20,11 +20,11 @@
     <string name="vn_library_title">نوٹس</string>
     <string name="vn_library_empty_hint">شروع کرنے کے لیے ریکارڈ یا امپورٹ کریں</string>
     <plurals name="vn_recordings_count">
-        <item quantity="one">1 ریکارڈنگ</item>
+        <item quantity="one">%1$d ریکارڈنگ</item>
         <item quantity="other">%1$d ریکارڈنگز</item>
     </plurals>
     <plurals name="vn_matches_count">
-        <item quantity="one">1 نتیجہ</item>
+        <item quantity="one">%1$d نتیجہ</item>
         <item quantity="other">%1$d نتائج</item>
     </plurals>
     <string name="vn_search_placeholder">اپنے الفاظ میں تلاش کریں…</string>
@@ -104,6 +104,7 @@
     <string name="vn_engine_section">ٹرانسکرپشن انجن</string>
     <string name="vn_model_name_fast">انگریزی · تیز</string>
     <string name="vn_model_name_all">تمام زبانیں</string>
+    <string name="vn_model_name_all_compact">تمام زبانیں · مختصر</string>
     <string name="vn_model_sub_fast">%1$d MB · صرف انگریزی، تیز ترین</string>
     <string name="vn_model_sub_all">%1$d MB · اردو سمیت 99 زبانیں</string>
     <string name="vn_engine_installed">✓ %1$s انسٹال ہے اور تیار ہے</string>

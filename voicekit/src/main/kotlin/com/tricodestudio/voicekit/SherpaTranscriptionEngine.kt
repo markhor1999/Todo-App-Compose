@@ -25,9 +25,25 @@ public class SherpaTranscriptionEngine constructor(
     private val modelStore: ModelStore,
     private val audioDecoder: AudioDecoder,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    /**
+     * Gate on what this hardware can survive. Defaults to [DeviceCapabilities.UNRESTRICTED] so JVM
+     * tests and non-Android callers are unaffected; the app's DI passes the real probe.
+     */
+    private val capabilities: DeviceCapabilities = DeviceCapabilities.UNRESTRICTED,
 ) {
 
-    fun isReady(spec: AsrModelSpec): Boolean = modelStore.isInstalled(spec)
+    /**
+     * Installed **and** loadable here.
+     *
+     * The capability half is not belt-and-braces: on a device with no 64-bit ABI the native load
+     * raises `SIGBUS`, which no `try`/`catch` can contain, so refusing before the call is the only
+     * available defence. See [DeviceCapabilities].
+     */
+    fun isReady(spec: AsrModelSpec): Boolean =
+        capabilities.fits(spec) && modelStore.isInstalled(spec)
+
+    /** Why [isReady] said no on capability grounds, for callers that need to explain themselves. */
+    fun unsupportedReason(spec: AsrModelSpec): String? = capabilities.refusalReason(spec)
 
     // One recognizer at a time, process-wide: two concurrent Whisper instances
     // roughly double native heap (~1 GB) and thrash the CPU. Parallel workers
@@ -47,25 +63,13 @@ public class SherpaTranscriptionEngine constructor(
         spec: AsrModelSpec,
         onProgress: (Float) -> Unit,
     ): TranscriptionResult = withContext(defaultDispatcher) {
-        // Phase 1 — decode (0.00..0.10 of overall progress).
-        val samples = audioDecoder.decodeToMono16k(audioFile) { p ->
-            onProgress(p * DECODE_SHARE)
-        }
-        onProgress(DECODE_SHARE)
-        // Length of what was actually decoded, not what the container claims.
-        val durationMs = samples.size * 1000L / AudioDecoder.TARGET_SAMPLE_RATE
-        if (samples.isEmpty()) {
-            return@withContext TranscriptionResult(
-                segments = emptyList(),
-                language = spec.languageParam.ifEmpty { null },
-                durationMs = 0,
-            )
-        }
+        // Refuse before anything native happens: a bad load is a SIGBUS, not an exception, and
+        // would take the whole process with it (2026-09-01 crash cluster).
+        unsupportedReason(spec)?.let { throw UnsupportedDeviceException(it) }
 
-        val recognizer = OfflineRecognizer(
-            assetManager = null,
-            config = OfflineRecognizerConfig(modelConfig = buildModelConfig(spec)),
-        )
+        // The VAD is small; the recogniser is roughly a gigabyte of native heap, so it is built on
+        // first speech instead of up front — a silent or empty recording never pays for one.
+        var recognizer: OfflineRecognizer? = null
         val vad = Vad(
             assetManager = null,
             config = VadModelConfig(
@@ -74,7 +78,7 @@ public class SherpaTranscriptionEngine constructor(
                     threshold = 0.5f,
                     minSilenceDuration = 0.35f,
                     minSpeechDuration = 0.25f,
-                    windowSize = 512,
+                    windowSize = VAD_WINDOW,
                     // Keep segments under Whisper's 30 s context window.
                     maxSpeechDuration = 28f,
                 ),
@@ -89,11 +93,13 @@ public class SherpaTranscriptionEngine constructor(
                 while (!vad.empty()) {
                     val speech = vad.front()
                     vad.pop()
-                    val stream = recognizer.createStream()
+                    val r = recognizer
+                        ?: newRecognizer(spec).also { recognizer = it }
+                    val stream = r.createStream()
                     try {
                         stream.acceptWaveform(speech.samples, SAMPLE_RATE)
-                        recognizer.decode(stream)
-                        val text = recognizer.getResult(stream).text.trim()
+                        r.decode(stream)
+                        val text = r.getResult(stream).text.trim()
                         if (text.isNotEmpty()) {
                             val startMs = speech.start * 1000L / SAMPLE_RATE
                             val endMs = startMs + speech.samples.size * 1000L / SAMPLE_RATE
@@ -105,19 +111,37 @@ public class SherpaTranscriptionEngine constructor(
                 }
             }
 
-            var offset = 0
-            while (offset < samples.size) {
-                val window = samples.copyOfRange(
-                    offset,
-                    (offset + VAD_WINDOW).coerceAtMost(samples.size),
+            // Decode and recognise in one pass. The decoder hands back 16 kHz mono chunks as the
+            // codec produces them, so peak memory is one codec buffer rather than the whole
+            // recording twice over; `pending` carries the sub-window remainder between chunks.
+            var pending = FloatArray(0)
+            val totalSamples = audioDecoder.decodeStreamingMono16k(
+                file = audioFile,
+                onProgress = { p -> onProgress(p.coerceIn(0f, 1f)) },
+            ) { chunk ->
+                val buf = if (pending.isEmpty()) chunk else pending + chunk
+                var offset = 0
+                while (offset + VAD_WINDOW <= buf.size) {
+                    vad.acceptWaveform(buf.copyOfRange(offset, offset + VAD_WINDOW))
+                    offset += VAD_WINDOW
+                    drainVad()
+                }
+                pending = if (offset == 0) buf else buf.copyOfRange(offset, buf.size)
+            }
+
+            if (totalSamples == 0L) {
+                return@withContext TranscriptionResult(
+                    segments = emptyList(),
+                    language = spec.languageParam.ifEmpty { null },
+                    durationMs = 0,
                 )
-                vad.acceptWaveform(window)
-                offset += VAD_WINDOW
+            }
+
+            // Whatever did not fill a window still has to reach the VAD, exactly as the batch
+            // implementation's short final window did.
+            if (pending.isNotEmpty()) {
+                vad.acceptWaveform(pending)
                 drainVad()
-                onProgress(
-                    DECODE_SHARE +
-                        (1f - DECODE_SHARE) * (offset.toFloat() / samples.size).coerceIn(0f, 1f)
-                )
             }
             vad.flush()
             drainVad()
@@ -126,11 +150,12 @@ public class SherpaTranscriptionEngine constructor(
             TranscriptionResult(
                 segments = segments,
                 language = spec.languageParam.ifEmpty { null },
-                durationMs = durationMs,
+                // Length of what was actually decoded, not what the container claims.
+                durationMs = totalSamples * 1000L / AudioDecoder.TARGET_SAMPLE_RATE,
             )
         } finally {
             vad.release()
-            recognizer.release()
+            recognizer?.release()
         }
     }
 
@@ -139,6 +164,19 @@ public class SherpaTranscriptionEngine constructor(
     // one-native-instance invariant as transcribe(), so it try-locks the same mutex for its whole
     // session: an in-flight background job wins (no live preview that take, MediaRecorder fallback);
     // a job arriving mid-recording simply suspends in withLock until the session releases.
+
+    /**
+     * Hold the inference slot for the duration of [block].
+     *
+     * Exists for the case where the actual inference happens in **another process** (Murmur runs
+     * the saved-transcript pass in `:asr`). The mutex below only serialises this process, so once
+     * transcription moved out, nothing stopped a live preview here and a transcription there from
+     * running at the same moment — roughly a gigabyte of native heap each, on the 2 GB phones this
+     * whole exercise is about. Wrapping the remote call in the local slot restores the invariant:
+     * whoever holds it, wherever the work runs, there is one at a time.
+     */
+    public suspend fun <T> withInferenceSlot(block: suspend () -> T): T =
+        transcribeMutex.withLock { block() }
 
     /** Non-blocking claim of the process-wide inference slot for a live session. */
     public fun tryLockForLiveSession(): Boolean = transcribeMutex.tryLock()
@@ -149,10 +187,13 @@ public class SherpaTranscriptionEngine constructor(
     }
 
     /** A recognizer for [spec] built exactly like the offline pass builds one. Caller releases. */
-    public fun newRecognizer(spec: AsrModelSpec): OfflineRecognizer = OfflineRecognizer(
-        assetManager = null,
-        config = OfflineRecognizerConfig(modelConfig = buildModelConfig(spec)),
-    )
+    public fun newRecognizer(spec: AsrModelSpec): OfflineRecognizer {
+        unsupportedReason(spec)?.let { throw UnsupportedDeviceException(it) }
+        return OfflineRecognizer(
+            assetManager = null,
+            config = OfflineRecognizerConfig(modelConfig = buildModelConfig(spec)),
+        )
+    }
 
     /** A silero VAD tuned for live preview: shorter max segment so text commits frequently. */
     public fun newLiveVad(): Vad = Vad(
@@ -175,7 +216,7 @@ public class SherpaTranscriptionEngine constructor(
      *  scaffolded low-RAM fallback, dormant until device-validated — see ModelCatalog.moonshineBaseEn). */
     private fun buildModelConfig(spec: AsrModelSpec): OfflineModelConfig {
         fun path(role: ModelFileRole) = modelStore.localFile(spec, spec.file(role)).absolutePath
-        val threads = Runtime.getRuntime().availableProcessors().coerceIn(2, 4)
+        val threads = capabilities.asrThreadCount
         return when (spec.family) {
             ModelFamily.WHISPER -> OfflineModelConfig(
                 whisper = OfflineWhisperModelConfig(

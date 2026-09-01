@@ -108,6 +108,7 @@
     <string name="vn_engine_section">Движок расшифровки</string>
     <string name="vn_model_name_fast">Английский · Быстрый</string>
     <string name="vn_model_name_all">Все языки</string>
+    <string name="vn_model_name_all_compact">Все языки · Компактный</string>
     <string name="vn_model_sub_fast">%1$d МБ · Только английский, самый быстрый</string>
     <string name="vn_model_sub_all">%1$d МБ · 99 языков, включая русский</string>
     <string name="vn_engine_installed">✓ %1$s установлен и готов</string>

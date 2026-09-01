@@ -1,6 +1,9 @@
 package com.tricodestudio.voicekit
 
 import android.content.Context
+import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +20,7 @@ public data class VoiceKitConfig(
     /** Model used when a call does not name one. */
     val defaultModel: VoiceModel = VoiceModel.MULTILINGUAL,
     /**
-     * Allow model downloads over a metered connection. Off by default — these are 40-220 MB, and
+     * Allow model downloads over a metered connection. Off by default — these run 41-274 MB, and
      * spending a user's mobile data without asking is the sort of thing that earns one-star reviews.
      *
      * Not yet enforced: [ModelManager.ensure] downloads regardless. Gate the call yourself until
@@ -26,6 +29,15 @@ public data class VoiceKitConfig(
     val allowMeteredDownload: Boolean = false,
     /** Where model files live. Null uses the app's internal storage, which is the safe default. */
     val modelDirectory: File? = null,
+    /**
+     * Base URL of the VoiceKit distribution endpoint, or null to fetch models from the public
+     * mirrors named in the catalog.
+     *
+     * When set, model downloads are authenticated with your licence key. This is the control that
+     * makes a stripped licence check not worth the trouble — see `LICENSING.md`. Leave it null and
+     * nothing breaks; the models are public and always were.
+     */
+    val distributionEndpoint: String? = null,
 )
 
 /**
@@ -77,7 +89,7 @@ public interface LiveSession : AutoCloseable {
  *
  * ```
  * VoiceKit.initialize(context, licenseKey = BuildConfig.VOICEKIT_KEY)
- * VoiceKit.models.ensure(VoiceModel.MULTILINGUAL)   // once, ~90 MB
+ * VoiceKit.models.ensure(VoiceModel.MULTILINGUAL)   // once, 153 MB
  * val result = VoiceKit.transcribe(audioFile)
  * println(result.text)
  * ```
@@ -93,6 +105,7 @@ public object VoiceKit {
         val store: ModelStore,
         val engine: SherpaTranscriptionEngine,
         val models: ModelManager,
+        val license: LicenseStatus,
     )
 
     @Volatile
@@ -120,16 +133,67 @@ public object VoiceKit {
         licenseKey: String,
         config: VoiceKitConfig = VoiceKitConfig(),
     ) {
-        validateLicenseShape(licenseKey)
         val app = context.applicationContext
-        val store = ModelStore(context = app, rootOverride = config.modelDirectory)
+        val status = LicenseVerifier.verify(licenseKey, AppIdentity.of(app))
+        reportLicense(status)
+
+        // A refused licence must not be discoverable only at download time, so the gated source is
+        // wired regardless of status — an Unlicensed/Lapsed key simply gets refused by the endpoint,
+        // which is the correct place for a commercial decision to be enforced.
+        val source = config.distributionEndpoint
+            ?.let { GatedModelSource(licenseKey = licenseKey, endpoint = it.trimEnd('/')) }
+            ?: DirectModelSource
+        val store = ModelStore(
+            context = app,
+            rootOverride = config.modelDirectory,
+            source = source,
+        )
         val engine = SherpaTranscriptionEngine(modelStore = store, audioDecoder = AudioDecoder())
         session = Session(
             config = config,
             store = store,
             engine = engine,
             models = ModelManagerImpl(store),
+            license = status,
         )
+    }
+
+    /**
+     * The licence state established by [initialize].
+     *
+     * Read it and report it to your own crash reporter if you like — a lapsed key never stops the
+     * SDK working, so this is the only way you would find out.
+     */
+    @JvmStatic
+    public val license: LicenseStatus
+        get() = require().license
+
+    /** Logs, loudly for a lapse, and never throws — nothing here may take down a host app's start. */
+    private fun reportLicense(status: LicenseStatus) {
+        when (status) {
+            is LicenseStatus.Active -> {
+                if (status.entitlement.tier == LicenseTier.TRIAL) {
+                    Log.i(TAG, "VoiceKit running on a TRIAL licence for ${status.entitlement.applicationId}.")
+                }
+                if (status.entitlement.isTest) {
+                    Log.w(
+                        TAG,
+                        "VoiceKit is using a vk_test_ key. It is not bound to your signing " +
+                            "certificate — do not ship a release build with it.",
+                    )
+                }
+            }
+            is LicenseStatus.Lapsed -> Log.w(
+                TAG,
+                "VoiceKit licence for ${status.entitlement.applicationId} lapsed on " +
+                    "${status.sinceMillis}. The SDK keeps working — your users are not affected — " +
+                    "but the subscription needs renewing.",
+            )
+            is LicenseStatus.Unlicensed -> Log.w(TAG, "VoiceKit is unlicensed: ${status.reason}")
+        }
+        if (LicenseVerifier.isPreRevenueBuild) {
+            Log.i(TAG, "VoiceKit build has no issuer key compiled in: licences are structural only.")
+        }
     }
 
     /** True once [initialize] has completed successfully. */
@@ -167,6 +231,14 @@ public object VoiceKit {
         val s = require()
         val chosen = model ?: s.config.defaultModel
 
+        if (chosen.isStreaming) {
+            // Caught here rather than deep in the engine: a streaming model has no offline decoder,
+            // so the native failure would surface as an unrelated-looking load error.
+            throw VoiceKitException.UnsupportedAudio(
+                "$chosen decodes a live stream, not a file. Use startLiveSession($chosen), or " +
+                    "transcribe() with VoiceModel.MULTILINGUAL."
+            )
+        }
         if (language != null && !chosen.supports(language)) {
             throw VoiceKitException.UnsupportedAudio(
                 "$chosen does not support '$language' (supports ${chosen.languages}). " +
@@ -193,32 +265,57 @@ public object VoiceKit {
     }
 
     /**
-     * Opens a live-preview session for one recording.
+     * Opens a live transcription session, producing a running transcript as you feed it audio.
      *
-     * Suspends (a model may need loading) and throws rather than returning null: a silent null turns
-     * a precondition failure into a support ticket instead of a stack trace.
+     * ```
+     * VoiceKit.startLiveSession(VoiceModel.ENGLISH_STREAMING).use { session ->
+     *     lifecycleScope.launch { session.text.collect { caption.text = it } }
+     *     while (recording) session.accept(readPcm())
+     * }
+     * ```
      *
-     * @throws VoiceKitException.LiveUnavailable when no live path can run.
+     * The choice of [model] decides how the text behaves, and nothing else about your code changes:
+     *
+     * - [VoiceModel.ENGLISH_STREAMING] → **word-by-word**, caption style, English only.
+     * - Any other model → **phrase-by-phrase**, committing at natural pauses ~1–2s after they are
+     *   spoken, in every language that model supports, with **no additional download**.
+     *
+     * Feed it 16 kHz mono normalized-float PCM via [LiveSession.accept]; that call is non-blocking
+     * and safe from an audio-capture callback. Always [LiveSession.close] the session — `use {}`
+     * does it for you — or the native recognizer stays resident.
+     *
+     * Suspends while the recognizer loads, and throws rather than returning null: a silent null
+     * turns a precondition failure into a support ticket instead of a stack trace.
+     *
+     * @param model defaults to [VoiceKitConfig.defaultModel].
+     * @throws VoiceKitException.ModelNotInstalled if [model] is not on disk — call
+     *   [ModelManager.ensure] first.
+     * @throws VoiceKitException.LiveUnavailable if a [transcribe] call currently holds the engine,
+     *   or the recognizer could not be loaded.
      */
     @JvmStatic
     @JvmOverloads
     public suspend fun startLiveSession(model: VoiceModel? = null): LiveSession {
-        require()
-        throw VoiceKitException.LiveUnavailable(
-            "streaming is not in this build yet — use transcribe() on a finished recording"
-        )
+        val s = require()
+        val chosen = model ?: s.config.defaultModel
+        // Loading a recognizer is heavy and blocking; keep it off whatever dispatcher the caller
+        // happened to be on rather than making every caller remember to wrap this.
+        return withContext(Dispatchers.IO) {
+            openLiveSession(model = chosen, store = s.store, engine = s.engine)
+        }
     }
 
     /**
-     * Shape-only check, kept separate from [initialize] so it is testable without an Android
-     * Context. This is not the entitlement check — that is a server round-trip which caches its
-     * answer and never gates inference.
+     * Shape-only check, separate from [initialize] so it is testable without an Android Context.
+     *
+     * This is not the entitlement check — [LicenseVerifier.verify] does that, offline, against the
+     * signed payload carried inside the key itself.
      */
     internal fun validateLicenseShape(licenseKey: String) {
-        if (licenseKey.isBlank()) {
-            throw VoiceKitException.InvalidLicense(VoiceKitException.InvalidLicense.Reason.MALFORMED)
-        }
+        LicenseVerifier.parseShape(licenseKey).getOrElse { throw it }
     }
+
+    internal const val TAG: String = "VoiceKit"
 
     /** Test seam: drops the initialized state. */
     internal fun resetForTesting() {

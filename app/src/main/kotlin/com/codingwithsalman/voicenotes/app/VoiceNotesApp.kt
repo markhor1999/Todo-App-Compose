@@ -36,8 +36,28 @@ class VoiceNotesApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        // Application.onCreate runs in EVERY process, and since 2.4.0 inference lives in its own
+        // (`:asr`). Notification channels and reminder rescheduling belong to the app process
+        // only — rescheduling in particular queries Room, and opening the database in a second
+        // process would need multi-instance invalidation we do not want to take on. The ASR
+        // process needs nothing but the model files.
+        if (!isMainProcess()) return
         createNotificationChannels()
         rescheduleReminders()
+    }
+
+    private fun isMainProcess(): Boolean {
+        val name = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            getProcessName()
+        } else {
+            val pid = android.os.Process.myPid()
+            (getSystemService(Context.ACTIVITY_SERVICE) as? android.app.ActivityManager)
+                ?.runningAppProcesses
+                ?.firstOrNull { it.pid == pid }
+                ?.processName
+        }
+        // A null reading should not silently disable the app's own startup work.
+        return name == null || name == packageName
     }
 
     private fun createNotificationChannels() {

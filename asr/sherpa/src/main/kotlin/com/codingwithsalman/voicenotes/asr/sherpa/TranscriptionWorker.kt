@@ -2,7 +2,10 @@
 
 package com.codingwithsalman.voicenotes.asr.sherpa
 
+import com.codingwithsalman.voicenotes.asr.sherpa.remote.AsrProcessDiedException
+import com.codingwithsalman.voicenotes.asr.sherpa.remote.RemoteTranscriber
 import com.tricodestudio.voicekit.SherpaTranscriptionEngine
+import com.tricodestudio.voicekit.UnsupportedDeviceException
 import android.app.NotificationManager
 import android.content.Context
 import android.util.Log
@@ -35,6 +38,7 @@ class TranscriptionWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted params: WorkerParameters,
     private val engine: SherpaTranscriptionEngine,
+    private val remoteTranscriber: RemoteTranscriber,
     private val repository: NotesRepository,
     private val settings: SettingsRepository,
     private val entitlementStore: EntitlementStore,
@@ -48,6 +52,9 @@ class TranscriptionWorker @AssistedInject constructor(
         val note = repository.note(noteId) ?: return Result.failure()
         val spec = ModelCatalog.byId(settings.modelId.first())
         if (!engine.isReady(spec)) {
+            // Covers both "model not downloaded yet" and "this device cannot load it at all".
+            // The second case used to reach native code and die on a SIGBUS; now it fails the note.
+            engine.unsupportedReason(spec)?.let { Log.w(TAG, "transcription unsupported: $it") }
             repository.updateStatus(noteId, TranscriptionStatus.FAILED)
             return Result.failure()
         }
@@ -64,7 +71,8 @@ class TranscriptionWorker @AssistedInject constructor(
 
         return try {
             var lastNotified = 0
-            val result = engine.transcribe(File(note.audioPath), spec) { progress ->
+            // Runs in the isolated `:asr` process — see RemoteTranscriber for the failure policy.
+            val result = remoteTranscriber.transcribe(File(note.audioPath), spec) { progress ->
                 progressBus.update(noteId, progress)
                 val percent = (progress * 100).toInt()
                 if (percent >= lastNotified + 10) { // keep notification churn low
@@ -106,6 +114,28 @@ class TranscriptionWorker @AssistedInject constructor(
             entitlementStore.recordTranscriptionSuccess()
             extractActionItems(noteId, note.createdAtMs, result.segments)
             Result.success()
+        } catch (e: AsrProcessDiedException) {
+            // The isolated process was killed — a native SIGBUS or the low-memory killer. In the
+            // old in-process design this exact event took the whole app with it; now it is one
+            // failed note. Deliberately NOT retried here: whatever killed that process would kill
+            // this one, and this one is the app.
+            Log.e(TAG, "ASR process died for note=$noteId", e)
+            repository.updateStatus(noteId, TranscriptionStatus.FAILED)
+            Result.failure()
+        } catch (e: UnsupportedDeviceException) {
+            Log.w(TAG, "device cannot transcribe note=$noteId: ${e.message}")
+            repository.updateStatus(noteId, TranscriptionStatus.FAILED)
+            Result.failure()
+        } catch (e: OutOfMemoryError) {
+            // Deliberately catching an Error, not an Exception. Transcription is the one place this
+            // app can plausibly exhaust the heap — a whole recording is decoded into a single
+            // FloatArray and a Whisper recognizer costs ~1 GB of native heap — and on the 2-3 GB
+            // hardware Murmur is actually installed on that happened often enough to produce 15
+            // separate Play issues, all landing on innocent bystanders because an OOM kills the
+            // process at whatever allocated next. `catch (e: Exception)` never saw them.
+            Log.e(TAG, "transcription ran out of memory for note=$noteId", e)
+            repository.updateStatus(noteId, TranscriptionStatus.FAILED)
+            Result.failure()
         } catch (e: Exception) {
             Log.e(TAG, "transcription failed for note=$noteId", e)
             repository.updateStatus(noteId, TranscriptionStatus.FAILED)

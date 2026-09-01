@@ -23,11 +23,11 @@
     <string name="vn_library_title">Notes</string>
     <string name="vn_library_empty_hint">Record or import to begin</string>
     <plurals name="vn_recordings_count">
-        <item quantity="one">1 recording</item>
+        <item quantity="one">%1$d recording</item>
         <item quantity="other">%1$d recordings</item>
     </plurals>
     <plurals name="vn_matches_count">
-        <item quantity="one">1 match</item>
+        <item quantity="one">%1$d match</item>
         <item quantity="other">%1$d matches</item>
     </plurals>
     <string name="vn_search_placeholder">Search your words…</string>
@@ -111,6 +111,7 @@
     <string name="vn_engine_section">Transcription engine</string>
     <string name="vn_model_name_fast">English · Fast</string>
     <string name="vn_model_name_all">All languages</string>
+    <string name="vn_model_name_all_compact">All languages · Compact</string>
     <string name="vn_model_sub_fast">%1$d MB · English only, fastest</string>
     <string name="vn_model_sub_all">%1$d MB · 99 languages incl. اردو / हिन्दी</string>
     <string name="vn_engine_installed">✓ %1$s is installed and ready</string>

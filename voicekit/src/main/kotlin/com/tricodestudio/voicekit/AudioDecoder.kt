@@ -30,6 +30,40 @@ public class AudioDecoder {
      * @throws VoiceKitException.UnsupportedAudio if the file has no audio track or cannot be decoded.
      */
     public fun decodeToMono16k(file: File, onProgress: (Float) -> Unit = {}): FloatArray {
+        val chunks = ArrayList<FloatArray>(256)
+        var total = 0
+        decodeStreamingMono16k(file, onProgress) { chunk ->
+            chunks += chunk
+            total += chunk.size
+        }
+        if (chunks.size == 1) return chunks[0]
+        val joined = FloatArray(total)
+        var at = 0
+        for (c in chunks) {
+            c.copyInto(joined, at)
+            at += c.size
+        }
+        return joined
+    }
+
+    /**
+     * Same decode, delivered in pieces: every chunk is 16 kHz mono float PCM, already resampled,
+     * and is handed to [onChunk] as soon as the codec produces it. Returns the total number of
+     * samples emitted.
+     *
+     * Prefer this over [decodeToMono16k] for anything that processes audio sequentially. The batch
+     * form has to hold the whole recording *and* a second copy of it while joining, which on a
+     * one-hour note is comfortably over a gigabyte before the recogniser allocates anything — the
+     * memory half of the 2026-09-01 crash cluster. Streaming keeps the footprint at one codec
+     * buffer regardless of how long the recording is.
+     *
+     * [onChunk] must not retain the array it is given.
+     */
+    public fun decodeStreamingMono16k(
+        file: File,
+        onProgress: (Float) -> Unit = {},
+        onChunk: (FloatArray) -> Unit,
+    ): Long {
         if (!file.exists()) {
             throw VoiceKitException.UnsupportedAudio("no file at ${file.absolutePath}")
         }
@@ -79,8 +113,20 @@ public class AudioDecoder {
         var sampleRate = trackFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE)
         var channels = trackFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
 
-        val pcm = ArrayList<FloatArray>(256)
         var totalSamples = 0L
+        // Built lazily: the real sample rate can arrive with INFO_OUTPUT_FORMAT_CHANGED, which the
+        // codec reports before the first output buffer.
+        var resampler: StreamingResampler? = null
+        fun emit(mono: FloatArray) {
+            if (mono.isEmpty()) return
+            val r = resampler ?: StreamingResampler(sampleRate, TARGET_SAMPLE_RATE)
+                .also { resampler = it }
+            val out = r.resample(mono)
+            if (out.isNotEmpty()) {
+                totalSamples += out.size
+                onChunk(out)
+            }
+        }
         val bufferInfo = MediaCodec.BufferInfo()
         var inputDone = false
         var outputDone = false
@@ -126,8 +172,7 @@ public class AudioDecoder {
                                 repeat(channels) { acc += shorts.get() / 32768f }
                                 mono[s++] = acc / channels
                             }
-                            pcm.add(mono)
-                            totalSamples += mono.size
+                            emit(mono)
                         }
                         codec.releaseOutputBuffer(outIndex, false)
                         if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
@@ -151,31 +196,16 @@ public class AudioDecoder {
             extractor.release()
         }
 
-        val joined = FloatArray(totalSamples.toInt())
-        var offset = 0
-        for (chunk in pcm) {
-            chunk.copyInto(joined, offset)
-            offset += chunk.size
+        resampler?.flush()?.let { tail ->
+            if (tail.isNotEmpty()) {
+                totalSamples += tail.size
+                onChunk(tail)
+            }
         }
-
-        return if (sampleRate == TARGET_SAMPLE_RATE) joined
-        else resampleLinear(joined, sampleRate, TARGET_SAMPLE_RATE)
+        onProgress(1f)
+        return totalSamples
     }
 
-    private fun resampleLinear(input: FloatArray, fromRate: Int, toRate: Int): FloatArray {
-        if (input.isEmpty()) return input
-        val outLength = (input.size.toLong() * toRate / fromRate).toInt().coerceAtLeast(1)
-        val output = FloatArray(outLength)
-        val ratio = (input.size - 1).toDouble() / (outLength - 1).coerceAtLeast(1)
-        for (i in output.indices) {
-            val pos = i * ratio
-            val i0 = pos.toInt()
-            val i1 = (i0 + 1).coerceAtMost(input.size - 1)
-            val frac = (pos - i0).toFloat()
-            output[i] = input[i0] * (1f - frac) + input[i1] * frac
-        }
-        return output
-    }
 
     public companion object {
         /** Sample rate every model in [VoiceModel] expects. */

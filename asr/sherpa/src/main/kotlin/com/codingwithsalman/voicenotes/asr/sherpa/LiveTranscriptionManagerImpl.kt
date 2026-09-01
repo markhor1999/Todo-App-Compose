@@ -3,6 +3,7 @@
 package com.codingwithsalman.voicenotes.asr.sherpa
 
 import com.tricodestudio.voicekit.SherpaTranscriptionEngine
+import com.tricodestudio.voicekit.DeviceCapabilities
 import com.tricodestudio.voicekit.ModelStore
 import android.util.Log
 import com.tricodestudio.voicekit.AsrModelSpec
@@ -54,6 +55,7 @@ private const val TAG = "VnLiveAsr"
 class LiveTranscriptionManagerImpl @Inject constructor(
     private val modelStore: ModelStore,
     private val engine: SherpaTranscriptionEngine,
+    private val capabilities: DeviceCapabilities,
     settings: SettingsRepository,
 ) : LiveTranscriptionManager {
 
@@ -70,17 +72,35 @@ class LiveTranscriptionManagerImpl @Inject constructor(
     }
 
     private val _modelState = MutableStateFlow<LiveModelState>(
-        if (modelStore.isInstalled(zipSpec)) LiveModelState.Ready else LiveModelState.NotInstalled
+        when {
+            !capabilities.supportsNativeAsr -> LiveModelState.NotInstalled
+            modelStore.isInstalled(zipSpec) -> LiveModelState.Ready
+            else -> LiveModelState.NotInstalled
+        }
     )
     override val modelState: StateFlow<LiveModelState> = _modelState.asStateFlow()
 
-    /** Some live path is usable: the chunked path (installed offline model) or the EN zipformer. */
-    override fun isAvailable(): Boolean =
-        modelStore.isInstalled(offlineSpec) || modelStore.isInstalled(zipSpec)
+    /**
+     * Some live path is usable: the chunked path (installed offline model) or the EN zipformer.
+     *
+     * Both run native sherpa, so a device without a 64-bit ABI is excluded outright — that is the
+     * `SIGBUS` population from the 2026-09-01 crash cluster, and the caller falls back to plain
+     * recording. The chunked path additionally has to fit the device's model-size ceiling.
+     */
+    override fun isAvailable(): Boolean {
+        if (!capabilities.supportsNativeAsr) return false
+        val chunked = capabilities.fits(offlineSpec) && modelStore.isInstalled(offlineSpec)
+        return chunked || modelStore.isInstalled(zipSpec)
+    }
 
     private var downloadJob: Job? = null
 
     override fun ensureModelDownloaded() {
+        // Never pull 43 MB over someone's mobile data for a feature their hardware cannot run.
+        if (!capabilities.supportsNativeAsr) {
+            Log.i(TAG, "live model download skipped: no 64-bit ABI on this device")
+            return
+        }
         if (_modelState.value is LiveModelState.Ready || downloadJob?.isActive == true) return
         // Opt-in, small model downloaded while the user watches the Settings toggle — a plain
         // scoped coroutine (not the WorkManager path the offline model uses) is enough here; a
@@ -100,9 +120,10 @@ class LiveTranscriptionManagerImpl @Inject constructor(
     }
 
     override fun newSession(): LiveSession? {
+        if (!capabilities.supportsNativeAsr) return null
         val offline = offlineSpec
         val wordLevel = offline.languages == listOf("en") && modelStore.isInstalled(zipSpec)
-        val chunked = modelStore.isInstalled(offline)
+        val chunked = capabilities.fits(offline) && modelStore.isInstalled(offline)
         if (!wordLevel && !chunked && !modelStore.isInstalled(zipSpec)) return null
         // One native inference at a time, process-wide: if a background transcription job is
         // mid-file, skip live preview for this take (the caller falls back to plain recording).

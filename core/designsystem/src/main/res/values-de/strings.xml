@@ -20,11 +20,11 @@
     <string name="vn_library_title">Notizen</string>
     <string name="vn_library_empty_hint">Aufnehmen oder importieren</string>
     <plurals name="vn_recordings_count">
-        <item quantity="one">1 Aufnahme</item>
+        <item quantity="one">%1$d Aufnahme</item>
         <item quantity="other">%1$d Aufnahmen</item>
     </plurals>
     <plurals name="vn_matches_count">
-        <item quantity="one">1 Treffer</item>
+        <item quantity="one">%1$d Treffer</item>
         <item quantity="other">%1$d Treffer</item>
     </plurals>
     <string name="vn_search_placeholder">Durchsuche deine Worte…</string>
@@ -104,6 +104,7 @@
     <string name="vn_engine_section">Transkriptions-Engine</string>
     <string name="vn_model_name_fast">Englisch · Schnell</string>
     <string name="vn_model_name_all">Alle Sprachen</string>
+    <string name="vn_model_name_all_compact">Alle Sprachen · Kompakt</string>
     <string name="vn_model_sub_fast">%1$d MB · Nur Englisch, am schnellsten</string>
     <string name="vn_model_sub_all">%1$d MB · 99 Sprachen inkl. Deutsch</string>
     <string name="vn_engine_installed">✓ %1$s ist installiert und bereit</string>

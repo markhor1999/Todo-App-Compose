@@ -13,6 +13,15 @@ data class ModelFileSpec(
     val url: String,
     val sizeBytes: Long,
     val role: ModelFileRole,
+    /**
+     * Expected SHA-256, lowercase hex, or null when unpinned.
+     *
+     * Null for everything served from public mirrors today — we have not verified those digests,
+     * and asserting a hash we have not checked would be worse than asserting none. Populate this
+     * as files move onto our own distribution, where the digest is known at upload time.
+     * [ModelStore] enforces it whenever it is present.
+     */
+    val sha256: String? = null,
 )
 
 @VoiceKitInternalApi
@@ -102,6 +111,45 @@ public object ModelCatalog {
             ModelFileSpec(
                 "base-tokens.txt",
                 "$HF/sherpa-onnx-whisper-base/resolve/main/base-tokens.txt",
+                816_730L,
+                ModelFileRole.TOKENS,
+            ),
+        ),
+        isPro = false,
+    )
+
+    /**
+     * Multilingual Whisper **tiny**, int8 (~99 MB) — the low-RAM multilingual path (MUR-17).
+     *
+     * Added 2026-09-01. Before this, the only multilingual option was [whisperBaseMultilingual] at
+     * ~160 MB, which [DeviceCapabilities] excludes on 2-3 GB hardware — so a low-RAM user who needed
+     * a language other than English had no working path at all. This bundle is within a megabyte of
+     * [whisperTinyEn] in size, so it clears the same ceiling while keeping auto-detect.
+     *
+     * Quality is below `base`: it is offered *instead of* base only where base cannot load.
+     * Sizes verified via HTTP HEAD 2026-09-01.
+     */
+    val whisperTinyMultilingual = AsrModelSpec(
+        id = "whisper-tiny-int8",
+        displayName = "All languages · Compact",
+        languages = emptyList(),
+        languageParam = "",
+        files = listOf(
+            ModelFileSpec(
+                "tiny-encoder.int8.onnx",
+                "$HF/sherpa-onnx-whisper-tiny/resolve/main/tiny-encoder.int8.onnx",
+                12_937_772L,
+                ModelFileRole.ENCODER,
+            ),
+            ModelFileSpec(
+                "tiny-decoder.int8.onnx",
+                "$HF/sherpa-onnx-whisper-tiny/resolve/main/tiny-decoder.int8.onnx",
+                89_855_401L,
+                ModelFileRole.DECODER,
+            ),
+            ModelFileSpec(
+                "tiny-tokens.txt",
+                "$HF/sherpa-onnx-whisper-tiny/resolve/main/tiny-tokens.txt",
                 816_730L,
                 ModelFileRole.TOKENS,
             ),
@@ -212,7 +260,8 @@ public object ModelCatalog {
     )
 
     /** Models offered in the picker. Moonshine is intentionally absent until device-validated. */
-    val all: List<AsrModelSpec> = listOf(whisperTinyEn, whisperBaseMultilingual)
+    val all: List<AsrModelSpec> =
+        listOf(whisperTinyEn, whisperTinyMultilingual, whisperBaseMultilingual)
 
     /** Specs resolvable by id but not shown in the offline model picker: the dormant Moonshine
      *  fallback and the live-preview streaming model (downloaded via its own settings toggle). */
@@ -220,13 +269,22 @@ public object ModelCatalog {
 
     val default: AsrModelSpec = whisperTinyEn
 
-    /** The low-RAM English fallback — see [moonshineBaseEn]. Not yet wired as any device's default. */
-    val lowRamDefault: AsrModelSpec = moonshineBaseEn
+    /**
+     * The low-RAM default: English tiny, which is also the global [default].
+     *
+     * ⚠️ This used to name [moonshineBaseEn], which is **~287 MB — larger than the
+     * [whisperBaseMultilingual] bundle that low-RAM devices are refused for being too big.** That
+     * label was actively misleading, so it is corrected here (2026-09-01); Moonshine stays dormant
+     * and is still resolvable by id, but it is not a low-RAM anything.
+     */
+    val lowRamDefault: AsrModelSpec = whisperTinyEn
+
+    /** Multilingual choice for a device that cannot hold [whisperBaseMultilingual]. */
+    val lowRamMultilingual: AsrModelSpec = whisperTinyMultilingual
 
     /**
-     * Owner-gated flip point: once the mid-range F2 spike validates Moonshine, call this with
-     * `lowRam = true` from the coordinator's model resolution for low-RAM devices. Until then it
-     * always returns [default] and Moonshine stays dormant.
+     * Default spec for a device. Low-RAM devices get the tiny bundle; everything else keeps
+     * [default]. Callers that need a *multilingual* low-RAM model want [lowRamMultilingual].
      */
     fun defaultFor(lowRam: Boolean): AsrModelSpec = if (lowRam) lowRamDefault else default
 

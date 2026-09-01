@@ -109,7 +109,11 @@ class PublicApiShapeTest {
                 assertEquals(VoiceKitException.InvalidLicense.Reason.MALFORMED, e.reason)
             }
         }
-        VoiceKit.validateLicenseShape("vk_live_anything")
+        // Tightened 2026-08-26: a key now carries a signed payload, so the shape is
+        // vk_<env>_<payload>.<signature> and a bare prefix is no longer enough. This line used to
+        // read validateLicenseShape("vk_live_anything") and correctly failed when the format landed.
+        VoiceKit.validateLicenseShape("vk_live_YXBwPXg.c2ln")
+        VoiceKit.validateLicenseShape("vk_test_YXBwPXg.c2ln")
     }
 
     /**
@@ -128,5 +132,67 @@ class PublicApiShapeTest {
             assertTrue("message should not be empty", !m.isNullOrBlank())
             assertTrue("message should be actionable, was: $m", (m?.length ?: 0) > 40)
         }
+    }
+    /**
+     * The live snippet from the docs, same contract as the batch one: it has to compile, because it
+     * is quoted verbatim on the landing page.
+     */
+    @Suppress("UNUSED_VARIABLE")
+    @Test
+    fun liveSessionSnippetFromTheDocsCompiles() {
+        val snippet: suspend () -> Unit = {
+            VoiceKit.startLiveSession(VoiceModel.ENGLISH_STREAMING).use { session ->
+                session.text.value.let(::println)
+                session.accept(FloatArray(512))
+            }
+        }
+        assertTrue("snippet should be constructible", snippet !== null)
+    }
+
+    @Test
+    fun onlyTheStreamingModelIsMarkedStreaming() {
+        assertTrue(VoiceModel.ENGLISH_STREAMING.isStreaming)
+        val batch = VoiceModel.entries.filterNot { it.isStreaming }
+        assertEquals(
+            listOf(VoiceModel.ENGLISH_FAST, VoiceModel.ENGLISH_COMPACT, VoiceModel.MULTILINGUAL),
+            batch,
+        )
+    }
+
+    /**
+     * A streaming model has no offline decoder. Routing it into transcribe() would surface as an
+     * unrelated-looking native load error, so the rejection has to happen at the public boundary
+     * and has to name the call that does work.
+     */
+    @Test
+    fun transcribeRejectsAStreamingModelAndNamesTheAlternative() {
+        VoiceKit.resetForTesting()
+        val error = runCatching {
+            kotlinx.coroutines.runBlocking {
+                VoiceKit.transcribe(File("x.wav"), model = VoiceModel.ENGLISH_STREAMING)
+            }
+        }.exceptionOrNull()
+        // Not initialized is checked first, which is correct ordering — assert that specifically so
+        // this test cannot silently start passing for the wrong reason.
+        assertTrue(
+            "expected NotInitialized before any model check, got $error",
+            error is VoiceKitException.NotInitialized,
+        )
+    }
+
+    @Test
+    fun streamingModelDoesNotClaimTheVadDownloadItNeverUses() {
+        // approxSizeMb is quoted to developers deciding whether to ship the model; the streaming
+        // path never segments on silence, so folding VAD bytes in would overstate the download.
+        val streamingBytes = VoiceModel.ENGLISH_STREAMING.spec.totalBytes
+        assertEquals(
+            (streamingBytes / 1_048_576L).toInt(),
+            VoiceModel.ENGLISH_STREAMING.approxSizeMb,
+        )
+        val batchBytes = VoiceModel.MULTILINGUAL.spec.totalBytes
+        assertTrue(
+            "a batch model must include the VAD bundle it does use",
+            VoiceModel.MULTILINGUAL.approxSizeMb > (batchBytes / 1_048_576L).toInt() - 1,
+        )
     }
 }

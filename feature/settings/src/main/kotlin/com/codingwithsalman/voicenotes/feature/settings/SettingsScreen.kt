@@ -2,6 +2,7 @@
 
 package com.codingwithsalman.voicenotes.feature.settings
 
+import com.tricodestudio.voicekit.ModelCatalog
 import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -149,9 +150,17 @@ fun SettingsScreen(
             SettingsCard {
                 viewModel.models.forEach { spec ->
                     OptionRow(
+                        // Three models now share two language buckets, so key the label off the id:
+                        // "All languages" and "All languages · Compact" are both multilingual and
+                        // would otherwise render identically (MUR-17).
                         title = stringResource(
-                            if (spec.languages == listOf("en")) R.string.vn_model_name_fast
-                            else R.string.vn_model_name_all
+                            when (spec.id) {
+                                ModelCatalog.whisperTinyMultilingual.id ->
+                                    R.string.vn_model_name_all_compact
+                                else ->
+                                    if (spec.languages == listOf("en")) R.string.vn_model_name_fast
+                                    else R.string.vn_model_name_all
+                            }
                         ),
                         subtitle = stringResource(
                             if (spec.languages == listOf("en")) R.string.vn_model_sub_fast
