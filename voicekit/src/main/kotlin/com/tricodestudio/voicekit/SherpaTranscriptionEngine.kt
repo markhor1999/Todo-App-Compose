@@ -99,7 +99,7 @@ public class SherpaTranscriptionEngine constructor(
                     try {
                         stream.acceptWaveform(speech.samples, SAMPLE_RATE)
                         r.decode(stream)
-                        val text = r.getResult(stream).text.trim()
+                        val text = Repetition.collapse(r.getResult(stream).text.trim())
                         if (text.isNotEmpty()) {
                             val startMs = speech.start * 1000L / SAMPLE_RATE
                             val endMs = startMs + speech.samples.size * 1000L / SAMPLE_RATE

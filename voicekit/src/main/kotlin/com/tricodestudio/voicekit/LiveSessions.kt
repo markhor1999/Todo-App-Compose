@@ -225,7 +225,7 @@ private class ChunkedLiveSession(
             try {
                 stream.acceptWaveform(speech.samples, SAMPLE_RATE)
                 recognizer.decode(stream)
-                val phrase = recognizer.getResult(stream).text.trim()
+                val phrase = Repetition.collapse(recognizer.getResult(stream).text.trim())
                 if (phrase.isNotEmpty()) committed.append(phrase).append(' ')
             } finally {
                 stream.release()
