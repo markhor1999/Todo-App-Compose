@@ -9,14 +9,14 @@ import android.net.Uri
  *
  * Nobody can install it from the phone they are reading this on, so the main action hands the link on
  * (the share sheet: email or message it to yourself, open it on the Mac) rather than opening a page whose
- * Download button does nothing useful here. `from=android` marks visits that came from this app, for
- * whenever the site keeps a visit log.
+ * Download button does nothing useful here. `ref=android` marks visits that came from this app, for
+ * whenever the site keeps a visit log (same convention as `ref=anoxhub`).
  *
  * The link goes to the page, never straight to a checkout: the Mac app is a separate product with its own
  * 14-day trial and purchase, and nothing in this app sells it.
  */
 object MurmurForMac {
-    const val URL = "https://tricodestudio.com/murmur?from=android"
+    const val URL = "https://tricodestudio.com/murmur?ref=android"
 
     /** Share sheet with a ready-made message carrying [URL]. */
     fun shareLink(context: Context) {
