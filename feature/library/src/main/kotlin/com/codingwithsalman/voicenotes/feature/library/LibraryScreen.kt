@@ -36,6 +36,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.res.stringResource
+import com.codingwithsalman.voicenotes.core.designsystem.MurmurForMac
 import com.codingwithsalman.voicenotes.core.designsystem.R
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.runtime.Composable
@@ -70,6 +71,7 @@ fun LibraryScreen(
     val context = androidx.compose.ui.platform.LocalContext.current
     val notes by viewModel.notes.collectAsStateWithLifecycle()
     val highlight by viewModel.highlight.collectAsStateWithLifecycle()
+    val showMacCard by viewModel.showMacCard.collectAsStateWithLifecycle()
     val query by viewModel.query.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -216,6 +218,23 @@ fun LibraryScreen(
                 }
             }
 
+            if (showMacCard) {
+                item(key = "mac-card") {
+                    MurmurForMacCard(
+                        onSendLink = {
+                            MurmurForMac.shareLink(context)
+                            viewModel.dismissMacCard()
+                        },
+                        onOpenPage = {
+                            MurmurForMac.openPage(context)
+                            viewModel.dismissMacCard()
+                        },
+                        onDismiss = viewModel::dismissMacCard,
+                        modifier = Modifier.animateItem(),
+                    )
+                }
+            }
+
             if (notes.isEmpty()) {
                 item(key = "empty") {
                     Box(
@@ -322,6 +341,72 @@ private fun ActionItemsHighlightCard(
                         TextButton(onClick = onDismiss) {
                             Text(stringResource(R.string.vn_autotasks_new_dismiss))
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * One-time card: Murmur is on Mac too, and where to get it.
+ *
+ * The address is printed on the card itself, because the person reading it is on a phone and will
+ * install on a Mac: they can type it there, send it to themselves, or open the page to read first.
+ */
+@Composable
+private fun MurmurForMacCard(
+    onSendLink: () -> Unit,
+    onOpenPage: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+    ) {
+        Column(modifier = Modifier.padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(R.string.vn_mac_card_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+                IconButton(onClick = onDismiss) {
+                    Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = stringResource(R.string.vn_cd_close),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            Column(modifier = Modifier.padding(end = 12.dp)) {
+                Text(
+                    text = stringResource(R.string.vn_mac_card_body),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = stringResource(R.string.vn_mac_card_where),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = stringResource(R.string.vn_mac_card_requirements),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Button(onClick = onSendLink) {
+                        Text(stringResource(R.string.vn_mac_card_send))
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    TextButton(onClick = onOpenPage) {
+                        Text(stringResource(R.string.vn_mac_card_open))
                     }
                 }
             }

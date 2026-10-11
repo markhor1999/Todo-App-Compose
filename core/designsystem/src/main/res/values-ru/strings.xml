@@ -187,4 +187,15 @@
     <string name="vn_autotasks_new_dismiss">Не сейчас</string>
     <string name="vn_autotasks_backfill_done">Найдено %1$d в %2$d заметках</string>
     <string name="vn_autotasks_backfill_none">В прежних заметках ничего не найдено</string>
+    <!-- Murmur for Mac cross-promotion (2.4.1) -->
+    <string name="vn_cd_close">Закрыть</string>
+    <string name="vn_mac_card_title">Murmur теперь есть на Mac</string>
+    <string name="vn_mac_card_body">Записывайте обе стороны звонка и получайте заметки — всё прямо на вашем Mac. Ничего не загружается в сеть. 14 дней бесплатно.</string>
+    <string name="vn_mac_card_where">Скачать: tricodestudio.com/murmur</string>
+    <string name="vn_mac_card_requirements">Нужен Mac с Apple Silicon (M1 или новее) и macOS 14.2 или новее.</string>
+    <string name="vn_mac_card_send">Отправить мне ссылку</string>
+    <string name="vn_mac_card_open">Открыть страницу</string>
+    <string name="vn_mac_share_text">Murmur для Mac: офлайн-заметки со встреч, которые создаются прямо на Mac. Скачать: %1$s</string>
+    <string name="vn_mac_settings_title">Murmur для Mac</string>
+    <string name="vn_mac_settings_subtitle">Отправьте себе ссылку · tricodestudio.com/murmur</string>
 </resources>

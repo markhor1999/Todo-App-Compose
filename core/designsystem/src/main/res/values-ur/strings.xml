@@ -183,4 +183,15 @@
     <string name="vn_autotasks_new_dismiss">ابھی نہیں</string>
     <string name="vn_autotasks_backfill_done">%2$d نوٹس میں %1$d ملے</string>
     <string name="vn_autotasks_backfill_none">آپ کے پرانے نوٹس میں کچھ نہیں ملا</string>
+    <!-- Murmur for Mac cross-promotion (2.4.1) -->
+    <string name="vn_cd_close">بند کریں</string>
+    <string name="vn_mac_card_title">Murmur اب Mac پر بھی</string>
+    <string name="vn_mac_card_body">اپنی کالز کی دونوں طرف کی گفتگو ریکارڈ کریں اور نوٹس پائیں، سب کچھ آپ کے Mac پر ہی۔ کچھ بھی اپ لوڈ نہیں ہوتا۔ 14 دن مفت۔</string>
+    <string name="vn_mac_card_where">tricodestudio.com/murmur سے حاصل کریں</string>
+    <string name="vn_mac_card_requirements">اس کے لیے M1 یا اس کے بعد کا Apple Silicon والا Mac اور macOS 14.2 یا نیا درکار ہے۔</string>
+    <string name="vn_mac_card_send">مجھے لنک بھیجیں</string>
+    <string name="vn_mac_card_open">صفحہ کھولیں</string>
+    <string name="vn_mac_share_text">Mac کے لیے Murmur: آف لائن میٹنگ نوٹس، جو آپ کے Mac پر ہی بنتے ہیں۔ یہاں سے ڈاؤن لوڈ کریں: %1$s</string>
+    <string name="vn_mac_settings_title">Mac کے لیے Murmur</string>
+    <string name="vn_mac_settings_subtitle">لنک خود کو بھیجیں · tricodestudio.com/murmur</string>
 </resources>

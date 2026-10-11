@@ -80,17 +80,42 @@ class LibraryViewModel @Inject constructor(
     private val _highlight = MutableStateFlow<Highlight>(Highlight.Hidden)
     val highlight: StateFlow<Highlight> = _highlight.asStateFlow()
 
+    /**
+     * The one-time "Murmur is on Mac" card. Shown only to someone with at least one finished
+     * transcript, i.e. who has had the thing the Mac app does, so a fresh install meets its own
+     * notes first and not a pitch.
+     */
+    private val _showMacCard = MutableStateFlow(false)
+    val showMacCard: StateFlow<Boolean> = _showMacCard.asStateFlow()
+
     init {
         // Purge notes whose undo window elapsed (or was lost to process death) before we list.
         viewModelScope.launch { repository.purgeDeleted() }
+        // One card per visit: the action-items offer is about this app and goes first; the Mac card
+        // waits for a later visit rather than stacking under it.
         viewModelScope.launch {
-            if (settings.autoTasksHighlightSeen.first()) return@launch
-            if (!settings.autoTasksEnabled.first()) return@launch
-            val hasHistory = repository.notesByStatuses(TranscriptionStatus.DONE).isNotEmpty()
-            if (hasHistory && repository.extractedActionItemCount() == 0) {
-                _highlight.value = Highlight.Offer
+            when {
+                shouldOfferActionItems() -> _highlight.value = Highlight.Offer
+                shouldShowMacCard() -> _showMacCard.value = true
             }
         }
+    }
+
+    private suspend fun shouldOfferActionItems(): Boolean {
+        if (settings.autoTasksHighlightSeen.first()) return false
+        if (!settings.autoTasksEnabled.first()) return false
+        val hasHistory = repository.notesByStatuses(TranscriptionStatus.DONE).isNotEmpty()
+        return hasHistory && repository.extractedActionItemCount() == 0
+    }
+
+    private suspend fun shouldShowMacCard(): Boolean =
+        !settings.macCardSeen.first() &&
+            repository.notesByStatuses(TranscriptionStatus.DONE).isNotEmpty()
+
+    /** Closing the card and using either of its actions all count as dealt with. */
+    fun dismissMacCard() {
+        viewModelScope.launch { settings.setMacCardSeen() }
+        _showMacCard.value = false
     }
 
     /** Runs extraction across the existing library, then reports what it found in place. */

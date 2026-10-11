@@ -34,6 +34,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.codingwithsalman.voicenotes.core.designsystem.MurmurForMac
 import com.codingwithsalman.voicenotes.core.designsystem.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -361,6 +362,15 @@ fun SettingsScreen(
 
             SectionTitle(stringResource(R.string.vn_share_section))
             val shareContext = LocalContext.current
+            // Permanent home of the link once the library's one-time Mac card has been closed.
+            ActionCard(
+                title = stringResource(R.string.vn_mac_settings_title),
+                subtitle = stringResource(R.string.vn_mac_settings_subtitle),
+                onClick = { MurmurForMac.shareLink(shareContext) },
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
             ActionCard(
                 title = stringResource(R.string.vn_tell_friend_title),
                 subtitle = stringResource(R.string.vn_tell_friend_subtitle),

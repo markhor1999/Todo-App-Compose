@@ -183,4 +183,15 @@
     <string name="vn_autotasks_new_dismiss">Ahora no</string>
     <string name="vn_autotasks_backfill_done">%1$d encontradas en %2$d notas</string>
     <string name="vn_autotasks_backfill_none">No se encontró nada en tus notas existentes</string>
+    <!-- Murmur for Mac cross-promotion (2.4.1) -->
+    <string name="vn_cd_close">Cerrar</string>
+    <string name="vn_mac_card_title">Murmur ya está en Mac</string>
+    <string name="vn_mac_card_body">Graba las dos partes de tus llamadas y obtén las notas, todo en tu Mac. No se sube nada. Gratis durante 14 días.</string>
+    <string name="vn_mac_card_where">Consíguelo en tricodestudio.com/murmur</string>
+    <string name="vn_mac_card_requirements">Requiere un Mac con Apple Silicon (M1 o posterior) y macOS 14.2 o posterior.</string>
+    <string name="vn_mac_card_send">Enviarme el enlace</string>
+    <string name="vn_mac_card_open">Abrir la página</string>
+    <string name="vn_mac_share_text">Murmur para Mac: notas de reuniones sin conexión, hechas en tu Mac. Descárgalo aquí: %1$s</string>
+    <string name="vn_mac_settings_title">Murmur para Mac</string>
+    <string name="vn_mac_settings_subtitle">Envíate el enlace · tricodestudio.com/murmur</string>
 </resources>

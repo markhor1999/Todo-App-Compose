@@ -26,6 +26,7 @@ class SettingsRepository @Inject constructor(
         val liveTranscription = booleanPreferencesKey("live_transcription_enabled")
         val autoTasks = booleanPreferencesKey("auto_tasks_enabled")
         val autoTasksHighlightSeen = booleanPreferencesKey("auto_tasks_highlight_seen")
+        val macCardSeen = booleanPreferencesKey("mac_card_seen")
     }
 
     val themeMode: Flow<ThemeMode> = context.settingsDataStore.data.map { prefs ->
@@ -106,5 +107,17 @@ class SettingsRepository @Inject constructor(
 
     suspend fun setAutoTasksHighlightSeen() {
         context.settingsDataStore.edit { it[Keys.autoTasksHighlightSeen] = true }
+    }
+
+    /**
+     * Whether the one-time "Murmur is on Mac" card in the library has been dealt with: closed, or
+     * either of its actions used. Settings keeps a permanent "Murmur for Mac" row, so hiding the card
+     * for good loses nobody the link.
+     */
+    val macCardSeen: Flow<Boolean> =
+        context.settingsDataStore.data.map { prefs -> prefs[Keys.macCardSeen] ?: false }
+
+    suspend fun setMacCardSeen() {
+        context.settingsDataStore.edit { it[Keys.macCardSeen] = true }
     }
 }
