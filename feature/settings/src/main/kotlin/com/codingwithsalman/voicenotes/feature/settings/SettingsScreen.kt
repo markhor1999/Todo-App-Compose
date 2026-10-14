@@ -362,7 +362,7 @@ fun SettingsScreen(
 
             SectionTitle(stringResource(R.string.vn_share_section))
             val shareContext = LocalContext.current
-            // Permanent home of the link once the library's one-time Mac card has been closed.
+            // Permanent home of the link once the library's one-time Mac and Windows card has been closed.
             ActionCard(
                 title = stringResource(R.string.vn_mac_settings_title),
                 subtitle = stringResource(R.string.vn_mac_settings_subtitle),

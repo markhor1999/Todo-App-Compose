@@ -81,8 +81,8 @@ class LibraryViewModel @Inject constructor(
     val highlight: StateFlow<Highlight> = _highlight.asStateFlow()
 
     /**
-     * The one-time "Murmur is on Mac" card. Shown only to someone with at least one finished
-     * transcript, i.e. who has had the thing the Mac app does, so a fresh install meets its own
+     * The one-time "Murmur is on Mac and Windows" card. Shown only to someone with at least one finished
+     * transcript, i.e. who has had the thing the desktop app does, so a fresh install meets its own
      * notes first and not a pitch.
      */
     private val _showMacCard = MutableStateFlow(false)
@@ -91,7 +91,7 @@ class LibraryViewModel @Inject constructor(
     init {
         // Purge notes whose undo window elapsed (or was lost to process death) before we list.
         viewModelScope.launch { repository.purgeDeleted() }
-        // One card per visit: the action-items offer is about this app and goes first; the Mac card
+        // One card per visit: the action-items offer is about this app and goes first; the desktop card
         // waits for a later visit rather than stacking under it.
         viewModelScope.launch {
             when {

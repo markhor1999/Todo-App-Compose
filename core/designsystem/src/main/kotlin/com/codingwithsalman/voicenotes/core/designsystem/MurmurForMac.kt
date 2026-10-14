@@ -5,14 +5,15 @@ import android.content.Intent
 import android.net.Uri
 
 /**
- * Murmur for Mac, the desktop sibling (`projects/murmur`), downloaded and sold from the studio website.
+ * Murmur for Mac and Windows, the desktop sibling (`projects/murmur`). The Mac app is downloaded from the studio
+ * website and the Windows app comes from the Microsoft Store ("Murmur Meeting Notes"); the page links both.
  *
  * Nobody can install it from the phone they are reading this on, so the main action hands the link on
- * (the share sheet: email or message it to yourself, open it on the Mac) rather than opening a page whose
+ * (the share sheet: email or message it to yourself, open it on the computer) rather than opening a page whose
  * Download button does nothing useful here. `ref=android` marks visits that came from this app, for
  * whenever the site keeps a visit log (same convention as `ref=anoxhub`).
  *
- * The link goes to the page, never straight to a checkout: the Mac app is a separate product with its own
+ * The link goes to the page, never straight to a checkout: the desktop app is a separate product with its own
  * 14-day trial and purchase, and nothing in this app sells it.
  */
 object MurmurForMac {

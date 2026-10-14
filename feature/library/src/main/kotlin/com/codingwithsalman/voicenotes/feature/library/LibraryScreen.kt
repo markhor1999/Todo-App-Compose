@@ -349,10 +349,10 @@ private fun ActionItemsHighlightCard(
 }
 
 /**
- * One-time card: Murmur is on Mac too, and where to get it.
+ * One-time card: Murmur is on Mac and Windows too, and where to get it.
  *
  * The address is printed on the card itself, because the person reading it is on a phone and will
- * install on a Mac: they can type it there, send it to themselves, or open the page to read first.
+ * install on a computer: they can type it there, send it to themselves, or open the page to read first.
  */
 @Composable
 private fun MurmurForMacCard(

@@ -183,15 +183,15 @@
     <string name="vn_autotasks_new_dismiss">Agora não</string>
     <string name="vn_autotasks_backfill_done">%1$d encontradas em %2$d notas</string>
     <string name="vn_autotasks_backfill_none">Nada encontrado nas suas notas atuais</string>
-    <!-- Murmur for Mac cross-promotion (2.4.1) -->
+    <!-- Murmur for Mac and Windows cross-promotion (2.4.1) -->
     <string name="vn_cd_close">Fechar</string>
-    <string name="vn_mac_card_title">O Murmur agora está no Mac</string>
-    <string name="vn_mac_card_body">Grave os dois lados das suas chamadas e receba as anotações, tudo no seu Mac. Nada é enviado para a nuvem. Grátis por 14 dias.</string>
+    <string name="vn_mac_card_title">O Murmur agora está no Mac e no Windows</string>
+    <string name="vn_mac_card_body">Grave os dois lados das suas chamadas e receba as anotações, tudo no seu computador. Nada é enviado para a nuvem. Grátis por 14 dias.</string>
     <string name="vn_mac_card_where">Baixe em tricodestudio.com/murmur</string>
-    <string name="vn_mac_card_requirements">Requer um Mac com Apple Silicon (M1 ou mais recente) e macOS 14.2 ou mais recente.</string>
+    <string name="vn_mac_card_requirements">Mac: Apple Silicon (M1 ou mais recente) e macOS 14.2 ou mais recente. Windows: Windows 10 ou 11, 64 bits.</string>
     <string name="vn_mac_card_send">Enviar o link para mim</string>
     <string name="vn_mac_card_open">Abrir a página</string>
-    <string name="vn_mac_share_text">Murmur para Mac: notas de reunião offline, feitas no seu Mac. Baixe aqui: %1$s</string>
-    <string name="vn_mac_settings_title">Murmur para Mac</string>
+    <string name="vn_mac_share_text">Murmur para Mac e Windows: notas de reunião offline, feitas no seu computador. Baixe aqui: %1$s</string>
+    <string name="vn_mac_settings_title">Murmur para Mac e Windows</string>
     <string name="vn_mac_settings_subtitle">Envie o link para você · tricodestudio.com/murmur</string>
 </resources>

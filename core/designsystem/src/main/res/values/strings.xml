@@ -195,15 +195,15 @@
     <string name="vn_start">Start</string>
     <string name="vn_start_anyway">Start anyway</string>
     <string name="vn_download_size">Download · %1$d MB</string>
-    <!-- Murmur for Mac cross-promotion (2.4.1) -->
+    <!-- Murmur for Mac and Windows cross-promotion (2.4.1) -->
     <string name="vn_cd_close">Close</string>
-    <string name="vn_mac_card_title">Murmur is on Mac now</string>
-    <string name="vn_mac_card_body">Record both sides of your calls and get the notes, all made on your Mac. Nothing is uploaded. Free for 14 days.</string>
+    <string name="vn_mac_card_title">Murmur is on Mac and Windows now</string>
+    <string name="vn_mac_card_body">Record both sides of your calls and get the notes, all made on your computer. Nothing is uploaded. Free for 14 days.</string>
     <string name="vn_mac_card_where">Get it at tricodestudio.com/murmur</string>
-    <string name="vn_mac_card_requirements">Needs a Mac with Apple Silicon (M1 or later) and macOS 14.2 or later.</string>
+    <string name="vn_mac_card_requirements">Mac: Apple Silicon (M1 or later) and macOS 14.2 or later. Windows: Windows 10 or 11, 64-bit.</string>
     <string name="vn_mac_card_send">Send me the link</string>
     <string name="vn_mac_card_open">Open the page</string>
-    <string name="vn_mac_share_text">Murmur for Mac: offline meeting notes, made on your Mac. Download it here: %1$s</string>
-    <string name="vn_mac_settings_title">Murmur for Mac</string>
+    <string name="vn_mac_share_text">Murmur for Mac and Windows: offline meeting notes, made on your computer. Download it here: %1$s</string>
+    <string name="vn_mac_settings_title">Murmur for Mac and Windows</string>
     <string name="vn_mac_settings_subtitle">Send yourself the link · tricodestudio.com/murmur</string>
 </resources>

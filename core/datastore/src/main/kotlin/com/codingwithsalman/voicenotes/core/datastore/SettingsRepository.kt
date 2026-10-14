@@ -110,8 +110,8 @@ class SettingsRepository @Inject constructor(
     }
 
     /**
-     * Whether the one-time "Murmur is on Mac" card in the library has been dealt with: closed, or
-     * either of its actions used. Settings keeps a permanent "Murmur for Mac" row, so hiding the card
+     * Whether the one-time "Murmur is on Mac and Windows" card in the library has been dealt with: closed, or
+     * either of its actions used. Settings keeps a permanent "Murmur for Mac and Windows" row, so hiding the card
      * for good loses nobody the link.
      */
     val macCardSeen: Flow<Boolean> =

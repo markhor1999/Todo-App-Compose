@@ -191,15 +191,15 @@
     <string name="vn_autotasks_new_dismiss">ليس الآن</string>
     <string name="vn_autotasks_backfill_done">تم العثور على %1$d في %2$d ملاحظة</string>
     <string name="vn_autotasks_backfill_none">لا يوجد شيء في ملاحظاتك الحالية</string>
-    <!-- Murmur for Mac cross-promotion (2.4.1) -->
+    <!-- Murmur for Mac and Windows cross-promotion (2.4.1) -->
     <string name="vn_cd_close">إغلاق</string>
-    <string name="vn_mac_card_title">Murmur متاح الآن على Mac</string>
-    <string name="vn_mac_card_body">سجّل طرفَي مكالماتك واحصل على الملاحظات، وكل ذلك على جهاز Mac نفسه. لا يُرفع أي شيء. مجانًا لمدة 14 يومًا.</string>
+    <string name="vn_mac_card_title">Murmur متاح الآن على Mac وWindows</string>
+    <string name="vn_mac_card_body">سجّل طرفَي مكالماتك واحصل على الملاحظات، وكل ذلك على كمبيوترك نفسه. لا يُرفع أي شيء. مجانًا لمدة 14 يومًا.</string>
     <string name="vn_mac_card_where">احصل عليه من tricodestudio.com/murmur</string>
-    <string name="vn_mac_card_requirements">يتطلب جهاز Mac بمعالج Apple Silicon من M1 أو أحدث، ونظام macOS 14.2 أو أحدث.</string>
+    <string name="vn_mac_card_requirements">يتطلب جهاز Mac بمعالج Apple Silicon من M1 أو أحدث ونظام macOS 14.2 أو أحدث، أو نظام Windows 10 أو 11 بإصدار 64 بت.</string>
     <string name="vn_mac_card_send">أرسل لي الرابط</string>
     <string name="vn_mac_card_open">افتح الصفحة</string>
-    <string name="vn_mac_share_text">Murmur لأجهزة Mac: ملاحظات اجتماعات دون اتصال تُكتب على جهاز Mac نفسه. نزّله من هنا: %1$s</string>
-    <string name="vn_mac_settings_title">Murmur لأجهزة Mac</string>
+    <string name="vn_mac_share_text">Murmur لأجهزة Mac وWindows: ملاحظات اجتماعات دون اتصال تُكتب على كمبيوترك نفسه. نزّله من هنا: %1$s</string>
+    <string name="vn_mac_settings_title">Murmur لأجهزة Mac وWindows</string>
     <string name="vn_mac_settings_subtitle">أرسل الرابط لنفسك · tricodestudio.com/murmur</string>
 </resources>

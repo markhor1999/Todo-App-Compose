@@ -183,15 +183,15 @@
     <string name="vn_autotasks_new_dismiss">अभी नहीं</string>
     <string name="vn_autotasks_backfill_done">%2$d नोट में %1$d मिले</string>
     <string name="vn_autotasks_backfill_none">आपके पुराने नोट में कुछ नहीं मिला</string>
-    <!-- Murmur for Mac cross-promotion (2.4.1) -->
+    <!-- Murmur for Mac and Windows cross-promotion (2.4.1) -->
     <string name="vn_cd_close">बंद करें</string>
-    <string name="vn_mac_card_title">Murmur अब Mac पर भी</string>
-    <string name="vn_mac_card_body">अपनी कॉल के दोनों तरफ़ की बातें रिकॉर्ड करें और नोट्स पाएँ — सब कुछ आपके Mac पर ही। कुछ भी अपलोड नहीं होता। 14 दिन मुफ़्त।</string>
+    <string name="vn_mac_card_title">Murmur अब Mac और Windows पर भी</string>
+    <string name="vn_mac_card_body">अपनी कॉल के दोनों तरफ़ की बातें रिकॉर्ड करें और नोट्स पाएँ — सब कुछ आपके कंप्यूटर पर ही। कुछ भी अपलोड नहीं होता। 14 दिन मुफ़्त।</string>
     <string name="vn_mac_card_where">tricodestudio.com/murmur से पाएँ</string>
-    <string name="vn_mac_card_requirements">Apple Silicon (M1 या नया) वाला Mac और macOS 14.2 या नया ज़रूरी है।</string>
+    <string name="vn_mac_card_requirements">Mac: Apple Silicon (M1 या नया) और macOS 14.2 या नया। Windows: Windows 10 या 11, 64-बिट।</string>
     <string name="vn_mac_card_send">मुझे लिंक भेजें</string>
     <string name="vn_mac_card_open">पेज खोलें</string>
-    <string name="vn_mac_share_text">Mac के लिए Murmur: ऑफ़लाइन मीटिंग नोट्स, जो आपके Mac पर ही बनते हैं। यहाँ से डाउनलोड करें: %1$s</string>
-    <string name="vn_mac_settings_title">Mac के लिए Murmur</string>
+    <string name="vn_mac_share_text">Mac और Windows के लिए Murmur: ऑफ़लाइन मीटिंग नोट्स, जो आपके कंप्यूटर पर ही बनते हैं। यहाँ से डाउनलोड करें: %1$s</string>
+    <string name="vn_mac_settings_title">Mac और Windows के लिए Murmur</string>
     <string name="vn_mac_settings_subtitle">लिंक ख़ुद को भेजें · tricodestudio.com/murmur</string>
 </resources>

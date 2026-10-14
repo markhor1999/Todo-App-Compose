@@ -183,15 +183,15 @@
     <string name="vn_autotasks_new_dismiss">Plus tard</string>
     <string name="vn_autotasks_backfill_done">%1$d trouvées dans %2$d notes</string>
     <string name="vn_autotasks_backfill_none">Rien trouvé dans vos notes existantes</string>
-    <!-- Murmur for Mac cross-promotion (2.4.1) -->
+    <!-- Murmur for Mac and Windows cross-promotion (2.4.1) -->
     <string name="vn_cd_close">Fermer</string>
-    <string name="vn_mac_card_title">Murmur est maintenant sur Mac</string>
-    <string name="vn_mac_card_body">Enregistrez les deux côtés de vos appels et obtenez les notes, le tout sur votre Mac. Rien n\'est envoyé en ligne. Gratuit pendant 14 jours.</string>
+    <string name="vn_mac_card_title">Murmur est maintenant sur Mac et Windows</string>
+    <string name="vn_mac_card_body">Enregistrez les deux côtés de vos appels et obtenez les notes, le tout sur votre ordinateur. Rien n\'est envoyé en ligne. Gratuit pendant 14 jours.</string>
     <string name="vn_mac_card_where">Disponible sur tricodestudio.com/murmur</string>
-    <string name="vn_mac_card_requirements">Nécessite un Mac avec puce Apple (M1 ou plus récent) et macOS 14.2 ou plus récent.</string>
+    <string name="vn_mac_card_requirements">Mac : puce Apple (M1 ou plus récent) et macOS 14.2 ou plus récent. Windows : Windows 10 ou 11, 64 bits.</string>
     <string name="vn_mac_card_send">M\'envoyer le lien</string>
     <string name="vn_mac_card_open">Ouvrir la page</string>
-    <string name="vn_mac_share_text">Murmur pour Mac : des notes de réunion hors ligne, rédigées sur votre Mac. Téléchargez-le ici : %1$s</string>
-    <string name="vn_mac_settings_title">Murmur pour Mac</string>
+    <string name="vn_mac_share_text">Murmur pour Mac et Windows : des notes de réunion hors ligne, rédigées sur votre ordinateur. Téléchargez-le ici : %1$s</string>
+    <string name="vn_mac_settings_title">Murmur pour Mac et Windows</string>
     <string name="vn_mac_settings_subtitle">Envoyez-vous le lien · tricodestudio.com/murmur</string>
 </resources>
